@@ -16,13 +16,14 @@
 8. [Tailwind CSS qurilishi](#tailwind-css-qurilishi)
 9. [Development serverini ishga tushirish](#development-serverini-ishga-tushirish)
 10. [Demo maʼlumotlar (ixtiyoriy)](#demo-malumotlar)
-11. [Muammolarni hal qilish](#muammolarni-hal-qilish)
+11. [Tarjima fayllarini kompilatsiya qilish](#tarjima-fayllarini-kompilatsiya-qilish)
+12. [Muammolarni hal qilish](#muammolarni-hal-qilish)
 
 ---
 
 ## Talablar
 
-Oʻrnatishdan avval quydagi dasturlar mavjudligini tekshiring:
+Oʻrnatishdan avval quyidagi dasturlar mavjudligini tekshiring:
 
 | Dastur | Versiya | Eslatma |
 |--------|---------|---------|
@@ -105,7 +106,8 @@ ALLOWED_HOSTS=*
 # Production uchun: https://hopeschool.uz
 CSRF_TRUSTED_ORIGINS=
 
-# Telegram — ariza yuborish uchun (hozircha ixtiyoriy)
+# Telegram — yangi arizalarni real vaqtda qabul qilish uchun (ixtiyoriy)
+# Ikkala qiymat boʻlmasa bildirishnoma yuborilmaydi
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_ADMIN_CHAT_ID=
 ```
@@ -118,8 +120,8 @@ TELEGRAM_ADMIN_CHAT_ID=
 | `SECRET_KEY` | **Ha** | Django maxfiy kaliti |
 | `ALLOWED_HOSTS` | **Ha** | Vergul bilan ajratilgan domenlar |
 | `CSRF_TRUSTED_ORIGINS` | Production | HTTPS manzillar |
-| `TELEGRAM_BOT_TOKEN` | Yoʻq | Bot tokeni — [@BotFather](https://t.me/BotFather) dan |
-| `TELEGRAM_ADMIN_CHAT_ID` | Yoʻq | Arizalar yuboriladigan chat/guruh ID si |
+| `TELEGRAM_BOT_TOKEN` | Yoʻq | Bot tokeni — [@BotFather](https://t.me/BotFather) dan; boʻsh qolsa Telegram bildirishnomasi oʻchiriladi |
+| `TELEGRAM_ADMIN_CHAT_ID` | Yoʻq | Arizalar yuboriladigan chat/guruh ID si (guruh uchun manfiy raqam) |
 
 ---
 
@@ -181,6 +183,7 @@ Brauzerda oching:
 | [http://127.0.0.1:8001/ru/](http://127.0.0.1:8001/ru/) | Ruscha versiya |
 | [http://127.0.0.1:8001/en/](http://127.0.0.1:8001/en/) | Inglizcha versiya |
 | [http://127.0.0.1:8001/admin/](http://127.0.0.1:8001/admin/) | Admin paneli |
+| [http://127.0.0.1:8001/ariza/](http://127.0.0.1:8001/ariza/) | Ariza topshirish (POST endpoint) |
 
 ---
 
@@ -192,7 +195,7 @@ Tez koʻrish uchun namunaviy maʼlumotlarni bazaga yuklash mumkin:
 python manage.py seed_demo
 ```
 
-Bu buyruq quyidagilarni yaratadi (mavjud demo ma'lumotlar avval oʻchiriladi):
+Bu buyruq quyidagilarni yaratadi (mavjud demo maʼlumotlar avval oʻchiriladi):
 
 - Sayt sozlamalari (kontaktlar, manzil, Bogʻiturkon koordinatalari)
 - 4 ta kurs: Ingliz tili, Matematika, Kimyo, Biologiya
@@ -205,6 +208,54 @@ Bu buyruq quyidagilarni yaratadi (mavjud demo ma'lumotlar avval oʻchiriladi):
 - Galereya albomi (gradient namunaviy rasmlar bilan)
 
 > **Diqqat:** `seed_demo` faqat development uchun. Production bazasida ishlatmang.
+
+---
+
+## Tarjima fayllarini kompilatsiya qilish
+
+Sayt `django-modeltranslation` orqali kontent tarjimasini, `gettext` orqali esa interfeys tarjimasini qoʻllab-quvvatlaydi.
+
+### .po fayllarini yaratish yoki yangilash
+
+```bash
+python manage.py makemessages -l ru -l en
+```
+
+Bu buyruq `locale/ru/LC_MESSAGES/django.po` va `locale/en/LC_MESSAGES/django.po` fayllarini yaratadi yoki yangilaydi.
+
+### .po → .mo kompilatsiyasi
+
+**Linux / macOS** (GNU `gettext` oʻrnatilgan boʻlsa):
+
+```bash
+python manage.py compilemessages
+```
+
+**Windows** — `compilemessages` GNU `msgfmt` ni talab qiladi, u Windowsda odatda mavjud emas. `polib` kutubxonasidan foydalaning:
+
+```bash
+pip install polib
+```
+
+Soʻng quyidagi skriptni ishga tushiring (loyiha ildizidan):
+
+```python
+import polib, pathlib
+
+for po_path in pathlib.Path("locale").rglob("*.po"):
+    po = polib.pofile(str(po_path))
+    mo_path = po_path.with_suffix(".mo")
+    po.save_as_mofile(str(mo_path))
+    print(f"  {po_path} → {mo_path}")
+```
+
+Yoki bir satrda:
+
+```powershell
+python -c "import polib, pathlib; [polib.pofile(str(p)).save_as_mofile(str(p.with_suffix('.mo'))) for p in pathlib.Path('locale').rglob('*.po')]"
+```
+
+> **Eslatma:** `.mo` fayllari ikkilik formatda boʻlib, Git da hisobga olinmaydi (`.gitignore` da). Serverga joylashtirilganda kompilatsiya qayta bajarilishi kerak.
 
 ---
 
@@ -232,7 +283,17 @@ Boshqa port raqamini belgilang.
 
 ### Windows da `'python' is not recognized`
 
-Python PATH ga qoʻshilmagan boʻlishi mumkin. `py` yoki `python3` buyruqlarini sinab koʻring, yoki Python ni qayta oʻrnating va "Add Python to PATH" katagini belgilang.
+Python PATH ga qoʻshilmagan boʻlishi mumkin. `py` yoki `python3` buyruqlarini sinab koʻring, yoki Pythonni qayta oʻrnating va "Add Python to PATH" katagini belgilang.
+
+### Telegram bildirishnomalar kelmayapti
+
+1. `.env` da `TELEGRAM_BOT_TOKEN` va `TELEGRAM_ADMIN_CHAT_ID` toʻldirilganligini tekshiring.
+2. Admin panelda **Sayt sozlamalari → "Telegram bildirishnomalari yoniq"** katagini belgilang.
+3. Server logida xato xabarlarni koʻring (`logger.warning` va `logger.exception` tomonidan yoziladi).
+4. Bot token va chat ID toʻgʻriligini Telegram API orqali tekshiring:
+   ```
+   https://api.telegram.org/bot<TOKEN>/getMe
+   ```
 
 ---
 

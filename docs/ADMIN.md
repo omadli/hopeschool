@@ -19,10 +19,11 @@
 8. [Galereya](#galereya)
 9. [Sertifikatlar](#sertifikatlar)
 10. [Ota-ona fikrlari](#ota-ona-fikrlari)
-11. [Arizalar](#arizalar)
-12. [Uch til bilan ishlash](#uch-til-bilan-ishlash)
-13. [CKEditor — boy matn muharriri](#ckeditor--boy-matn-muharriri)
-14. [Tartiblashtirish va yashirish](#tartiblashtirish-va-yashirish)
+11. [Arizalar (Leads)](#arizalar-leads)
+12. [Tashriflar analitikasi](#tashriflar-analitikasi)
+13. [Uch til bilan ishlash](#uch-til-bilan-ishlash)
+14. [CKEditor — boy matn muharriri](#ckeditor--boy-matn-muharriri)
+15. [Tartiblashtirish va yashirish](#tartiblashtirish-va-yashirish)
 
 ---
 
@@ -126,7 +127,9 @@ Instagram, Telegram kanal, Telegram guruh, YouTube, Facebook va TikTok havolalar
 
 ### Telegram bildirishnomalari
 
-"**Telegram bildirishnomalari yoniq**" katagini belgilash yoki olib tashlash orqali arizalarning Telegram ga yuborilishini boshqarish mumkin (TELEGRAM_BOT_TOKEN va TELEGRAM_ADMIN_CHAT_ID `.env` da toʻldirilgan boʻlishi kerak).
+"**Telegram bildirishnomalari yoniq**" katagini belgilash yoki olib tashlash orqali yangi arizalarning Telegram ga yuborilishini boshqarish mumkin.
+
+> **Shartlar:** `.env` da `TELEGRAM_BOT_TOKEN` va `TELEGRAM_ADMIN_CHAT_ID` toʻldirilgan boʻlishi **ham** shart. Faqat ushbu katagni belgilash yetarli emas.
 
 ---
 
@@ -299,8 +302,8 @@ Oʻquvchilar muvaffaqiyatlari va sertifikatlarini namoyish etish uchun.
 | **Izoh** | Qisqa tavsif (masalan: "IELTS Band 7.0", "Kimyo olimpiadasi gʻolibi") |
 | **Belgi** | Qisqa yorliq (masalan: "IELTS", "SAT", "Gʻolib") |
 | **Qizil belgi** | Belgilansa, urgʻu rangida koʻrsatiladi |
-| **Rasm** | Sertifikat tasvirining surati |
-| **PDF fayl** | Sertifikat PDF nusxasi (maks 10 MB) |
+| **Rasm** | Sertifikat tasvirining surati — JPG/PNG/WebP/GIF, maks 5 MB |
+| **PDF fayl** | Sertifikat PDF nusxasi — maks 10 MB |
 | **Tashqi havola** | Masalan: Telegram kanal havolasi |
 
 > **Diqqat:** Rasm, PDF yoki tashqi havoladan kamida bittasi kiritilishi **majburiy**.
@@ -322,16 +325,96 @@ Oʻquvchilar muvaffaqiyatlari va sertifikatlarini namoyish etish uchun.
 
 ---
 
-## Arizalar
+## Arizalar (Leads)
 
-**Ariza formasi va Telegram integratsiya qoʻshilmoqda (Phase 3).**
+> **Holat: toʻliq ishlamoqda (Phase 3 tugallangan)**
 
-Saytning bosh sahifasida ariza topshirish formasi mavjud. Ariza yuborilganda:
+**Admin menyusi → Murojaatlar → Arizalar**
 
-1. **Bazaga saqlanadi** — admin paneldagi "Arizalar" boʻlimida koʻrish mumkin
-2. **Telegram ga yuboriladi** — `.env` da `TELEGRAM_BOT_TOKEN` va `TELEGRAM_ADMIN_CHAT_ID` toʻldirilgan boʻlsa
+Saytdagi `/ariza/` endpointiga yuborilgan barcha arizalar shu yerda saqlanadi.
 
-Telegram bildirishnomalarini yoqish/oʻchirish: **Sayt sozlamalari → Telegram → "Telegram bildirishnomalari yoniq"** katagini boshlash.
+### Ariza roʻyxati
+
+Roʻyxatda quyidagi ustunlar koʻrinadi:
+
+| Ustun | Tavsif |
+|-------|--------|
+| **Ism familiya** | Ariza yuborganning toʻliq ismi |
+| **Telefon** | +998XXXXXXXXX formatida normallanadi |
+| **Kurs** | Tanlangan kurs (ixtiyoriy) |
+| **Holat** | `Yangi / Bogʻlanildi / Oʻquvchi boʻldi / Rad etildi` — roʻyxatda tahrirlanadi |
+| **Telegram** | Bildirishnoma yuborilganmi — `Ha / Yoʻq` |
+| **Vaqt** | Ariza kelib tushgan sana va soat |
+
+### Sidebar badge
+
+Chap menyu — **Murojaatlar → Arizalar** — yonida yangi (`Yangi` holatdagi) arizalar soni dinamik badge sifatida koʻrsatiladi. Barcha arizalar koʻrib chiqilgach, badge yoʻqoladi.
+
+### Holat almashtirish
+
+Arizani ochmasdan, roʻyxatdagi "Holat" ustunida to'gʻridan-toʻgʻri yangi holat tanlash mumkin. Masalan:
+
+```
+Yangi → Bogʻlanildi   (telefon qilinganda)
+Bogʻlanildi → Oʻquvchi boʻldi   (yozilganda)
+Bogʻlanildi → Rad etildi   (manfiy javob)
+```
+
+### Ariza manbasi
+
+`Manba` maydoni (`source`) ariza qayerdan kelganini koʻrsatadi — UTM parametr yoki HTTP Referrer dan avtomatik toʻldiriladi. Bu reklama samaradorligini baholashda yordam beradi.
+
+### Spam himoyasi
+
+Sayt ikki usul bilan spam arizalardan himoyalangan:
+
+| Usul | Tavsif |
+|------|--------|
+| **Honeypot** | Yashirin `website` maydoni — bot toʻldirsa, so jim rad etiladi (bazaga saqlanmaydi) |
+| **IP rate-limit** | Bir IP dan 1 soat ichida 5 tadan ortiq ariza qabul qilinmaydi (HTTP 429) |
+
+---
+
+## Tashriflar analitikasi
+
+> **Holat: qoʻshilmoqda (Phase 4)**
+
+Admin panelidagi analitika boʻlimi saytga tashriflar statistikasini koʻrsatadi — hech qanday tashqi tracker (Google Analytics va h.k.) talab qilinmaydi, barchasi server tomonida yozib boriladi.
+
+### Nima saqlanadi
+
+Har bir sahifa koʻrishda quyidagi maʼlumotlar `VisitLog` jadvaliga yoziladi:
+
+| Maydon | Tavsif |
+|--------|--------|
+| `ip_address` | Tashrif etuvchining IP manzili |
+| `device_type` | `desktop`, `mobile`, `tablet` |
+| `browser` | Brauzer nomi (Chrome, Firefox, Safari va h.k.) |
+| `os` | Operatsion tizim (Windows, Android, iOS va h.k.) |
+| `language` | Soʻralgan til: `uz`, `ru`, `en` |
+| `path` | Koʻrilgan sahifa manzili |
+
+Botlar, admin soʻrovlari va statik fayllar hisobga **olinmaydi**.
+
+### Dashboard
+
+Admin panelda analitika sahifasi quyidagilarni koʻrsatadi:
+
+- Jami tashriflar (kunlik / haftalik / oylik)
+- Qurilma turi boʻyicha taqsimot
+- Eng koʻp koʻrilgan 10 ta sahifa
+- Brauzer va OS statistikasi
+- Til boʻyicha taqsimot
+
+### Eski yozuvlarni tozalash
+
+```bash
+# 90 kundan eski yozuvlarni oʻchiradi (standart)
+python manage.py prune_visitlogs
+
+# 30 kundan eski yozuvlarni oʻchiradi
+python manage.py prune_visitlogs --days 30
+```
 
 ---
 
@@ -363,9 +446,15 @@ Agar biror til uchun maydon boʻsh qolsa, standart til (oʻzbekcha) matn koʻrsa
 | `/ru/` | Ruscha |
 | `/en/` | Inglizcha |
 
-### Interfeys tarjimasi haqida eslatma
+### Til almashtirgich
 
-Hozirgi bosqichda admin interfeysi va sahifa matinlari oʻzbekcha. `/ru/` yoki `/en/` prefiksida saytga kirilsa, **kontent** oʻsha tilda koʻrsatiladi (admindan kiritilgan), lekin navigatsiya tugmalari va interfeys elementlari hali oʻzbekcha — chunki `.po` tarjima fayllari hali yaratilmagan.
+Saytdagi til almashtirgich `POST /i18n/set_language/` endpointiga asoslangan. Bu URL URL prefikslari (`i18n_patterns`) dan tashqarida joylashgan, shuning uchun har qanday sahifadan til almashtirish ishlaydi.
+
+### Interfeys tarjimasi haqida
+
+Sahifa **kontenti** tanlangan tilda koʻrsatiladi (admindan kiritilgan). **Interfeys matnlari** (navigatsiya, tugmalar va h.k.) `locale/ru` va `locale/en` dagi `.po/.mo` fayllari orqali tarjima qilinadi — bu jarayon hozir yakunlanmoqda.
+
+Tarjima fayllarini kompilatsiya qilish uchun qarang: [`ORNATISH.md`](ORNATISH.md#tarjima-fayllarini-kompilatsiya-qilish).
 
 ---
 
@@ -435,3 +524,6 @@ Admin paneli → Sozlamalar → Foydalanuvchilar → Qoʻshish. "Xodim maqomi" v
 
 **Kontent oʻchib ketgan, qaytarish mumkinmi?**
 Har bir elementning "Tarix" sahifasida oldingi versiyalarni koʻrish mumkin, lekin avtomatik tiklash funksiyasi hozircha yoʻq. Muhim oʻzgarishlardan oldin bazani zahiralang.
+
+**Telegram bildirishnomalar kelmayapti?**
+`.env` da ikkala — `TELEGRAM_BOT_TOKEN` va `TELEGRAM_ADMIN_CHAT_ID` — toʻldirilganligini tekshiring. Keyin admin panelda **Sayt sozlamalari → "Telegram bildirishnomalari yoniq"** katagini belgilang. Xato hollarda server loglarini koʻring.
