@@ -1,0 +1,31 @@
+{% load i18n %}
+{# ---- SEO head meta: canonical, hreflang, Open Graph, Twitter, verification ---- #}
+{# Expects context vars (set in base.html): seo_page_title, seo_page_description, seo_og_image. #}
+
+{# Canonical (self-referencing, absolute) #}
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+{# Language alternates (hreflang). alt.url is a relative path; make absolute. #}
+{% for alt in alt_urls %}<link rel="alternate" hreflang="{{ alt.code }}" href="{{ request.scheme }}://{{ request.get_host }}{{ alt.url }}">
+{% endfor %}{% for alt in alt_urls %}{% if alt.code == 'uz' %}<link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}{{ alt.url }}">
+{% endif %}{% endfor %}
+
+{# Open Graph #}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ site_config.site_name }}">
+<meta property="og:title" content="{{ seo_page_title }}">
+<meta property="og:description" content="{{ seo_page_description }}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% if seo_og_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ seo_og_image.url }}">{% elif site_config.og_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_config.og_image.url }}">{% elif site_config.logo %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_config.logo.url }}">{% endif %}
+<meta property="og:locale" content="{{ LANGUAGE_CODE }}">
+
+{# Twitter card #}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ seo_page_title }}">
+<meta name="twitter:description" content="{{ seo_page_description }}">
+{% if seo_og_image %}<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ seo_og_image.url }}">{% elif site_config.og_image %}<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_config.og_image.url }}">{% elif site_config.logo %}<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ site_config.logo.url }}">{% endif %}
+
+{# Webmaster verification (rendered only when set) #}
+{% if site_config.google_site_verification %}<meta name="google-site-verification" content="{{ site_config.google_site_verification }}">{% endif %}
+{% if site_config.yandex_verification %}<meta name="yandex-verification" content="{{ site_config.yandex_verification }}">{% endif %}
+{% if site_config.bing_msvalidate %}<meta name="msvalidate.01" content="{{ site_config.bing_msvalidate }}">{% endif %}

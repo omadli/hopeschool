@@ -1,0 +1,38 @@
+{% load i18n %}
+{# ---- Site-wide JSON-LD: EducationalOrganization + LocalBusiness ---- #}
+{# Text values run through |escapejs to stay valid inside JSON string literals. #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["EducationalOrganization", "LocalBusiness"],
+  "@id": "{{ request.scheme }}://{{ request.get_host }}/#org",
+  "name": "{{ site_config.site_name|default:'Hope School'|escapejs }}",
+  "url": "{{ request.scheme }}://{{ request.get_host }}/",
+{% if site_config.logo %}  "logo": "{{ request.scheme }}://{{ request.get_host }}{{ site_config.logo.url }}",
+{% elif site_config.og_image %}  "logo": "{{ request.scheme }}://{{ request.get_host }}{{ site_config.og_image.url }}",
+{% endif %}{% if site_config.seo_description %}  "description": "{{ site_config.seo_description|escapejs }}",
+{% endif %}{% if site_config.phone_primary %}  "telephone": "{{ site_config.phone_primary|escapejs }}",
+{% endif %}{% if site_config.email %}  "email": "{{ site_config.email|escapejs }}",
+{% endif %}  "foundingDate": "2023",
+{% if site_config.address %}  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ site_config.address|escapejs }}",
+    "addressLocality": "Bogʻiturkon, Romitan",
+    "addressRegion": "Buxoro",
+    "addressCountry": "UZ"
+  },
+{% endif %}{% if site_config.has_geo %}  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "{{ site_config.latitude|escapejs }}",
+    "longitude": "{{ site_config.longitude|escapejs }}"
+  },
+{% endif %}  "sameAs": [{% if site_config.instagram_url %}
+    "{{ site_config.instagram_url|escapejs }}"{% endif %}{% if site_config.telegram_url %}{% if site_config.instagram_url %},{% endif %}
+    "{{ site_config.telegram_url|escapejs }}"{% endif %}{% if site_config.telegram_group_url %}{% if site_config.instagram_url or site_config.telegram_url %},{% endif %}
+    "{{ site_config.telegram_group_url|escapejs }}"{% endif %}{% if site_config.youtube_url %}{% if site_config.instagram_url or site_config.telegram_url or site_config.telegram_group_url %},{% endif %}
+    "{{ site_config.youtube_url|escapejs }}"{% endif %}{% if site_config.facebook_url %}{% if site_config.instagram_url or site_config.telegram_url or site_config.telegram_group_url or site_config.youtube_url %},{% endif %}
+    "{{ site_config.facebook_url|escapejs }}"{% endif %}{% if site_config.tiktok_url %}{% if site_config.instagram_url or site_config.telegram_url or site_config.telegram_group_url or site_config.youtube_url or site_config.facebook_url %},{% endif %}
+    "{{ site_config.tiktok_url|escapejs }}"{% endif %}
+  ]
+}
+</script>

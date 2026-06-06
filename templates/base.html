@@ -3,8 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>{% block title %}{{ site_config.seo_title|default:site_config.site_name }}{% endblock %}</title>
-  <meta name="description" content="{% block meta_description %}{{ site_config.seo_description }}{% endblock %}">
+  <meta name="robots" content="index,follow">
+
+  {# SEO fallback chain: page object meta -> site defaults. Exposed to head partials. #}
+  {% firstof course.meta_title course.name teacher.meta_title teacher.full_name post.meta_title post.title site_config.seo_title site_config.site_name as seo_page_title %}
+  {% firstof course.meta_description course.short_description post.meta_description post.excerpt teacher.meta_description teacher.position site_config.seo_description as seo_page_description %}
+  <title>{% block title %}{{ seo_page_title }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ seo_page_description }}{% endblock %}">
+
+  {% with seo_og_image=course.og_image %}{% include "partials/_head_meta.html" %}{% endwith %}
+  {% include "partials/_json_ld.html" %}
 
   {% if site_config.favicon %}<link rel="icon" href="{{ site_config.favicon.url }}">{% else %}<link rel="icon" href="{% static 'img/logo.png' %}">{% endif %}
 
@@ -16,6 +24,7 @@
   <script>(function(){try{var s=localStorage.getItem('theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
 
   {% tailwind_css %}
+  {% include "partials/_head_analytics.html" %}
   {% block extra_head %}{% endblock %}
 </head>
 <body>

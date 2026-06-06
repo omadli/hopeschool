@@ -3,6 +3,38 @@
 {% block title %}{{ post.meta_title|default:post.title }} — {{ site_config.site_name }}{% endblock %}
 {% block meta_description %}{{ post.meta_description|default:post.excerpt }}{% endblock %}
 
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "{% translate 'Bosh sahifa' %}", "item": "{{ request.scheme }}://{{ request.get_host }}/"},
+    {"@type": "ListItem", "position": 2, "name": "{% translate 'Yangiliklar' %}", "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'news:list' %}"},
+    {"@type": "ListItem", "position": 3, "name": "{{ post.title|escapejs }}", "item": "{{ request.build_absolute_uri }}"}
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "headline": "{{ post.title|escapejs }}",
+  "description": "{{ post.meta_description|default:post.excerpt|default:post.title|escapejs }}",
+  "datePublished": "{{ post.published_at|date:'c' }}",
+  "dateModified": "{{ post.updated_at|date:'c' }}",
+  "url": "{{ request.build_absolute_uri }}",
+{% if post.cover_image %}  "image": "{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}",
+{% endif %}  "publisher": {
+    "@type": "EducationalOrganization",
+    "name": "{{ site_config.site_name|default:'Hope School'|escapejs }}",
+    "@id": "{{ request.scheme }}://{{ request.get_host }}/#org"
+  },
+  "mainEntityOfPage": {"@type": "WebPage", "@id": "{{ request.build_absolute_uri }}"}
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <article class="py-12 lg:py-16 bg-base">
   <div class="mx-auto max-w-3xl px-4 lg:px-8">
