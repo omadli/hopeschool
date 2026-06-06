@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "apps.testimonials",
     "apps.news",
     "apps.certificates",
+    "apps.leads",
 ]
 
 MIDDLEWARE = [
@@ -249,6 +250,17 @@ UNFOLD = {
                     {"title": _("Biz haqimizda"), "icon": "article", "link": reverse_lazy("admin:pages_aboutsection_changelist")},
                     {"title": _("Statistika"), "icon": "bar_chart", "link": reverse_lazy("admin:pages_statitem_changelist")},
                     {"title": _("Nega biz"), "icon": "verified", "link": reverse_lazy("admin:pages_whyusitem_changelist")},
+                ],
+            },
+            {
+                "title": _("Murojaatlar"),
+                "items": [
+                    {
+                        "title": _("Arizalar"),
+                        "icon": "inbox",
+                        "link": reverse_lazy("admin:leads_lead_changelist"),
+                        "badge": "apps.leads.badges.new_leads_count",
+                    },
                 ],
             },
             {

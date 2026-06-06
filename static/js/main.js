@@ -136,13 +136,54 @@
   document.querySelectorAll("[data-close-modal]").forEach(function (b) { b.addEventListener("click", closeM); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeM(); });
 
-  // ---- demo form submit (replaced by real endpoint in a later phase) ----
-  window.previewSubmit = function (e) {
-    e.preventDefault();
-    closeM();
+  // ---- lead form submit (real endpoint, dependency-free) ----
+  function showToast() {
     var t = document.getElementById("toast");
     if (t) { t.classList.remove("hidden"); setTimeout(function () { t.classList.add("hidden"); }, 3200); }
-    e.target.reset();
+  }
+  function setError(form, msg) {
+    var box = form.querySelector("[data-form-error]");
+    if (!box) return;
+    if (msg) { box.textContent = msg; box.classList.remove("hidden"); }
+    else { box.textContent = ""; box.classList.add("hidden"); }
+  }
+  function firstError(errors) {
+    // errors: {field: [{message: "..."}, ...], ...} (Django get_json_data shape)
+    try {
+      for (var k in errors) {
+        if (errors[k] && errors[k].length) return errors[k][0].message;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  window.previewSubmit = function (e) {
+    e.preventDefault();
+    var form = e.target;
+    var btn = form.querySelector('button[type="submit"]');
+    var GENERIC = "Xatolik yuz berdi. Iltimos, qaytadan urinib koʻring.";
+    setError(form, "");
+    if (btn) btn.disabled = true;
+
+    fetch(form.action, {
+      method: "POST",
+      body: new FormData(form),
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+      .then(function (res) {
+        var d = res.data || {};
+        if (d.ok) {
+          form.reset();
+          if (form.closest("#modal")) closeM();
+          showToast();
+        } else {
+          setError(form, firstError(d.errors) || d.error || GENERIC);
+        }
+      })
+      .catch(function () { setError(form, GENERIC); })
+      .finally(function () { if (btn) btn.disabled = false; });
+
     return false;
   };
 })();

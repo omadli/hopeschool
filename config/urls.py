@@ -4,10 +4,13 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from apps.leads.views import lead_create
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("i18n/", include("django.conf.urls.i18n")),  # set_language (outside i18n_patterns)
     path("ckeditor5/", include("django_ckeditor_5.urls")),
+    path("ariza/", lead_create, name="lead_create"),  # lead submit (no lang prefix)
 ]
 
 urlpatterns += i18n_patterns(
