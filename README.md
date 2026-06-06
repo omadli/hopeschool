@@ -17,9 +17,10 @@
 8. [Loyiha tuzilishi](#loyiha-tuzilishi)
 9. [Arizalar va Telegram](#arizalar-va-telegram)
 10. [Tashriflar va Analitika](#tashriflar-va-analitika)
-11. [i18n / Tarjima](#i18n--tarjima)
-12. [Media xavfsizligi va CKEditor](#media-xavfsizligi-va-ckeditor)
-13. [Deployment](#deployment)
+11. [SEO](#seo)
+12. [i18n / Tarjima](#i18n--tarjima)
+13. [Media xavfsizligi va CKEditor](#media-xavfsizligi-va-ckeditor)
+14. [Deployment](#deployment)
 
 ---
 
@@ -49,7 +50,7 @@ Asosiy xususiyatlar:
 | 8 | **"Nega biz" bloklari** | ✓ Tayyor | Ikonkali afzallik kartalari, admin orqali tartiblanadi |
 | 9 | **Ariza formasi + Telegram** | ✓ Tayyor | `/ariza/` → DB → admin "Murojaatlar → Arizalar" + sidebar badge; Telegram bot bildirishnoma; honeypot + IP rate-limit spam himoyasi |
 | 10 | **Tashriflar hisobi (Analitika)** | ⟳ Qoʻshilmoqda | VisitLog middleware, KPI dashboard, `prune_visitlogs` buyruq |
-| 11 | **SEO tayyorligi** | ✓ Tayyor | Har bir sahifa uchun meta sarlavha/tavsif, OG rasm; Google, Yandex, Bing webmaster tasdiqlash; GA4, Yandex.Metrica; sitemap |
+| 11 | **SEO** | ✓ Tayyor | `sitemap.xml` (3 til, hreflang); `robots.txt`; har bir sahifada canonical + hreflang (uz/ru/en + x-default); meta sarlavha/tavsif (sahifadan → obyekt meta → SiteConfig → standart); Open Graph + Twitter Card; JSON-LD (EducationalOrganization+LocalBusiness, Course, NewsArticle, BreadcrumbList); GA4 + Yandex Metrica (admin ID kiritilganda avtomatik yoqiladi); Google/Yandex/Bing webmaster tasdiqlash meta-teglari (SiteConfigʼdan) |
 | 12 | **Xaritadan joylashuv tanlash** | ✓ Tayyor | Admin panelda interaktiv Leaflet xarita — belgi bosish yoki manzil qidirish orqali koordinatalar avtomatik toʻladi; Google va Yandex xaritalar shu koordinatalardan quriladi |
 | 13 | **Kunduzgi/tungi rejim** | ✓ Tayyor | LocalStorage + `prefers-color-scheme` orqali temir-flash yoʻq mavzu almashish |
 | 14 | **CKEditor 5 rich-text** | ✓ Tayyor | Admin kontent maydonlarida formatlash, rasm yuklash |
@@ -358,6 +359,111 @@ python manage.py prune_visitlogs --days 30
 ```
 
 Ushbu buyruqni crontab yoki systemd timer orqali muntazam ishlatish tavsiya etiladi (masalan, haftada bir marta).
+
+---
+
+## SEO
+
+Sayt qidiruv tizimi optimizatsiyasining barcha asosiy jihatlarini qoʻllab-quvvatlaydi. Barcha SEO sozlamalari admin panelda boshqariladi — kod oʻzgartirish talab qilinmaydi.
+
+### sitemap.xml
+
+`/sitemap.xml` manzilida avtomatik yaratiladigan xarita uchta til versiyasini (`/uz/`, `/ru/`, `/en/`) qamrab oladi. Har bir URL uchun `hreflang` muqobil havolalari va `x-default` (oʻzbekcha) kiritilgan.
+
+Qamrab olingan sahifalar:
+
+| Sahifa | Yangilish chastotasi |
+|--------|----------------------|
+| Bosh sahifa | Haftalik |
+| Har bir kurs detail sahifasi | Haftalik |
+| Har bir oʻqituvchi profil sahifasi | Oylik |
+| Har bir yangilik/eʼlon sahifasi | Haftalik |
+| Galereya sahifasi | Oylik |
+
+### robots.txt
+
+`/robots.txt` manzilida statik fayl xizmat qiladi. Admin paneli va media papkalariga crawl taqiqlanadi; saytmap manzili avtomatik koʻrsatiladi:
+
+```
+User-agent: *
+Disallow: /admin/
+Disallow: /media/
+Sitemap: https://hopeschool.uz/sitemap.xml
+```
+
+### Sahifa `<head>` — meta va canonical
+
+Har bir sahifada quyidagi teglar generatsiya qilinadi:
+
+**Meta sarlavha va tavsif — fallback zanjiri:**
+
+```
+Sahifaga xos meta_title / meta_description
+    → Obyekt meta maydonlari (kurs, oʻqituvchi, yangilik meta_title/meta_description)
+        → SiteConfig.seo_title / SiteConfig.seo_description
+            → Standart qiymat
+```
+
+**Canonical va hreflang:**
+
+```html
+<link rel="canonical" href="https://hopeschool.uz/uz/kurslar/ingliz-tili/" />
+<link rel="alternate" hreflang="uz"      href="https://hopeschool.uz/uz/kurslar/ingliz-tili/" />
+<link rel="alternate" hreflang="ru"      href="https://hopeschool.uz/ru/kurslar/ingliz-tili/" />
+<link rel="alternate" hreflang="en"      href="https://hopeschool.uz/en/kurslar/ingliz-tili/" />
+<link rel="alternate" hreflang="x-default" href="https://hopeschool.uz/uz/kurslar/ingliz-tili/" />
+```
+
+### Open Graph va Twitter Card
+
+Ijtimoiy tarmoqlarda ulashilganda koʻrinadigan meta-teglar:
+
+| Teg | Manba |
+|-----|-------|
+| `og:title` | Sahifa meta_title → SiteConfig.seo_title |
+| `og:description` | Sahifa meta_description → SiteConfig.seo_description |
+| `og:image` | Obyekt rasmi → SiteConfig.og_image |
+| `og:url` | Joriy sahifaning canonical URL si |
+| `twitter:card` | `summary_large_image` |
+| `twitter:title`, `twitter:description`, `twitter:image` | og: teglar bilan bir xil manba |
+
+OG rasm tavsiya etilgan oʻlchami: **1200 × 630 px**.
+
+### JSON-LD tuzilgan maʼlumotlar
+
+Qidiruv tizimlariga kontent turini tushuntirish uchun `<script type="application/ld+json">` bloklari generatsiya qilinadi:
+
+| Tur | Sahifa |
+|-----|--------|
+| `EducationalOrganization` + `LocalBusiness` | Barcha sahifalarda (global, bosh sahifada kengaytirilgan) |
+| `Course` | Kurs detail sahifasi |
+| `NewsArticle` | Yangilik/eʼlon detail sahifasi |
+| `BreadcrumbList` | Ichki sahifalarda navigatsiya zanjiri |
+
+`LocalBusiness` da manzil, telefon, koordinatalar (SiteConfig.latitude/longitude) va ish vaqti kiritiladi.
+
+### Google Analytics 4 va Yandex Metrica
+
+Tashqi tracker skriptlari faqat admin panelida ID kiritilganda sahifaga qoʻshiladi:
+
+| Xizmat | Sozlama joyi | Shart |
+|--------|-------------|-------|
+| **Google Analytics 4** | Sayt sozlamalari → `GA4 oʻlchov ID` | `G-XXXXXXXXXX` formatida kiritilganda yoqiladi |
+| **Yandex Metrica** | Sayt sozlamalari → `Yandex Metrica ID` | Raqamli ID kiritilganda yoqiladi |
+
+ID boʻsh qolsa, tegishli skript sahifaga umuman qoʻshilmaydi — ortiqcha HTTP soʻrov ketmaydi.
+
+### Webmaster tasdiqlash
+
+Qidiruv tizimlari saytni tasdiqlash uchun `<meta name="..." content="...">` tegi ishlatadi. Kodlar admin panelda **Sayt sozlamalari → SEO sozlamalari** boʻlimiga kiritiladi:
+
+| Xizmat | Meta-teg nomi |
+|--------|--------------|
+| Google Search Console | `google-site-verification` |
+| Yandex Webmaster | `yandex-verification` |
+| Bing Webmaster | `msvalidate.01` |
+
+Batafsil toʻldirish koʻrsatmasi va sitemap yuborish qadamlari uchun qarang: [`docs/ADMIN.md → SEO — qidiruv tizimlariga ulash`](docs/ADMIN.md#seo--qidiruv-tizimlariga-ulash).
 
 ---
 

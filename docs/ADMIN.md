@@ -21,9 +21,10 @@
 10. [Ota-ona fikrlari](#ota-ona-fikrlari)
 11. [Arizalar (Leads)](#arizalar-leads)
 12. [Tashriflar analitikasi](#tashriflar-analitikasi)
-13. [Uch til bilan ishlash](#uch-til-bilan-ishlash)
-14. [CKEditor — boy matn muharriri](#ckeditor--boy-matn-muharriri)
-15. [Tartiblashtirish va yashirish](#tartiblashtirish-va-yashirish)
+13. [SEO — qidiruv tizimlariga ulash](#seo--qidiruv-tizimlariga-ulash)
+14. [Uch til bilan ishlash](#uch-til-bilan-ishlash)
+15. [CKEditor — boy matn muharriri](#ckeditor--boy-matn-muharriri)
+16. [Tartiblashtirish va yashirish](#tartiblashtirish-va-yashirish)
 
 ---
 
@@ -256,6 +257,8 @@ Kurslardan oldin turkumlarni (toifalarni) yarating:
 | **Chop etilgan sana** | Avtomatik toʻldiriladi, qoʻlda oʻzgartirish mumkin |
 | **Chop etilgan** | Belgisi olib tashlansa, maqola saytda koʻrinmaydi |
 | **Tanlangan** | Belgilansa, sahifada alohida koʻrsatilishi mumkin |
+| **SEO sarlavha** | Ushbu maqola sahifasi uchun maxsus meta sarlavha (boʻsh qolsa umumiy ishlatiladi) |
+| **SEO tavsif** | Ushbu maqola uchun meta tavsif (boʻsh qolsa SiteConfig tavsifi ishlatiladi) |
 
 ---
 
@@ -415,6 +418,124 @@ python manage.py prune_visitlogs
 # 30 kundan eski yozuvlarni oʻchiradi
 python manage.py prune_visitlogs --days 30
 ```
+
+---
+
+## SEO — qidiruv tizimlariga ulash
+
+Bu boʻlim saytni qidiruv tizimlari uchun toʻgʻri sozlash boʻyicha amaliy koʻrsatma beradi.
+
+---
+
+### SiteConfig — global SEO maydonlari
+
+**Admin menyusi → Sozlamalar → Sayt sozlamalari → SEO sozlamalari** boʻlimida global (barcha sahifalarga tegishli) maʼlumotlar saqlanadi.
+
+> Bu maydonlar allaqachon "Sayt sozlamalari" boʻlimida jadval koʻrinishida keltirilgan. Quyida har birini qanday toʻldirish kerakligi tushuntiriladi.
+
+#### SEO sarlavha va tavsif
+
+| Maydon | Toʻldirish tartibi |
+|--------|-------------------|
+| **SEO sarlavha** (`seo_title`) | Sayt uchun umumiy sarlavha — bosh sahifada va boshqa sahifalarda alohida sarlavha kiritilmagan boʻlsa ishlatiladi. Maks 60 belgi. Misol: `Hope School — Bogʻiturkon oʻquv markazi` |
+| **SEO tavsif** (`seo_description`) | Qidiruv natijalarida tavsif matni. Maks 160 belgi. Misol: `Ingliz tili, matematika, kimyo va biologiya kurslari. Buxoro viloyati, Romitan tumani.` |
+| **OG rasm** (`og_image`) | Saytni ijtimoiy tarmoqlarda ulashganda koʻrinadigan umumiy rasm. Tavsiya etilgan oʻlcham: **1200 × 630 px**, JPG/PNG. |
+
+**Meta sarlavha va tavsif fallback zanjiri:**
+
+```
+Sahifaga xos meta_title / meta_description
+    → Kurs / Oʻqituvchi / Yangilik obyekti meta_title / meta_description
+        → SiteConfig.seo_title / SiteConfig.seo_description
+            → Standart qiymat
+```
+
+Yaʼni, SiteConfigni toʻliq kiritib qoʻysangiz, hech bir sahifa boʻsh meta bilan qolmaydi.
+
+---
+
+#### Webmaster tasdiqlash kodlari
+
+Qidiruv tizimlari saytning egaligini tasdiqlash uchun maxsus `<meta>` teg ishlatadi. Kodni oʻsha platformadan koʻchirib **Sayt sozlamalari → SEO sozlamalari** ga kiriting.
+
+##### Google Search Console
+
+1. [Google Search Console](https://search.google.com/search-console/) ga kiring → **Mulk qoʻshish** → domenni kiriting.
+2. Tasdiqlash usuli sifatida **"HTML tegi"** ni tanlang.
+3. Koʻrsatilgan `content="..."` qiymatini (masalan, `abc123xyz`) koʻchiring.
+4. Admin panelda **"Google verification"** maydoniga faqat `content` qiymatini (tirnoqsiz) kiriting.
+5. Google Consoleda **"Tasdiqlash"** tugmasini bosing.
+
+##### Yandex Webmaster
+
+1. [Yandex Webmaster](https://webmaster.yandex.ru/) ga kiring → **"Sayt qoʻshish"** → domenni kiriting.
+2. Tasdiqlash usuli sifatida **"Meta-teg"** ni tanlang.
+3. `content="..."` qiymatini koʻchiring.
+4. Admin panelda **"Yandex verification"** maydoniga kiriting.
+5. Yandex Webmasterde **"Tekshirish"** tugmasini bosing.
+
+##### Bing Webmaster
+
+1. [Bing Webmaster Tools](https://www.bing.com/webmasters/) ga kiring → **"Sayt qoʻshish"** → domenni kiriting.
+2. Tasdiqlash usuli sifatida **"HTML Meta-teg"** ni tanlang.
+3. `content="..."` qiymatini koʻchiring.
+4. Admin panelda **"Bing verification"** maydoniga kiriting.
+5. Bing da **"Verify"** tugmasini bosing.
+
+---
+
+#### Analitika ID lari
+
+Tashqi tracker skriptlari faqat ID kiritilganda sahifaga qoʻshiladi — boʻsh qolsa hech qanday skript yuklanmaydi.
+
+| Maydon | Format | Qayerdan olinadi |
+|--------|--------|-----------------|
+| **GA4 oʻlchov ID** (`ga4_measurement_id`) | `G-XXXXXXXXXX` | [Google Analytics](https://analytics.google.com/) → Admin → Maʼlumotlar oqimi → Oʻlchov ID |
+| **Yandex Metrica ID** (`yandex_metrica_id`) | Raqam (masalan: `98765432`) | [Yandex Metrica](https://metrica.yandex.ru/) → Schetchik sozlamalari → Schetchik raqami |
+
+---
+
+### Kurs, Oʻqituvchi va Yangilik — obyekt SEO maydonlari
+
+Har bir kurs, oʻqituvchi va yangilik sahifasi uchun alohida meta maʼlumot kiritish mumkin. Bu SiteConfig umumiy maʼlumotlaridan ustunlik qiladi.
+
+| Maydon | Qayerda | Tavsif |
+|--------|---------|--------|
+| **SEO sarlavha** (`meta_title`) | Kurs / Oʻqituvchi / Yangilik formasi | Sahifa `<title>` va OG sarlavhasi uchun. Maks 60 belgi |
+| **SEO tavsif** (`meta_description`) | Kurs / Oʻqituvchi / Yangilik formasi | Qidiruv natijasi annotatsiyasi. Maks 160 belgi |
+
+Boʻsh qoldirilsa, fallback zanjiri ishga tushadi (yuqorida keltirilgan).
+
+---
+
+### sitemap.xml — qidiruv tizimlarga yuborish
+
+Sitemap avtomatik generatsiya qilinadi. Uni qidiruv tizimlarda roʻyxatga olish bir marta bajariladi:
+
+**Sitemap manzili:** `https://DOMEN/sitemap.xml`
+
+(Domen — SiteConfig → Brending → **Domen** maydonidan olinadi.)
+
+#### Google Search Console orqali yuborish
+
+1. Saytni yuqoridagi koʻrsatma bilan tasdiqlang.
+2. Chap menyu → **"Indeksatsiya" → "Sitemaplar"** ga oʻting.
+3. **"Yangi sitemap qoʻshish"** maydoniga `sitemap.xml` kiriting → **"Yuborish"**.
+4. Holat: `Muvaffaqiyatli` boʻlganda sitemap qabul qilingan.
+
+#### Yandex Webmaster orqali yuborish
+
+1. Saytni tasdiqlang.
+2. Chap menyu → **"Indeksatsiya" → "Sitemap fayllari"** ga oʻting.
+3. **"Fayl qoʻshish"** → toʻliq URL ni kiriting (masalan, `https://hopeschool.uz/sitemap.xml`) → **"Qoʻshish"**.
+
+#### Bing Webmaster orqali yuborish
+
+1. Saytni tasdiqlang.
+2. Chap menyu → **"Sitemaps"** ga oʻting.
+3. Sitemap URL ni kiriting → **"Submit"**.
+
+> **Eslatma:** Sitemap tarkibi yangilanganida (yangi kurs yoki yangilik qoʻshilganda) qidiruv tizimlari uni avtomatik qayta tekshiradi. Qoʻlda qayta yuborish shart emas.
 
 ---
 
