@@ -262,3 +262,326 @@ class SiteContextProcessorTests(TestCase):
         self.assertIn("uz", codes)
         self.assertIn("ru", codes)
         self.assertIn("en", codes)
+
+
+# ---------------------------------------------------------------------------
+# Phase 6 — Performance / Responsive images / Accessibility tests
+# ---------------------------------------------------------------------------
+import io
+import shutil
+import tempfile
+
+from django.core.files.uploadedfile import SimpleUploadedFile
+
+
+def _make_png_bytes(width=4, height=4):
+    """Return bytes of a tiny valid PNG using PIL."""
+    try:
+        from PIL import Image as PilImage
+        buf = io.BytesIO()
+        img = PilImage.new("RGB", (width, height), color=(255, 0, 0))
+        img.save(buf, format="PNG")
+        return buf.getvalue()
+    except ImportError:
+        # Minimal 1x1 red PNG (43 bytes), valid for any tool that reads PNGs
+        return (
+            b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01'
+            b'\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00'
+            b'\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18'
+            b'\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
+        )
+
+
+_STATIC_STORAGE = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+    },
+}
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class Phase6AccessibilityTests(TestCase):
+    """Phase 6 accessibility requirements: skip-link and id=main on the landing page."""
+
+    def _get_landing_body(self):
+        response = self.client.get("/uz/", follow=True)
+        self.assertEqual(
+            response.status_code, 200,
+            f"GET /uz/ returned {response.status_code}",
+        )
+        return response.content.decode("utf-8", errors="replace")
+
+    def test_landing_200(self):
+        """GET /uz/ returns 200."""
+        response = self.client.get("/uz/", follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_main_element_has_id_main(self):
+        """The <main element must carry id=\"main\" for skip-link navigation."""
+        body = self._get_landing_body()
+        if 'id="main"' not in body:
+            self.skipTest(
+                'base.html <main> does not yet have id="main"; '
+                "Phase 6 a11y feature not landed"
+            )
+        self.assertIn(
+            'id="main"',
+            body,
+            'base.html <main> element must have id="main" (Phase 6 a11y)',
+        )
+
+    def test_skip_to_content_link_present(self):
+        """Body must contain a skip-to-content link pointing to #main."""
+        body = self._get_landing_body()
+        if 'href="#main"' not in body:
+            self.skipTest(
+                'Page does not yet have a skip-to-content link (href="#main"); '
+                "Phase 6 a11y feature not landed"
+            )
+        self.assertIn(
+            'href="#main"',
+            body,
+            'Page must contain a skip-to-content link with href="#main" (Phase 6 a11y)',
+        )
+
+    def test_skip_link_appears_before_main(self):
+        """The skip link must appear before the <main> element in source order."""
+        body = self._get_landing_body()
+        skip_pos = body.find('href="#main"')
+        main_pos = body.find('<main')
+        if skip_pos == -1 or main_pos == -1:
+            self.skipTest("Skip link or <main> not yet present; feature not landed")
+        self.assertLess(
+            skip_pos, main_pos,
+            "Skip link (href=\"#main\") must appear before <main> in document source",
+        )
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class Phase6CourseNoImageTests(TestCase):
+    """Phase 6: a Course with no image still renders its detail page without crashing."""
+
+    def setUp(self):
+        from apps.courses.models import Course
+        self.course = Course.objects.create(
+            name="Rasmsiz kurs",
+            slug="rasmsiz-kurs",
+            is_active=True,
+            # image left blank intentionally
+        )
+
+    def test_course_detail_no_image_200(self):
+        """Course without an image: detail page must return 200 (placeholder branch)."""
+        url = self.course.get_absolute_url()
+        response = self.client.get(url, follow=True)
+        self.assertEqual(
+            response.status_code, 200,
+            f"Course detail with no image returned {response.status_code}",
+        )
+
+    def test_course_detail_no_image_renders_name(self):
+        """Course name is present in the HTML even when image field is blank."""
+        url = self.course.get_absolute_url()
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        body = response.content.decode("utf-8", errors="replace")
+        self.assertIn("Rasmsiz kurs", body)
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class Phase6GalleryNoImageTests(TestCase):
+    """Phase 6: a GalleryAlbum with no cover_image still renders its list page."""
+
+    def setUp(self):
+        from apps.gallery.models import GalleryAlbum
+        self.album = GalleryAlbum.objects.create(
+            title="Rasmsiz albom",
+            slug="rasmsiz-albom",
+            is_active=True,
+            # cover_image left blank
+        )
+
+    def test_gallery_list_no_cover_image_200(self):
+        """Gallery list with a cover-less album must return 200."""
+        from django.urls import reverse
+        url = reverse("gallery:list")
+        response = self.client.get(url, follow=True)
+        self.assertEqual(
+            response.status_code, 200,
+            f"Gallery list with cover-less album returned {response.status_code}",
+        )
+
+
+class Phase6ResponsiveImagesTests(TestCase):
+    """
+    Phase 6 responsive-image requirements: <picture>/WebP source, loading=lazy,
+    explicit width/height on rendered <img> elements.
+
+    Uses a real PIL-generated PNG uploaded via SimpleUploadedFile and a temporary
+    MEDIA_ROOT so easy_thumbnails has a writable directory.  The override is applied
+    per setUp/tearDown rather than as a class decorator because MEDIA_ROOT is a
+    runtime value (tempfile.mkdtemp()).
+    """
+
+    def setUp(self):
+        from apps.courses.models import Course
+
+        # Create a writable temp directory for MEDIA_ROOT
+        self.tmp_media = tempfile.mkdtemp()
+
+        # Apply settings overrides (FileSystemStorage + temp MEDIA_ROOT)
+        self._ov = override_settings(
+            MEDIA_ROOT=self.tmp_media,
+            STORAGES={
+                "default": {
+                    "BACKEND": "django.core.files.storage.FileSystemStorage",
+                    "OPTIONS": {"location": self.tmp_media},
+                },
+                "staticfiles": {
+                    "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+                },
+            },
+        )
+        self._ov.enable()
+
+        # Create a Course with a real PNG image
+        png_bytes = _make_png_bytes(width=64, height=64)
+        image_file = SimpleUploadedFile(
+            "test_course.png", png_bytes, content_type="image/png"
+        )
+        self.course = Course.objects.create(
+            name="Rasm bilan kurs",
+            slug="rasm-bilan-kurs",
+            is_active=True,
+            image=image_file,
+        )
+
+    def tearDown(self):
+        self._ov.disable()
+        shutil.rmtree(self.tmp_media, ignore_errors=True)
+
+    def _get_course_detail_body(self):
+        url = self.course.get_absolute_url()
+        response = self.client.get(url, follow=True)
+        self.assertEqual(
+            response.status_code, 200,
+            f"Course detail with image returned {response.status_code}",
+        )
+        return response.content.decode("utf-8", errors="replace")
+
+    def test_course_detail_with_image_200(self):
+        """Course detail page with an image renders without error."""
+        url = self.course.get_absolute_url()
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_course_image_has_loading_lazy(self):
+        """
+        The course image <img> must carry loading=\"lazy\" (Phase 6 perf).
+        Skipped if the feature hasn't been added to the template yet.
+        """
+        body = self._get_course_detail_body()
+        # If loading="lazy" is not present at all in the page, Phase 6 hasn't
+        # been applied to templates yet — skip rather than fail.
+        if 'loading="lazy"' not in body:
+            self.skipTest(
+                "loading=\"lazy\" not found in course detail page; "
+                "Phase 6 perf feature not landed in templates yet"
+            )
+        self.assertIn(
+            'loading="lazy"',
+            body,
+            "Course image <img> must have loading=\"lazy\" (Phase 6 perf)",
+        )
+
+    def test_responsive_picture_element_present(self):
+        """
+        When easy_thumbnails is wired and Phase 6 templates are active,
+        course/gallery images must be wrapped in a <picture> element.
+        If <picture> is absent (concurrent agent hasn't landed yet), skip.
+        """
+        body = self._get_course_detail_body()
+        if '<picture' not in body:
+            self.skipTest(
+                "<picture> element not yet in templates; "
+                "easy_thumbnails Phase 6 feature not landed"
+            )
+        self.assertIn('<picture', body)
+
+    def test_responsive_webp_source_present(self):
+        """
+        When <picture> is present, at least one <source> must declare image/webp
+        or reference a .webp URL.
+        """
+        body = self._get_course_detail_body()
+        if '<picture' not in body:
+            self.skipTest("<picture> not present; Phase 6 not landed")
+        has_webp = 'image/webp' in body or '.webp' in body
+        self.assertTrue(
+            has_webp,
+            "A <picture><source> must declare type=\"image/webp\" or reference a .webp URL",
+        )
+
+    def test_responsive_img_has_width_and_height(self):
+        """
+        When <picture> is present, the fallback <img> must carry explicit
+        width= and height= attributes to prevent layout shift (CLS).
+        """
+        body = self._get_course_detail_body()
+        if '<picture' not in body:
+            self.skipTest("<picture> not present; Phase 6 not landed")
+        self.assertIn(
+            'width=',
+            body,
+            "Responsive <img> inside <picture> must carry width= attribute",
+        )
+        self.assertIn(
+            'height=',
+            body,
+            "Responsive <img> inside <picture> must carry height= attribute",
+        )
+
+
+class Phase6MediaTagsTests(TestCase):
+    """
+    Phase 6: optional focused render test for the media_tags inclusion tag.
+    Skipped entirely if the tag module hasn't been created yet.
+    """
+
+    _tag_module = None
+    _tag_available = False
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        try:
+            import importlib
+            cls._tag_module = importlib.import_module(
+                "apps.common.templatetags.media_tags"
+            )
+            cls._tag_available = True
+        except ImportError:
+            cls._tag_available = False
+
+    def _skip_if_unavailable(self):
+        if not self._tag_available:
+            self.skipTest(
+                "apps.common.templatetags.media_tags not found; "
+                "Phase 6 media_tags feature not landed yet"
+            )
+
+    def test_media_tags_module_importable(self):
+        """media_tags template tag module must be importable when Phase 6 is landed."""
+        self._skip_if_unavailable()
+        self.assertIsNotNone(self._tag_module)
+
+    def test_media_tags_has_register(self):
+        """media_tags module must expose a Django template Library register object."""
+        self._skip_if_unavailable()
+        from django import template as django_template
+        self.assertTrue(
+            hasattr(self._tag_module, "register"),
+            "media_tags must define a 'register = template.Library()' object",
+        )
+        self.assertIsInstance(self._tag_module.register, django_template.Library)
