@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "apps.news",
     "apps.certificates",
     "apps.leads",
+    "apps.analytics",
 ]
 
 MIDDLEWARE = [
@@ -76,6 +77,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "apps.analytics.middleware.VisitLogMiddleware",  # last: log public page visits
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -205,6 +207,7 @@ UNFOLD = {
     "SITE_TITLE": "Hope School",
     "SITE_HEADER": "Hope School",
     "SITE_SUBHEADER": _("Boshqaruv paneli"),
+    "DASHBOARD_CALLBACK": "apps.analytics.dashboard.dashboard_callback",
     "SITE_SYMBOL": "school",
     "SITE_URL": "/",  # "Saytni koʻrish" tugmasi
     "SHOW_HISTORY": True,
@@ -261,6 +264,12 @@ UNFOLD = {
                         "link": reverse_lazy("admin:leads_lead_changelist"),
                         "badge": "apps.leads.badges.new_leads_count",
                     },
+                ],
+            },
+            {
+                "title": _("Analitika"),
+                "items": [
+                    {"title": _("Tashriflar"), "icon": "analytics", "link": reverse_lazy("admin:analytics_visitlog_changelist")},
                 ],
             },
             {

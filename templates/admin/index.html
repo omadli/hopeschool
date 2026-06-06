@@ -1,0 +1,51 @@
+{% extends 'admin/base_site.html' %}
+
+{% load i18n unfold %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+    {# ---- KPI cards ---- #}
+    <div class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-3">
+        {% for kpi in kpis %}
+            {% component "unfold/components/card.html" with class="h-full" %}
+                <div class="flex items-center gap-4">
+                    <span class="material-symbols-outlined text-primary-500 text-4xl">{{ kpi.icon }}</span>
+                    <div class="flex flex-col">
+                        <span class="text-font-subtle-light dark:text-font-subtle-dark text-sm">{{ kpi.title }}</span>
+                        {% component "unfold/components/title.html" %}{{ kpi.value }}{% endcomponent %}
+                    </div>
+                </div>
+            {% endcomponent %}
+        {% endfor %}
+    </div>
+
+    {# ---- Charts ---- #}
+    <div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-3">
+        <div class="lg:col-span-2">
+            {% component "unfold/components/card.html" with title=_('Tashriflar (soʻnggi 14 kun)') class="h-full" %}
+                {% component "unfold/components/chart/line.html" with data=visits_chart height="280" %}{% endcomponent %}
+            {% endcomponent %}
+        </div>
+        <div>
+            {% component "unfold/components/card.html" with title=_('Qurilmalar') class="h-full" %}
+                {% component "unfold/components/chart/bar.html" with data=device_chart height="280" %}{% endcomponent %}
+            {% endcomponent %}
+        </div>
+    </div>
+
+    {# ---- Tables ---- #}
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {% component "unfold/components/card.html" with title=_('Top sahifalar') class="h-full" %}
+            {% component "unfold/components/table.html" with table=top_paths %}{% endcomponent %}
+        {% endcomponent %}
+
+        {% component "unfold/components/card.html" with title=_('Top manbalar') class="h-full" %}
+            {% component "unfold/components/table.html" with table=top_referrers %}{% endcomponent %}
+        {% endcomponent %}
+    </div>
+{% endblock %}
