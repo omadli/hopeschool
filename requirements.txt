@@ -1,0 +1,32 @@
+# --- Core ---
+Django>=5.2,<5.3
+django-environ>=0.11
+
+# --- Admin (Unfold) ---
+django-unfold>=0.40
+django-import-export>=4.0
+
+# --- i18n ---
+django-modeltranslation>=0.19
+
+# --- Rich text editor (admin) ---
+django-ckeditor-5>=0.2.18
+
+# --- Content / config ---
+django-solo>=2.4
+Pillow>=10.4
+easy-thumbnails>=2.10
+
+# --- Integrations ---
+requests>=2.32
+user-agents>=2.2.0
+
+# --- Frontend (Tailwind v4 standalone CLI, no Node) ---
+django-tailwind-cli>=2.20
+
+# --- Static / serving ---
+whitenoise>=6.7
+gunicorn>=23.0
+
+# --- Windows timezone data ---
+tzdata
