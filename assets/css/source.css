@@ -159,6 +159,37 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
 .rich blockquote { border-left: 3px solid var(--border); padding-left: 1em; margin: .9em 0; color: var(--soft); }
 .rich img { max-width: 100%; height: auto; border-radius: .6rem; margin: .6em 0; }
 
+/* ===========================================================================
+   Accessibility — keyboard focus + skip link
+   =========================================================================== */
+/* Visible focus ring for keyboard users only (mouse clicks stay clean). */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--color-brand-blue-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.dark a:focus-visible,
+.dark button:focus-visible,
+.dark [tabindex]:focus-visible,
+.dark input:focus-visible,
+.dark select:focus-visible,
+.dark textarea:focus-visible {
+  outline-color: var(--color-brand-blue-300);
+}
+/* The skip link should never show a focus ring offset that clips it. */
+.skip-link:focus-visible { outline-offset: 3px; }
+/* <main> is programmatically focusable for the skip link but must not show a ring. */
+main:focus,
+main:focus-visible { outline: none; }
+
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   .rl, .sr, .floaty, .marquee-track { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+  .card-hover, .duotone img { transition: none !important; }
 }

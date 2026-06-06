@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n media_tags %}
 {% if teachers %}
 <section id="teachers" class="py-12 lg:py-16 bg-alt">
   <div class="mx-auto max-w-6xl px-4 lg:px-8">
@@ -11,7 +11,7 @@
       <article class="snap-start shrink-0 w-[68%] sm:w-[42%] lg:w-[23.4%]">
         <div class="card-hover group rounded-card surface-card border bd shadow-soft overflow-hidden h-full">
           <a href="{{ t.get_absolute_url }}" class="duotone block aspect-[4/5] overflow-hidden grad-cap">
-            {% if t.photo %}<img src="{{ t.photo.url }}" alt="{{ t.full_name }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">{% endif %}
+            {% if t.photo %}{% responsive_img t.photo alt=t.full_name css="h-full w-full object-cover transition duration-500 group-hover:scale-105" width=420 width_2x=720 sizes="(min-width:1024px) 23vw, (min-width:640px) 42vw, 68vw" %}{% endif %}
           </a>
           <div class="p-4">
             <h3 class="font-display font-bold text-[16px]"><a href="{{ t.get_absolute_url }}" class="hover:text-brand-blue-600">{{ t.full_name }}</a></h3>

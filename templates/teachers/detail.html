@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n media_tags %}
 {% block title %}{{ teacher.meta_title|default:teacher.full_name }} — {{ site_config.site_name }}{% endblock %}
 {% block meta_description %}{{ teacher.meta_description|default:teacher.position }}{% endblock %}
 
@@ -29,7 +29,7 @@
     <div class="grid md:grid-cols-3 gap-8">
       <div class="md:col-span-1">
         <div class="duotone rounded-card overflow-hidden border bd grad-cap aspect-[4/5]">
-          {% if teacher.photo %}<img src="{{ teacher.photo.url }}" alt="{{ teacher.full_name }}" class="h-full w-full object-cover">{% endif %}
+          {% if teacher.photo %}{% responsive_img teacher.photo alt=teacher.full_name css="h-full w-full object-cover" width=520 width_2x=900 eager=True fetchpriority="high" sizes="(min-width:768px) 33vw, 100vw" %}{% endif %}
         </div>
         <div class="mt-4 flex items-center gap-2">
           {% if teacher.instagram_url %}<a href="{{ teacher.instagram_url }}" target="_blank" rel="noopener" class="h-10 w-10 grid place-items-center rounded-lg border bd hover:text-brand-blue-600" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></a>{% endif %}

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n media_tags %}
 {% block title %}{% translate "Galereya" %} — {{ site_config.site_name }}{% endblock %}
 
 {% block extra_head %}
@@ -26,7 +26,7 @@
     <div class="columns-2 md:columns-3 lg:columns-4 gap-4 [column-fill:_balance]">
       {% for img in images %}
       <div class="mb-4 break-inside-avoid group relative overflow-hidden rounded-card duotone">
-        <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:img.caption }}" loading="lazy" class="w-full object-cover transition duration-700 group-hover:scale-105">
+        {% responsive_img img.image alt=img.alt_text|default:img.caption css="w-full object-cover transition duration-700 group-hover:scale-105" width=520 width_2x=900 sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw" %}
       </div>
       {% endfor %}
     </div>

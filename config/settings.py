@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "solo",
     "django_tailwind_cli",
     "django_ckeditor_5",
+    "easy_thumbnails",
 
     # Local apps
     "apps.common",
@@ -155,6 +156,23 @@ STATICFILES_DIRS = [BASE_DIR / "assets", BASE_DIR / "static"]
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# ---------------------------------------------------------------------------
+# easy-thumbnails — responsive WebP delivery (Core Web Vitals)
+# ---------------------------------------------------------------------------
+# Default quality for generated thumbnails. 82 is a good quality/size
+# sweet spot for photographic content. THUMBNAIL_QUALITY backs the
+# thumbnailer's per-instance default; DEFAULT_OPTIONS covers the tag path.
+THUMBNAIL_DEFAULT_OPTIONS = {"quality": 82}
+THUMBNAIL_QUALITY = 82
+# Keep the original extension for the <img> fallback (JPG stays JPG, PNG stays
+# PNG, etc.). The WebP <source> variants force a .webp extension explicitly in
+# apps/common/templatetags/media_tags.py (PRESERVE_EXTENSIONS alone keeps the
+# source extension even for format="WEBP", which would mislabel the file).
+THUMBNAIL_PRESERVE_EXTENSIONS = ("jpg", "jpeg", "png", "gif", "webp")
+# Silent in production: a missing/unreadable source yields an empty URL
+# (the template keeps its gradient placeholder) instead of raising.
+THUMBNAIL_DEBUG = False
 
 # Upload limits (security)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 12 * 1024 * 1024   # 12 MB

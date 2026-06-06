@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n media_tags %}
 {% block title %}{% translate "Sertifikatlar" %} — {{ site_config.site_name }}{% endblock %}
 
 {% block extra_head %}
@@ -27,7 +27,7 @@
       {% for c in certificates %}
       <a href="{{ c.link }}" target="_blank" rel="noopener" class="card-hover group block rounded-card surface-card border bd shadow-soft overflow-hidden">
         <div class="relative aspect-[1.4/1] overflow-hidden grad-cap">
-          {% if c.image %}<img src="{{ c.image.url }}" alt="{{ c.title }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">{% else %}<div class="absolute inset-0 grid place-items-center text-white"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5"/></svg></div>{% endif %}
+          {% if c.image %}{% responsive_img c.image alt=c.title css="h-full w-full object-cover transition duration-500 group-hover:scale-105" width=420 width_2x=720 sizes="(min-width:1024px) 23vw, (min-width:640px) 33vw, 50vw" %}{% else %}<div class="absolute inset-0 grid place-items-center text-white"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5"/></svg></div>{% endif %}
           {% if c.badge %}<span class="absolute top-3 left-3 rounded-pill bg-white/90 dark:bg-black/45 backdrop-blur px-2.5 py-1 text-[11px] font-bold {% if c.badge_accent %}text-brand-red-600 dark:text-brand-red-300{% else %}text-brand-blue-700 dark:text-brand-blue-300{% endif %}">{{ c.badge }}</span>{% endif %}
         </div>
         <div class="p-4"><p class="font-display font-bold text-[14px]">{{ c.student_name|default:c.title }}</p>{% if c.description %}<p class="text-[12px] txt-soft">{{ c.description }}</p>{% endif %}</div>

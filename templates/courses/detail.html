@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n ui %}
+{% load i18n ui media_tags %}
 {% block title %}{{ course.meta_title|default:course.name }} — {{ site_config.site_name }}{% endblock %}
 {% block meta_description %}{{ course.meta_description|default:course.short_description }}{% endblock %}
 
@@ -51,7 +51,7 @@
         <h1 class="mt-4 font-display font-extrabold tracking-tight text-[clamp(1.9rem,4vw,2.8rem)]">{{ course.name }}</h1>
         {% if course.short_description %}<p class="mt-3 text-[17px] txt-soft leading-relaxed">{{ course.short_description }}</p>{% endif %}
 
-        {% if course.image %}<img src="{{ course.image.url }}" alt="{{ course.name }}" class="mt-6 w-full rounded-card border bd object-cover">{% endif %}
+        {% if course.image %}{% responsive_img course.image alt=course.name css="mt-6 w-full rounded-card border bd object-cover" width=760 width_2x=1280 eager=True fetchpriority="high" sizes="(min-width:1024px) 66vw, 100vw" %}{% endif %}
 
         {% if course.description %}<div class="rich mt-6 text-[16px] leading-relaxed">{{ course.description|safe }}</div>{% endif %}
       </div>

@@ -1,0 +1,14 @@
+{% comment %}
+Responsive <picture> rendered by the {% responsive_img %} inclusion tag
+(apps/common/templatetags/media_tags.py).
+
+`class="contents"` makes the <picture> box vanish from layout so the inner
+<img> behaves as a direct child of the surrounding aspect-ratio container
+(the card CSS relies on h-full/w-full/object-cover on a direct child).
+
+Falls back gracefully: if thumbnail generation yields no URL (missing source),
+img_src is empty and nothing renders — the caller keeps its gradient placeholder.
+{% endcomment %}{% if img_src %}<picture class="contents">
+  {% if webp_srcset %}<source type="image/webp" srcset="{{ webp_srcset }}"{% if sizes %} sizes="{{ sizes }}"{% endif %}>{% endif %}
+  <img src="{{ img_src }}"{% if img_srcset %} srcset="{{ img_srcset }}"{% endif %}{% if sizes %} sizes="{{ sizes }}"{% endif %} alt="{{ alt }}"{% if width %} width="{{ width }}"{% endif %}{% if height %} height="{{ height }}"{% endif %} loading="{{ loading }}" decoding="async"{% if fetchpriority %} fetchpriority="{{ fetchpriority }}"{% endif %} class="{{ css }}">
+</picture>{% endif %}

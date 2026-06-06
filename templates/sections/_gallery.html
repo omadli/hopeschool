@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n media_tags %}
 {% if gallery_images %}
 <section id="gallery" class="py-12 lg:py-16 bg-alt">
   <div class="mx-auto max-w-6xl px-4 lg:px-8">
@@ -12,7 +12,7 @@
     <div data-carousel="gallery" data-interval="2800" class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1">
       {% for img in gallery_images %}
       <div class="snap-start shrink-0 w-[70%] sm:w-[44%] lg:w-[30%] group relative overflow-hidden rounded-card duotone aspect-[4/3]">
-        <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:img.caption }}" loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-105">
+        {% responsive_img img.image alt=img.alt_text|default:img.caption css="h-full w-full object-cover transition duration-700 group-hover:scale-105" width=520 width_2x=900 sizes="(min-width:1024px) 30vw, (min-width:640px) 44vw, 70vw" %}
       </div>
       {% endfor %}
     </div>

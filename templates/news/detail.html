@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n media_tags %}
 {% block title %}{{ post.meta_title|default:post.title }} — {{ site_config.site_name }}{% endblock %}
 {% block meta_description %}{{ post.meta_description|default:post.excerpt }}{% endblock %}
 
@@ -47,7 +47,7 @@
       <span class="txt-soft">{{ post.published_at|date:"d.m.Y" }}</span>
     </div>
     <h1 class="mt-3 font-display font-extrabold tracking-tight text-[clamp(1.9rem,4vw,2.7rem)] leading-tight">{{ post.title }}</h1>
-    {% if post.cover_image %}<img src="{{ post.cover_image.url }}" alt="{{ post.title }}" class="mt-6 w-full rounded-card border bd object-cover">{% endif %}
+    {% if post.cover_image %}{% responsive_img post.cover_image alt=post.title css="mt-6 w-full rounded-card border bd object-cover" width=760 width_2x=1280 eager=True fetchpriority="high" sizes="(min-width:768px) 48rem, 100vw" %}{% endif %}
     {% if post.body %}<div class="rich mt-6 text-[16.5px] leading-relaxed">{{ post.body|safe }}</div>{% endif %}
   </div>
 
@@ -57,7 +57,7 @@
     <div class="grid sm:grid-cols-3 gap-5">
       {% for r in related %}
       <a href="{{ r.get_absolute_url }}" class="card-hover group block rounded-card surface-card border bd shadow-soft overflow-hidden">
-        <div class="duotone aspect-[16/9] overflow-hidden grad-cap">{% if r.cover_image %}<img src="{{ r.cover_image.url }}" alt="{{ r.title }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">{% endif %}</div>
+        <div class="duotone aspect-[16/9] overflow-hidden grad-cap">{% if r.cover_image %}{% responsive_img r.cover_image alt=r.title css="h-full w-full object-cover transition duration-500 group-hover:scale-105" width=400 width_2x=680 sizes="(min-width:640px) 33vw, 100vw" %}{% endif %}</div>
         <div class="p-4"><h3 class="font-display font-bold text-[15px] leading-snug">{{ r.title }}</h3></div>
       </a>
       {% endfor %}

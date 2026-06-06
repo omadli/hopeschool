@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n media_tags %}
 {% if news %}
 <section id="news" class="py-12 lg:py-16 bg-base">
   <div class="mx-auto max-w-6xl px-4 lg:px-8">
@@ -9,8 +9,8 @@
       </div>
       <div class="hidden sm:flex items-center gap-2">
         <a href="{% url 'news:list' %}" class="text-[14px] font-semibold text-brand-blue-700 dark:text-brand-blue-300 mr-1">{% translate "Barchasi" %} →</a>
-        <button data-prev="news" class="h-10 w-10 grid place-items-center rounded-pill border bd surface-card hover:text-brand-blue-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg></button>
-        <button data-next="news" class="h-10 w-10 grid place-items-center rounded-pill border bd surface-card hover:text-brand-blue-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button data-prev="news" aria-label="{% translate 'Oldingi' %}" class="h-10 w-10 grid place-items-center rounded-pill border bd surface-card hover:text-brand-blue-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button data-next="news" aria-label="{% translate 'Keyingi' %}" class="h-10 w-10 grid place-items-center rounded-pill border bd surface-card hover:text-brand-blue-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
     </div>
     <div data-carousel="news" data-interval="4000" class="flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1">
@@ -18,7 +18,7 @@
       <article class="snap-start shrink-0 w-[86%] sm:w-[47%] lg:w-[31.5%]">
         <a href="{{ post.get_absolute_url }}" class="card-hover group block rounded-card surface-card border bd shadow-soft overflow-hidden h-full">
           <div class="duotone aspect-[16/9] overflow-hidden grad-cap">
-            {% if post.cover_image %}<img src="{{ post.cover_image.url }}" alt="{{ post.title }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">{% endif %}
+            {% if post.cover_image %}{% responsive_img post.cover_image alt=post.title css="h-full w-full object-cover transition duration-500 group-hover:scale-105" width=560 width_2x=920 sizes="(min-width:1024px) 31vw, (min-width:640px) 47vw, 86vw" %}{% endif %}
           </div>
           <div class="p-5">
             <div class="flex items-center gap-2 text-[12px]">
