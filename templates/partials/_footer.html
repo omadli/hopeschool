@@ -1,0 +1,39 @@
+{% load static i18n ui %}
+<footer class="bg-alt border-t bd">
+  <div class="mx-auto max-w-6xl px-4 lg:px-8 py-12">
+    <div class="grid md:grid-cols-12 gap-8">
+      <div class="md:col-span-5">
+        <img src="{% if site_config.logo %}{{ site_config.logo.url }}{% else %}{% static 'img/logo.png' %}{% endif %}" alt="{{ site_config.site_name }}" class="h-14 w-auto">
+        <p class="mt-4 text-[14px] leading-relaxed txt-soft max-w-sm">{{ site_config.tagline|default:_("Zamonaviy taʻlim markazi. Biz bilan farzandingiz kelajagiga ishonchli qadam qoʻying.") }}</p>
+      </div>
+      <div class="md:col-span-3">
+        <h4 class="font-display font-bold text-[15px] mb-3">{% translate "Sahifalar" %}</h4>
+        <ul class="space-y-2 text-[14px] txt-soft">
+          <li><a href="{% url 'home' %}#about" class="hover:text-brand-blue-600">{% translate "Biz haqimizda" %}</a></li>
+          <li><a href="{% url 'home' %}#courses" class="hover:text-brand-blue-600">{% translate "Kurslar" %}</a></li>
+          <li><a href="{% url 'home' %}#news" class="hover:text-brand-blue-600">{% translate "Yangiliklar" %}</a></li>
+          <li><a href="{% url 'home' %}#teachers" class="hover:text-brand-blue-600">{% translate "Oʻqituvchilar" %}</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-4">
+        <h4 class="font-display font-bold text-[15px] mb-3">{% translate "Bogʻlanish" %}</h4>
+        <ul class="space-y-2 text-[14px] txt-soft">
+          {% if site_config.address %}<li>{{ site_config.address }}</li>{% endif %}
+          {% if site_config.phone_primary %}<li><a href="tel:{{ site_config.phone_primary }}" class="hover:text-brand-blue-600">{{ site_config.phone_primary|phone_display }}</a></li>{% endif %}
+          {% if site_config.phone_secondary %}<li><a href="tel:{{ site_config.phone_secondary }}" class="hover:text-brand-blue-600">{{ site_config.phone_secondary|phone_display }}</a></li>{% endif %}
+          {% if site_config.telegram_url %}<li><a href="{{ site_config.telegram_url }}" target="_blank" rel="noopener" class="hover:text-brand-blue-600">{% translate "Telegram kanal" %}</a></li>{% endif %}
+          {% if site_config.telegram_group_url %}<li><a href="{{ site_config.telegram_group_url }}" target="_blank" rel="noopener" class="hover:text-brand-blue-600">{% translate "Telegram guruh" %}</a></li>{% endif %}
+        </ul>
+        <div class="mt-4 flex items-center gap-2.5">
+          {% if site_config.instagram_url %}<a href="{{ site_config.instagram_url }}" target="_blank" rel="noopener" class="h-9 w-9 grid place-items-center rounded-lg border bd hover:text-brand-blue-600" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></a>{% endif %}
+          {% if site_config.telegram_url %}<a href="{{ site_config.telegram_url }}" target="_blank" rel="noopener" class="h-9 w-9 grid place-items-center rounded-lg border bd hover:text-brand-blue-600" aria-label="Telegram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.6 20c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.6 13.4l-4.8-1.5c-1-.3-1-1 .2-1.5l18.7-7.2c.9-.3 1.6.2 1.3 1.6z"/></svg></a>{% endif %}
+          {% if site_config.youtube_url %}<a href="{{ site_config.youtube_url }}" target="_blank" rel="noopener" class="h-9 w-9 grid place-items-center rounded-lg border bd hover:text-brand-blue-600" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 5.6c-.2-.9-1-1.5-1.9-1.6C17.9 3.7 12 3.7 12 3.7s-5.9 0-8 .3C3.1 4.1 2.3 4.7 2.1 5.6 1.8 7.4 1.8 12 1.8 12s0 4.6.3 6.4c.2.9 1 1.5 1.9 1.6 2.1.3 8 .3 8 .3s5.9 0 8-.3c.9-.1 1.7-.7 1.9-1.6.3-1.8.3-6.4.3-6.4s0-4.6-.3-6.4zM10 15.2V8.8l5.2 3.2L10 15.2z"/></svg></a>{% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="mt-10 pt-6 border-t bd flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] txt-soft">
+      <p>© {% now "Y" %} {{ site_config.site_name }}. {% translate "Barcha huquqlar himoyalangan." %}</p>
+      <p>since 2023 · Toshkent</p>
+    </div>
+  </div>
+</footer>

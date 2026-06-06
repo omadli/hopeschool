@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Yangiliklar va eʻlonlar" %} — {{ site_config.site_name }}{% endblock %}
+
+{% block content %}
+<section class="py-12 lg:py-16 bg-base">
+  <div class="mx-auto max-w-6xl px-4 lg:px-8">
+    <div class="mb-10">
+      <span class="text-[12.5px] font-bold uppercase tracking-[0.18em] text-brand-blue-600 dark:text-brand-blue-300">{% translate "Yangiliklar va eʻlonlar" %}</span>
+      <h1 class="mt-2 font-display font-extrabold tracking-tight text-[clamp(1.9rem,4vw,2.8rem)]">{% translate "Markaz yangiliklari" %}</h1>
+    </div>
+    {% if posts %}
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {% for post in posts %}
+      <article>
+        <a href="{{ post.get_absolute_url }}" class="card-hover group block rounded-card surface-card border bd shadow-soft overflow-hidden h-full">
+          <div class="duotone aspect-[16/9] overflow-hidden grad-cap">
+            {% if post.cover_image %}<img src="{{ post.cover_image.url }}" alt="{{ post.title }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">{% endif %}
+          </div>
+          <div class="p-5">
+            <div class="flex items-center gap-2 text-[12px]">
+              {% if post.badge %}<span class="rounded-pill {% if post.badge_accent %}bg-brand-red-50 dark:bg-brand-red-500/15 text-brand-red-600 dark:text-brand-red-300{% else %}bg-brand-blue-50 dark:bg-brand-blue-500/15 text-brand-blue-700 dark:text-brand-blue-300{% endif %} font-semibold px-2.5 py-0.5">{{ post.badge }}</span>{% endif %}
+              <span class="txt-soft">{{ post.published_at|date:"d.m.Y" }}</span>
+            </div>
+            <h2 class="mt-3 font-display font-bold text-[18px] leading-snug">{{ post.title }}</h2>
+            {% if post.excerpt %}<p class="mt-1.5 text-[14px] leading-relaxed txt-soft">{{ post.excerpt }}</p>{% endif %}
+          </div>
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+    {% if is_paginated %}
+    <div class="mt-10 flex justify-center gap-2 text-[14px] font-semibold">
+      {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="rounded-pill border bd surface-card px-4 py-2">←</a>{% endif %}
+      <span class="rounded-pill bg-brand-blue-600 text-white px-4 py-2">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="rounded-pill border bd surface-card px-4 py-2">→</a>{% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <p class="txt-soft">{% translate "Hozircha yangilik yo'q." %}</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

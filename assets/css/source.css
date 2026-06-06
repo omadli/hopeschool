@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+/* Class-based dark mode (toggled via <html class="dark">) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Scan templates + JS for class names */
+@source "../../templates";
+@source "../../apps";
+@source "../../static/js";
+
+/* ===========================================================================
+   Brand theme tokens  (generate bg-brand-blue-500, font-display, rounded-card…)
+   =========================================================================== */
+@theme {
+  --color-brand-blue-50:  #eef4ff;
+  --color-brand-blue-100: #d9e6ff;
+  --color-brand-blue-200: #b3cdff;
+  --color-brand-blue-300: #84acf7;
+  --color-brand-blue-400: #5189ec;
+  --color-brand-blue-500: #2c6bd4;
+  --color-brand-blue-600: #2257b3;
+  --color-brand-blue-700: #1c468f;
+  --color-brand-blue-800: #18386f;
+  --color-brand-blue-900: #122a52;
+
+  --color-brand-red-50:  #fef2f2;
+  --color-brand-red-100: #fde1e2;
+  --color-brand-red-300: #f48a8f;
+  --color-brand-red-500: #da2128;
+  --color-brand-red-600: #c01a20;
+  --color-brand-red-700: #9c151b;
+
+  --font-display: "Manrope", system-ui, sans-serif;
+  --font-body: "Onest", system-ui, sans-serif;
+
+  --radius-card: 1.25rem;
+  --radius-pill: 999px;
+}
+
+/* ===========================================================================
+   Theme surface tokens (light / dark)
+   =========================================================================== */
+:root {
+  --bg: #ffffff; --bg-2: #f4f7fc; --card: #ffffff; --border: #e7ebf2;
+  --text: #14181f; --soft: #566076; --header: rgba(255,255,255,.82);
+  --shadow: 0 6px 22px -10px rgb(20 24 31 / .12);
+  --shadow-lg: 0 20px 46px -16px rgb(34 87 179 / .28);
+  --grad-from: #3d7fe6; --grad-to: #1c468f;
+  --dot: rgba(44,107,212,0.13);
+}
+.dark {
+  --bg: #080d1a; --bg-2: #0d1428; --card: #111a31; --border: #22304e;
+  --text: #e9eff9; --soft: #9bb0d2; --header: rgba(8,13,26,.8);
+  --shadow: 0 10px 30px -12px rgb(0 0 0 / .55);
+  --shadow-lg: 0 24px 54px -18px rgb(0 0 0 / .65);
+  --grad-from: #3d7fe6; --grad-to: #16306b;
+  --dot: rgba(120,160,235,0.14);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  transition: background .4s ease, color .4s ease;
+}
+h1, h2, h3, h4 { font-family: var(--font-display); }
+
+/* ===========================================================================
+   Theme helper classes
+   =========================================================================== */
+.bg-base { background: var(--bg); }
+.bg-alt { background: var(--bg-2); }
+.surface-card { background: var(--card); }
+.bd { border-color: var(--border) !important; }
+.txt-soft { color: var(--soft); }
+.shadow-soft { box-shadow: var(--shadow); }
+.shadow-strong { box-shadow: var(--shadow-lg); }
+
+.grad-cap { background: linear-gradient(135deg, var(--grad-from), var(--grad-to)); }
+.text-grad {
+  background: linear-gradient(135deg, #3d7fe6, #1c468f);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.dark .text-grad {
+  background: linear-gradient(135deg, #6ba2ff, #3d7fe6);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.dot-grid { background-image: radial-gradient(var(--dot) 1px, transparent 1px); background-size: 22px 22px; }
+.glow::before {
+  content: ''; position: absolute; inset: -25% 5% auto auto;
+  width: 480px; height: 480px;
+  background: radial-gradient(closest-side, rgba(61,127,230,.20), transparent 70%);
+  z-index: 0; pointer-events: none;
+}
+
+/* Photo brand duotone */
+.duotone { position: relative; }
+.duotone img { filter: saturate(.95) contrast(1.02); }
+.duotone::after {
+  content: ''; position: absolute; inset: 0; mix-blend-mode: multiply;
+  background: linear-gradient(160deg, rgba(44,107,212,.26), rgba(28,70,143,.10));
+}
+.dark .duotone::after {
+  mix-blend-mode: soft-light;
+  background: linear-gradient(160deg, rgba(61,127,230,.34), rgba(8,13,26,.30));
+}
+
+/* Hero staggered load */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.rl { opacity: 0; animation: fadeUp .75s cubic-bezier(.2,.7,.2,1) forwards; }
+.d1 { animation-delay: .05s } .d2 { animation-delay: .13s } .d3 { animation-delay: .24s }
+.d4 { animation-delay: .36s } .d5 { animation-delay: .48s }
+@keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
+.floaty { animation: floaty 6s ease-in-out infinite; }
+
+/* Scroll reveal */
+.sr { opacity: 0; transform: translateY(22px); transition: opacity .6s cubic-bezier(.2,.7,.2,1), transform .6s cubic-bezier(.2,.7,.2,1); }
+.sr.in { opacity: 1; transform: none; }
+
+.card-hover { transition: transform .32s cubic-bezier(.2,.7,.2,1), box-shadow .32s, border-color .32s; }
+.card-hover:hover { transform: translateY(-5px); }
+
+.nav-link { position: relative; }
+.nav-link::after { content: ''; position: absolute; left: 0; bottom: -5px; height: 2px; width: 0; background: #2c6bd4; transition: width .25s; }
+.nav-link:hover::after { width: 100%; }
+
+/* Carousels */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Marquee */
+.marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.marquee-track { display: flex; gap: 3.5rem; width: max-content; animation: scrollx 26s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes scrollx { to { transform: translateX(-50%); } }
+
+/* Scroll progress + ticker */
+#progress { transform-origin: 0 50%; transform: scaleX(0); }
+@keyframes tickerIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.ticker-item { animation: tickerIn .5s ease; }
+
+::selection { background: #d9e6ff; color: #122a52; }
+
+/* Rich text (CKEditor output) */
+.rich h1, .rich h2, .rich h3 { font-family: var(--font-display); font-weight: 700; color: var(--text); line-height: 1.25; margin: 1.2em 0 .5em; }
+.rich h2 { font-size: 1.4rem; }
+.rich h3 { font-size: 1.15rem; }
+.rich p { margin: .7em 0; }
+.rich ul, .rich ol { margin: .7em 0; padding-left: 1.4em; }
+.rich ul { list-style: disc; }
+.rich ol { list-style: decimal; }
+.rich li { margin: .3em 0; }
+.rich a { color: #2c6bd4; text-decoration: underline; text-underline-offset: 2px; }
+.dark .rich a { color: #84acf7; }
+.rich strong, .rich b { font-weight: 700; color: var(--text); }
+.rich blockquote { border-left: 3px solid var(--border); padding-left: 1em; margin: .9em 0; color: var(--soft); }
+.rich img { max-width: 100%; height: auto; border-radius: .6rem; margin: .6em 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rl, .sr, .floaty, .marquee-track { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+}

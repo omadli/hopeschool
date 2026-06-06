@@ -1,0 +1,24 @@
+{% load i18n %}
+<div id="modal" class="fixed inset-0 z-[100] hidden">
+  <div data-close-modal class="absolute inset-0 bg-black/55 backdrop-blur-sm"></div>
+  <div class="absolute inset-0 grid place-items-center p-4">
+    <div class="relative w-full max-w-md rounded-card surface-card shadow-strong p-6 sm:p-8" style="animation:fadeUp .35s ease">
+      <button data-close-modal class="absolute top-3.5 right-3.5 h-9 w-9 grid place-items-center rounded-lg txt-soft hover:bg-alt" aria-label="{% translate 'Yopish' %}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <div class="flex items-center gap-2.5 mb-1">
+        <span class="grid place-items-center h-9 w-9 rounded-lg grad-cap text-white"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10 12 5 2 10l10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+        <h3 class="font-display font-extrabold text-[20px]">{% translate "Ariza qoldirish" %}</h3>
+      </div>
+      <p class="text-[14px] txt-soft mb-5">{% translate "Maʻlumotlaringizni qoldiring, tez orada bogʻlanamiz." %}</p>
+      <form onsubmit="return previewSubmit(event)" class="space-y-3">
+        <input required type="text" name="full_name" placeholder="{% translate 'Ism familiya' %}" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition">
+        <input required type="tel" name="phone" placeholder="+998 __ ___ __ __" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition">
+        <select name="course" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition">
+          <option value="">{% translate "Kursni tanlang (ixtiyoriy)" %}</option>
+          {% for c in lead_courses %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+        </select>
+        <textarea name="message" rows="2" placeholder="{% translate 'Qoʻshimcha izoh (ixtiyoriy)' %}" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition resize-none"></textarea>
+        <button type="submit" class="w-full rounded-pill bg-brand-red-600 px-6 py-3.5 text-[15px] font-semibold text-white hover:bg-brand-red-700">{% translate "Yuborish" %}</button>
+      </form>
+    </div>
+  </div>
+</div>

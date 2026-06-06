@@ -1,0 +1,45 @@
+{% load static i18n tailwind_cli %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}" class="">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}{{ site_config.seo_title|default:site_config.site_name }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ site_config.seo_description }}{% endblock %}">
+
+  {% if site_config.favicon %}<link rel="icon" href="{{ site_config.favicon.url }}">{% else %}<link rel="icon" href="{% static 'img/logo.png' %}">{% endif %}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  {# set theme before paint to avoid flash #}
+  <script>(function(){try{var s=localStorage.getItem('theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
+
+  {% tailwind_css %}
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div id="progress" class="fixed top-0 left-0 right-0 h-[3px] z-[120] grad-cap"></div>
+
+  {% include "partials/_header.html" %}
+
+  <main class="pb-20 lg:pb-0">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "partials/_footer.html" %}
+  {% include "partials/_mobile_bar.html" %}
+  {% include "partials/_modal.html" %}
+
+  {# success toast #}
+  <div id="toast" class="fixed bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 z-[110] hidden">
+    <div class="flex items-center gap-3 rounded-pill bg-[#14181f] text-white px-5 py-3 shadow-strong text-[14px] font-medium">
+      <span class="grid place-items-center h-6 w-6 rounded-full bg-green-500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 4 4L19 6"/></svg></span>
+      {% translate "Arizangiz qabul qilindi!" %}
+    </div>
+  </div>
+
+  <script src="{% static 'js/main.js' %}" defer></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
