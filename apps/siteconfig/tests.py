@@ -1,0 +1,92 @@
+"""Tests for apps.siteconfig."""
+from django.contrib.auth import get_user_model
+from django.test import TestCase, override_settings
+from django.urls import reverse
+
+from apps.siteconfig.models import SiteConfig
+
+User = get_user_model()
+
+_STATIC_STORAGE = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+    },
+}
+
+
+class SiteConfigModelTests(TestCase):
+    """SiteConfig model behaviour."""
+
+    def _get_config(self, **kwargs):
+        """Fetch or create the singleton, update fields, save."""
+        config = SiteConfig.get_solo()
+        for k, v in kwargs.items():
+            setattr(config, k, v)
+        config.save()
+        return config
+
+    def test_str(self):
+        config = SiteConfig.get_solo()
+        self.assertEqual(str(config), "Sayt sozlamalari")
+
+    def test_phone_normalization_spaced(self):
+        config = self._get_config(phone_primary="+998 90 123 45 67")
+        self.assertEqual(config.phone_primary, "+998901234567")
+
+    def test_phone_normalization_9digit(self):
+        config = self._get_config(phone_primary="901234567")
+        self.assertEqual(config.phone_primary, "+998901234567")
+
+    def test_phone_secondary_normalization(self):
+        config = self._get_config(phone_secondary="+998 71 200 00 00")
+        self.assertEqual(config.phone_secondary, "+998712000000")
+
+    def test_blank_phone_stays_blank(self):
+        config = self._get_config(phone_primary="", phone_secondary="")
+        self.assertEqual(config.phone_primary, "")
+        self.assertEqual(config.phone_secondary, "")
+
+    def test_has_geo_false_when_empty(self):
+        config = self._get_config(latitude="", longitude="")
+        self.assertFalse(config.has_geo)
+
+    def test_has_geo_true_when_set(self):
+        config = self._get_config(latitude="41.299496", longitude="69.240073")
+        self.assertTrue(config.has_geo)
+
+    def test_google_map_src_contains_coords(self):
+        config = self._get_config(latitude="41.299496", longitude="69.240073")
+        self.assertIn("41.299496", config.google_map_src)
+        self.assertIn("69.240073", config.google_map_src)
+
+    def test_google_map_src_empty_without_coords(self):
+        config = self._get_config(latitude="", longitude="")
+        self.assertEqual(config.google_map_src, "")
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class SiteConfigAdminTests(TestCase):
+    """Admin siteconfig pages return 200."""
+
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username="admin_siteconfig",
+            password="adminpass123",
+            email="admin_siteconfig@test.com",
+        )
+        self.client.force_login(self.superuser)
+
+    def _get(self, url):
+        return self.client.get(url, follow=True)
+
+    def test_siteconfig_changelist(self):
+        """Singleton admin changelist redirects to change page — follow=True → 200."""
+        url = reverse("admin:siteconfig_siteconfig_changelist")
+        self.assertEqual(self._get(url).status_code, 200)
+
+    def test_siteconfig_change(self):
+        """Singleton change page (pk=1 after get_solo())."""
+        SiteConfig.get_solo()  # ensure the singleton exists
+        url = reverse("admin:siteconfig_siteconfig_change", args=[1])
+        self.assertEqual(self._get(url).status_code, 200)
