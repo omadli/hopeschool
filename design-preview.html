@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="uz" class="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hope School — Zamonaviy oʻquv markazi</title>
+  <meta name="description" content="Hope School — Toshkentdagi zamonaviy taʼlim markazi. Ingliz tili, matematika, IT va boshqa yoʻnalishlar." />
+  <link rel="icon" href="logo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- set theme before paint to avoid flash -->
+  <script>
+    (function(){ try{ var s=localStorage.getItem('theme'); var d=s? s==='dark' : matchMedia('(prefers-color-scheme: dark)').matches; if(d) document.documentElement.classList.add('dark'); }catch(e){} })();
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: { 50:'#eef4ff',100:'#d9e6ff',200:'#b3cdff',300:'#84acf7',400:'#5189ec',500:'#2c6bd4',600:'#2257b3',700:'#1c468f',800:'#18386f',900:'#122a52' },
+              red: { 50:'#fef2f2',100:'#fde1e2',300:'#f48a8f',500:'#da2128',600:'#c01a20',700:'#9c151b' },
+            },
+          },
+          fontFamily: { display:['Manrope','system-ui','sans-serif'], body:['Onest','system-ui','sans-serif'] },
+          borderRadius: { card:'1.25rem', pill:'999px' },
+          maxWidth: { content:'72rem' },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ===== Theme tokens ===== */
+    :root{
+      --bg:#ffffff; --bg-2:#f4f7fc; --card:#ffffff; --border:#e7ebf2;
+      --text:#14181f; --soft:#566076; --header:rgba(255,255,255,.82);
+      --shadow:0 6px 22px -10px rgb(20 24 31 / .12);
+      --shadow-lg:0 20px 46px -16px rgb(34 87 179 / .28);
+      --grad-from:#3d7fe6; --grad-to:#1c468f;
+      --dot:rgba(44,107,212,0.13);
+    }
+    .dark{
+      --bg:#080d1a; --bg-2:#0d1428; --card:#111a31; --border:#22304e;
+      --text:#e9eff9; --soft:#9bb0d2; --header:rgba(8,13,26,.8);
+      --shadow:0 10px 30px -12px rgb(0 0 0 / .55);
+      --shadow-lg:0 24px 54px -18px rgb(0 0 0 / .65);
+      --grad-from:#3d7fe6; --grad-to:#16306b;
+      --dot:rgba(120,160,235,0.14);
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Onest',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .4s ease,color .4s ease}
+    h1,h2,h3,h4{font-family:'Manrope',system-ui,sans-serif}
+
+    /* helpers */
+    .bg-base{background:var(--bg)} .bg-alt{background:var(--bg-2)}
+    .surface-card{background:var(--card)}
+    .bd{border-color:var(--border)!important}
+    .txt-soft{color:var(--soft)}
+    .shadow-soft{box-shadow:var(--shadow)} .shadow-strong{box-shadow:var(--shadow-lg)}
+    .grad-cap{background:linear-gradient(135deg,var(--grad-from),var(--grad-to))}
+    .text-grad{background:linear-gradient(135deg,#3d7fe6,#1c468f);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .dark .text-grad{background:linear-gradient(135deg,#6ba2ff,#3d7fe6);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+    .dot-grid{background-image:radial-gradient(var(--dot) 1px,transparent 1px);background-size:22px 22px}
+    .glow::before{content:'';position:absolute;inset:-25% 5% auto auto;width:480px;height:480px;background:radial-gradient(closest-side,rgba(61,127,230,.20),transparent 70%);z-index:0;pointer-events:none}
+
+    /* photo duotone */
+    .duotone{position:relative}
+    .duotone img{filter:saturate(.95) contrast(1.02)}
+    .duotone::after{content:'';position:absolute;inset:0;mix-blend-mode:multiply;background:linear-gradient(160deg,rgba(44,107,212,.26),rgba(28,70,143,.10))}
+    .dark .duotone::after{mix-blend-mode:soft-light;background:linear-gradient(160deg,rgba(61,127,230,.34),rgba(8,13,26,.30))}
+
+    /* hero load */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+    .rl{opacity:0;animation:fadeUp .75s cubic-bezier(.2,.7,.2,1) forwards}
+    .d1{animation-delay:.05s}.d2{animation-delay:.13s}.d3{animation-delay:.24s}.d4{animation-delay:.36s}.d5{animation-delay:.48s}
+    @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+    .floaty{animation:floaty 6s ease-in-out infinite}
+
+    /* scroll reveal */
+    .sr{opacity:0;transform:translateY(22px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+    .sr.in{opacity:1;transform:none}
+
+    .card-hover{transition:transform .32s cubic-bezier(.2,.7,.2,1),box-shadow .32s,border-color .32s}
+    .card-hover:hover{transform:translateY(-5px)}
+
+    .nav-link{position:relative}
+    .nav-link::after{content:'';position:absolute;left:0;bottom:-5px;height:2px;width:0;background:#2c6bd4;transition:width .25s}
+    .nav-link:hover::after{width:100%}
+
+    /* carousels */
+    .no-scrollbar::-webkit-scrollbar{display:none}
+    .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+
+    /* marquee */
+    .marquee{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+    .marquee-track{display:flex;gap:3.5rem;width:max-content;animation:scrollx 26s linear infinite}
+    .marquee:hover .marquee-track{animation-play-state:paused}
+    @keyframes scrollx{to{transform:translateX(-50%)}}
+
+    /* scroll progress + ticker */
+    #progress{transform-origin:0 50%;transform:scaleX(0)}
+    @keyframes tickerIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .ticker-item{animation:tickerIn .5s ease}
+
+    ::selection{background:#d9e6ff;color:#122a52}
+    @media (prefers-reduced-motion: reduce){.rl,.sr,.floaty,.marquee-track{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}}
+  </style>
+</head>
+
+<body>
+  <!-- scroll progress -->
+  <div id="progress" class="fixed top-0 left-0 right-0 h-[3px] z-[120] grad-cap"></div>
+
+  <!-- announcement ticker (yangiliklar demo) -->
+  <div class="grad-cap text-white">
+    <div class="mx-auto max-w-content px-4 lg:px-8 h-9 flex items-center justify-between gap-3 text-[12.5px] sm:text-[13px]">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="shrink-0 inline-flex items-center gap-1 font-semibold bg-white/15 rounded-pill px-2 py-0.5">📢 Eʼlon</span>
+        <span id="ticker" class="ticker-item truncate font-medium">Arab tili kurslari ochildi — birinchi dars bepul!</span>
+      </div>
+      <span class="shrink-0 hidden sm:inline-block text-white/70 font-semibold tracking-wide">PREVIEW</span>
+    </div>
+  </div>
+
+  <!-- ===== HEADER ===== -->
+  <header id="hdr" class="sticky top-0 z-50 transition-all duration-300 border-b border-transparent">
+    <div class="mx-auto max-w-content px-4 lg:px-8">
+      <div class="flex h-[64px] sm:h-[72px] items-center justify-between gap-3">
+        <a href="#home" class="flex items-center gap-2.5 shrink-0">
+          <img src="logo.png" alt="Hope School" class="h-10 sm:h-12 w-auto" />
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium txt-soft">
+          <a href="#about" class="nav-link hover:opacity-100">Biz haqimizda</a>
+          <a href="#courses" class="nav-link">Kurslar</a>
+          <a href="#news" class="nav-link">Yangiliklar</a>
+          <a href="#teachers" class="nav-link">Oʻqituvchilar</a>
+          <a href="#results" class="nav-link">Natijalar</a>
+          <a href="#contact" class="nav-link">Bogʻlanish</a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <!-- language dropdown (mobile + desktop) -->
+          <div class="relative" data-langwrap>
+            <button data-langbtn class="flex items-center gap-1.5 rounded-pill border bd surface-card px-2.5 sm:px-3 py-2 text-[13px] font-semibold">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>
+              <span data-langcur>UZ</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div data-langmenu class="hidden absolute right-0 mt-2 w-36 rounded-xl surface-card border bd shadow-strong p-1 z-50">
+              <button class="lang-opt w-full text-left rounded-lg px-3 py-2 text-[14px] font-medium hover:bg-brand-blue-50 dark:hover:bg-white/5" data-code="UZ">🇺🇿 Oʻzbekcha</button>
+              <button class="lang-opt w-full text-left rounded-lg px-3 py-2 text-[14px] font-medium hover:bg-brand-blue-50 dark:hover:bg-white/5" data-code="RU">🇷🇺 Русский</button>
+              <button class="lang-opt w-full text-left rounded-lg px-3 py-2 text-[14px] font-medium hover:bg-brand-blue-50 dark:hover:bg-white/5" data-code="EN">🇬🇧 English</button>
+            </div>
+          </div>
+
+          <!-- dark toggle -->
+          <button id="theme-btn" aria-label="Rejimni almashtirish" class="grid place-items-center h-10 w-10 rounded-pill border bd surface-card">
+            <svg class="sun hidden dark:block" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg>
+            <svg class="moon block dark:hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A8.5 8.5 0 0 1 11.2 3 7 7 0 1 0 21 12.8z"/></svg>
+          </button>
+
+          <button data-open-modal class="hidden lg:inline-flex items-center gap-2 rounded-pill bg-brand-red-600 px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-brand-red-700 hover:-translate-y-0.5" style="box-shadow:0 10px 22px -10px rgba(192,26,32,.55)">
+            Ariza qoldirish
+          </button>
+
+          <button id="burger" class="lg:hidden grid place-items-center h-10 w-10 rounded-pill border bd surface-card">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- mobile drawer -->
+    <div id="drawer" class="lg:hidden hidden border-t bd surface-card">
+      <div class="px-4 py-3 flex flex-col text-[15px] font-medium">
+        <a href="#about" class="py-2.5 border-b bd">Biz haqimizda</a>
+        <a href="#courses" class="py-2.5 border-b bd">Kurslar</a>
+        <a href="#news" class="py-2.5 border-b bd">Yangiliklar</a>
+        <a href="#teachers" class="py-2.5 border-b bd">Oʻqituvchilar</a>
+        <a href="#results" class="py-2.5 border-b bd">Natijalar</a>
+        <a href="#contact" class="py-2.5">Bogʻlanish</a>
+        <button data-open-modal class="mt-3 rounded-pill bg-brand-red-600 px-5 py-3 font-semibold text-white">Ariza qoldirish</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="pb-20 lg:pb-0">
+    <!-- ===== HERO ===== -->
+    <section id="home" class="relative overflow-hidden bg-base glow">
+      <div class="absolute inset-0 dot-grid opacity-70 [mask-image:linear-gradient(to_bottom,#000,transparent_85%)]"></div>
+      <div class="relative mx-auto max-w-content px-4 lg:px-8 pt-10 lg:pt-16 pb-12 lg:pb-16">
+        <div class="grid lg:grid-cols-12 gap-9 lg:gap-8 items-center">
+          <div class="lg:col-span-6">
+            <span class="rl d1 inline-flex items-center gap-2 rounded-pill border bd surface-card px-3.5 py-1.5 text-[12.5px] sm:text-[13px] font-semibold text-brand-blue-700 dark:text-brand-blue-300">
+              <span class="h-1.5 w-1.5 rounded-full bg-brand-red-500 animate-pulse"></span>
+              Zamonaviy taʼlim markazi · Toshkent
+            </span>
+            <h1 class="rl d2 mt-5 font-display font-extrabold tracking-tight leading-[1.06] text-[clamp(2.1rem,5.4vw,3.7rem)]">
+              Farzandingiz kelajagi <span class="text-grad">Hope&nbsp;School</span>dan boshlanadi
+            </h1>
+            <p class="rl d3 mt-5 max-w-xl text-[16px] sm:text-[17px] leading-relaxed txt-soft">
+              Tajribali oʻqituvchilar, zamonaviy metodika va natijaga yoʻnaltirilgan kichik guruhlar — bir joyda.
+            </p>
+            <div class="rl d4 mt-7 flex flex-wrap items-center gap-3">
+              <button data-open-modal class="inline-flex items-center gap-2 rounded-pill bg-brand-red-600 px-6 py-3.5 text-[15px] font-semibold text-white transition hover:bg-brand-red-700 hover:-translate-y-0.5" style="box-shadow:0 12px 26px -10px rgba(192,26,32,.55)">
+                Bepul darsga yoziling
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+              <a href="#courses" class="inline-flex items-center gap-2 rounded-pill border bd surface-card px-6 py-3.5 text-[15px] font-semibold text-brand-blue-700 dark:text-brand-blue-300 transition hover:-translate-y-0.5">
+                Kurslarni koʻrish
+              </a>
+            </div>
+
+            <dl class="rl d5 mt-9 grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-5 max-w-xl">
+              <div><dt class="font-display text-[1.9rem] font-extrabold text-brand-blue-600 dark:text-brand-blue-300"><span class="count" data-to="500">0</span>+</dt><dd class="text-[13px] txt-soft mt-0.5">Bitiruvchilar</dd></div>
+              <div><dt class="font-display text-[1.9rem] font-extrabold text-brand-blue-600 dark:text-brand-blue-300"><span class="count" data-to="15">0</span>+</dt><dd class="text-[13px] txt-soft mt-0.5">Oʻqituvchilar</dd></div>
+              <div><dt class="font-display text-[1.9rem] font-extrabold text-brand-blue-600 dark:text-brand-blue-300"><span class="count" data-to="12">0</span></dt><dd class="text-[13px] txt-soft mt-0.5">Yoʻnalish</dd></div>
+              <div><dt class="font-display text-[1.9rem] font-extrabold text-brand-red-500"><span class="count" data-to="98">0</span>%</dt><dd class="text-[13px] txt-soft mt-0.5">Mamnunlik</dd></div>
+            </dl>
+          </div>
+
+          <div class="lg:col-span-6 relative">
+            <div class="rl d3 relative">
+              <div class="duotone overflow-hidden rounded-[1.75rem] shadow-strong aspect-[4/4.4] sm:aspect-[5/4.6]">
+                <img src="https://picsum.photos/seed/hopeschool-class/900/900" alt="Hope School oʻquv jarayoni" class="h-full w-full object-cover" />
+              </div>
+              <div class="floaty absolute -left-3 sm:-left-7 top-8 surface-card rounded-2xl shadow-soft border bd p-3.5 w-[180px]">
+                <div class="flex items-center gap-3">
+                  <span class="grid place-items-center h-10 w-10 rounded-xl bg-brand-blue-50 dark:bg-brand-blue-500/15 text-brand-blue-600 dark:text-brand-blue-300"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10 12 5 2 10l10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+                  <div><div class="font-display font-bold text-[15px] leading-none">IELTS 7.5</div><div class="text-[12px] txt-soft mt-1">oʻrtacha</div></div>
+                </div>
+              </div>
+              <div class="floaty absolute -right-2 sm:-right-5 bottom-10 surface-card rounded-2xl shadow-soft border bd p-3.5 w-[200px]" style="animation-delay:-3s">
+                <div class="flex -space-x-2 mb-2">
+                  <img class="h-7 w-7 rounded-full border-2 border-white object-cover" src="https://picsum.photos/seed/p1/60/60" alt="">
+                  <img class="h-7 w-7 rounded-full border-2 border-white object-cover" src="https://picsum.photos/seed/p2/60/60" alt="">
+                  <img class="h-7 w-7 rounded-full border-2 border-white object-cover" src="https://picsum.photos/seed/p3/60/60" alt="">
+                  <span class="grid place-items-center h-7 w-7 rounded-full border-2 border-white bg-brand-red-500 text-white text-[10px] font-bold">+97</span>
+                </div>
+                <div class="text-[12px] txt-soft leading-snug">Bu oy <b style="color:var(--text)">100+</b> yangi oʻquvchi</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- partners marquee -->
+    <div class="bg-alt border-y bd py-5">
+      <div class="mx-auto max-w-content px-4 lg:px-8">
+        <div class="marquee">
+          <div class="marquee-track font-display font-bold text-[18px] txt-soft opacity-60">
+            <span>Cambridge</span><span>IELTS</span><span>Pearson</span><span>Khan Academy</span><span>Coursera</span><span>Oxford</span><span>British Council</span>
+            <span>Cambridge</span><span>IELTS</span><span>Pearson</span><span>Khan Academy</span><span>Coursera</span><span>Oxford</span><span>British Council</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ABOUT / WHY US ===== -->
+    <section id="about" class="py-14 lg:py-20 bg-base">
+      <div class="mx-auto max-w-content px-4 lg:px-8">
+        <div class="grid lg:grid-cols-12 gap-9 lg:gap-10">
+          <div class="lg:col-span-5 sr">
+            <span class="text-[12.5px] font-bold uppercase tracking-[0.18em] text-brand-blue-600 dark:text-brand-blue-300">Biz haqimizda</span>
+            <h2 class="mt-3 font-display font-extrabold tracking-tight text-[clamp(1.7rem,3.4vw,2.5rem)] leading-[1.12]">2023-yildan beri bilimga ishonchni mustahkamlaymiz</h2>
+            <p class="mt-4 text-[16px] leading-relaxed txt-soft">Hope School — har bir oʻquvchining iqtidorini ochib beradigan maskan. Zamonaviy yondashuv, individual eʼtibor va aniq natija.</p>
+            <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <button data-open-modal class="inline-flex items-center gap-2 rounded-pill bg-brand-blue-600 px-5 py-3 text-[15px] font-semibold text-white transition hover:bg-brand-blue-700 hover:-translate-y-0.5">Biz bilan bogʻlaning</button>
+              <a href="#teachers" class="text-[15px] font-semibold text-brand-blue-700 dark:text-brand-blue-300 hover:underline underline-offset-4">Jamoamiz bilan tanishing →</a>
+            </div>
+          </div>
+          <div class="lg:col-span-7 grid sm:grid-cols-2 gap-4">
+            <div class="sr card-hover rounded-card surface-card border bd shadow-soft p-5"><span class="grid place-items-center h-11 w-11 rounded-xl bg-brand-blue-50 dark:bg-brand-blue-500/15 text-brand-blue-600 dark:text-brand-blue-300"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 14c-4 0-7 2-7 5h14c0-3-3-5-7-5z"/><circle cx="12" cy="8" r="4"/></svg></span><h3 class="mt-4 font-display font-bold text-[17px]">Tajribali oʻqituvchilar</h3><p class="mt-1.5 text-[14px] leading-relaxed txt-soft">Xalqaro sertifikatlarga ega mutaxassislar.</p></div>
+            <div class="sr card-hover rounded-card surface-card border bd shadow-soft p-5" style="transition-delay:.06s"><span class="grid place-items-center h-11 w-11 rounded-xl bg-brand-blue-50 dark:bg-brand-blue-500/15 text-brand-blue-600 dark:text-brand-blue-300"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="4"/></svg></span><h3 class="mt-4 font-display font-bold text-[17px]">Zamonaviy metodika</h3><p class="mt-1.5 text-[14px] leading-relaxed txt-soft">Amaliyotga asoslangan interaktiv darslar.</p></div>
+            <div class="sr card-hover rounded-card surface-card border bd shadow-soft p-5" style="transition-delay:.12s"><span class="grid place-items-center h-11 w-11 rounded-xl bg-brand-red-50 dark:bg-brand-red-500/15 text-brand-red-600 dark:text-brand-red-300"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3 2.5-5 6-5s6 2 6 5"/></svg></span><h3 class="mt-4 font-display font-bold text-[17px]">Kichik guruhlar</h3><p class="mt-1.5 text-[14px] leading-relaxed txt-soft">6–10 kishi: har kimga yetarli eʼtibor.</p></div>
+            <div class="sr card-hover rounded-card surface-card border bd shadow-soft p-5" style="transition-delay:.18s"><span class="grid place-items-center h-11 w-11 rounded-xl bg-brand-red-50 dark:bg-brand-red-500/15 text-brand-red-600 dark:text-brand-red-300"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="m9 12 2 2 4-4"/><path d="M12 3 4 6v6c0 5 3.5 7.5 8 9 4.5-1.5 8-4 8-9V6z"/></svg></span><h3 class="mt-4 font-display font-bold text-[17px]">Kafolatlangan natija</h3><p class="mt-1.5 text-[14px] leading-relaxed txt-soft">Aniq maqsad va shaffof baholash.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== COURSES ===== -->
+    <section id="courses" class="py-14 lg:py-20 bg-alt">
+      <div class="mx-auto max-w-content px-4 lg:px-8">
+        <div class="sr flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-9">
+          <div>
+            <span class="text-[12.5px] font-bold uppercase tracking-[0.18em] text-brand-blue-600 dark:text-brand-blue-300">Yoʻnalishlar</span>
+            <h2 class="mt-2 font-display font-extrabold tracking-tight text-[clamp(1.7rem,3.4vw,2.5rem)] leading-tight">Bizning kurslarimiz</h2>
+          </div>
+          <p class="max-w-sm text-[15px] txt-soft">Har bir kurs admin paneldan boshqariladi — narx va tavsif istalgan vaqtda oʻzgaradi.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5" id="courses-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===== NEWS / ANNOUNCEMENTS (auto slider) ===== -->
+    <section id="news" class="py-14 lg:py-20 bg-base">
+      <div class="mx-auto max-w-content px-4 lg:px-8">
+        <div class="sr flex items-end justify-between gap-4 mb-8">
+          <div>
+            <span class="text-[12.5px] font-bold uppercase tracking-[0.18em] text-brand-blue-600 dark:text-brand-blue-300">Yangiliklar va eʼlonlar</span>
+            <h2 class="mt-2 font-display font-extrabold tracking-tight text-[clamp(1.7rem,3.4vw,2.5rem)] leading-tight">Markaz yangiliklari</h2>
+          </div>
+          <div class="hidden sm:flex items-center gap-2">
+            <button data-prev="news" class="h-10 w-10 grid place-items-center rounded-pill border bd surface-card hover:text-brand-blue-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg></button>
+            <button data-next="news" class="h-10 w-10 grid place-items-center rounded-pill border bd surface-card hover:text-brand-blue-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
+          </div>
+        </div>
+        <div data-carousel="news" data-interval="4000" class="flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1" id="news-track"></div>
+      </div>
+    </section>
+
+    <!-- ===== TEACHERS (auto slider) ===== -->
+    <section id="teachers" class="py-14 lg:py-20 bg-alt">
+      <div class="mx-auto max-w-content px-4 lg:px-8">
+        <div class="sr text-center max-w-2xl mx-auto mb-9">
+          <span class="text-[12.5px] font-bold uppercase tracking-[0.18em] text-brand-blue-600 dark:text-brand-blue-300">Jamoa</span>
+          <h2 class="mt-2 font-display font-extrabold tracking-tight text-[clamp(1.7rem,3.4vw,2.5rem)] leading-tight">Tajribali oʻqituvchilar</h2>
+        </div>
+        <div data-carousel="teachers" data-interval="3500" class="flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1" id="teachers-track"></div>
+        <div class="flex justify-center gap-2 mt-6 sm:hidden">
+          <button data-prev="teachers" class="h-10 w-10 grid place-items-center rounded-pill border bd surface-card"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <button data-next="teachers" class="h-10 w-10 grid place-items-center rounded-pill border bd surface-card"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== RESULTS: certificates + testimonials ===== -->
+    <section id="results" class="py-14 lg:py-20 bg-base">
+      <div class="mx-auto max-w-content px-4 lg:px-8">
+        <div class="sr flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+          <div>
+            <span class="text-[12.5px] font-bold uppercase tracking-[0.18em] text-brand-blue-600 dark:text-brand-blue-300">Natijalar</span>
+            <h2 class="mt-2 font-display font-extrabold tracking-tight text-[clamp(1.7rem,3.4vw,2.5rem)] leading-tight">Oʻquvchilarimiz yutuqlari</h2>
+          </div>
+          <a href="#" class="inline-flex items-center gap-2 rounded-pill border bd surface-card px-5 py-2.5 text-[14px] font-semibold text-brand-blue-700 dark:text-brand-blue-300 self-start">Barcha sertifikatlar →</a>
+        </div>
+
+        <!-- certificates auto slider -->
+        <div data-carousel="certs" data-interval="3000" class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1 mb-12" id="certs-track"></div>
+
+        <!-- testimonials auto slider -->
+        <div class="sr mb-6 flex items-center justify-between">
+          <h3 class="font-display font-bold text-[20px]">Ota-onalar fikri</h3>
+          <div class="hidden sm:flex items-center gap-2">
+            <button data-prev="revs" class="h-9 w-9 grid place-items-center rounded-pill border bd surface-card"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg></button>
+            <button data-next="revs" class="h-9 w-9 grid place-items-center rounded-pill border bd surface-card"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
+          </div>
+        </div>
+        <div data-carousel="revs" data-interval="4500" class="flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1" id="revs-track"></div>
+      </div>
+    </section>
+
+    <!-- ===== GALLERY (auto slider) ===== -->
+    <section id="gallery" class="py-14 lg:py-20 bg-alt">
+      <div class="mx-auto max-w-content px-4 lg:px-8">
+        <div class="sr text-center max-w-2xl mx-auto mb-9">
+          <span class="text-[12.5px] font-bold uppercase tracking-[0.18em] text-brand-blue-600 dark:text-brand-blue-300">Galereya</span>
+          <h2 class="mt-2 font-display font-extrabold tracking-tight text-[clamp(1.7rem,3.4vw,2.5rem)] leading-tight">Oʻquv jarayonimizdan lavhalar</h2>
+        </div>
+        <div data-carousel="gallery" data-interval="2800" class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1" id="gallery-track"></div>
+      </div>
+    </section>
+
+    <!-- ===== CONTACT + LOCATION ===== -->
+    <section id="contact" class="py-14 lg:py-20 bg-base relative overflow-hidden">
+      <div class="absolute inset-0 dot-grid opacity-50 [mask-image:radial-gradient(circle_at_75%_25%,#000,transparent_70%)]"></div>
+      <div class="relative mx-auto max-w-content px-4 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
+          <div class="sr flex flex-col">
+            <span class="text-[12.5px] font-bold uppercase tracking-[0.18em] text-brand-blue-600 dark:text-brand-blue-300">Bogʻlanish</span>
+            <h2 class="mt-2 font-display font-extrabold tracking-tight text-[clamp(1.8rem,3.6vw,2.6rem)] leading-tight">Bepul sinov darsiga yoziling</h2>
+            <p class="mt-4 text-[16px] leading-relaxed txt-soft max-w-md">Arizangizni qoldiring — mutaxassisimiz qaytib qoʻngʻiroq qiladi.</p>
+            <ul class="mt-5 space-y-2.5 text-[14.5px]">
+              <li class="flex items-center gap-3"><span class="grid place-items-center h-6 w-6 rounded-full bg-brand-blue-100 dark:bg-brand-blue-500/20 text-brand-blue-700 dark:text-brand-blue-300"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 4 4L19 6"/></svg></span> Birinchi dars bepul</li>
+              <li class="flex items-center gap-3"><span class="grid place-items-center h-6 w-6 rounded-full bg-brand-blue-100 dark:bg-brand-blue-500/20 text-brand-blue-700 dark:text-brand-blue-300"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 4 4L19 6"/></svg></span> Bilim darajangizni aniqlaymiz</li>
+            </ul>
+            <!-- mini map + address -->
+            <div class="mt-6 grid sm:grid-cols-5 gap-3 flex-1">
+              <div class="sm:col-span-3 relative rounded-card overflow-hidden border bd grad-cap min-h-[150px]">
+                <div class="absolute inset-0 dot-grid opacity-40"></div>
+                <div class="absolute inset-0 grid place-items-center text-white text-center px-4">
+                  <div><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mx-auto opacity-90"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><p class="mt-2 font-display font-bold text-[14px]">Google / Yandex xarita</p></div>
+                </div>
+              </div>
+              <div class="sm:col-span-2 rounded-card surface-card border bd p-4 text-[13.5px] flex flex-col justify-center gap-2.5">
+                <div class="flex items-start gap-2"><svg width="16" height="16" class="mt-0.5 text-brand-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> Chilonzor, Bunyodkor 12</div>
+                <div class="flex items-center gap-2"><svg width="16" height="16" class="text-brand-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 2.1 4.1 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5l2.9.7A2 2 0 0 1 22 16.9z"/></svg> +998 90 123 45 67</div>
+                <div class="flex items-center gap-2 pt-1">
+                  <a href="#" class="h-8 w-8 grid place-items-center rounded-lg border bd hover:text-brand-blue-600" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></a>
+                  <a href="#" class="h-8 w-8 grid place-items-center rounded-lg border bd hover:text-brand-blue-600" aria-label="Telegram"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.6 20c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.6 13.4l-4.8-1.5c-1-.3-1-1 .2-1.5l18.7-7.2c.9-.3 1.6.2 1.3 1.6z"/></svg></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sr rounded-card surface-card border bd shadow-strong p-6 sm:p-8">
+            <form onsubmit="return previewSubmit(event)" class="space-y-3.5">
+              <div><label class="block text-[13px] font-semibold mb-1.5">Ism familiya</label><input required type="text" placeholder="Ismingizni kiriting" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition"/></div>
+              <div><label class="block text-[13px] font-semibold mb-1.5">Telefon raqam</label><input required type="tel" placeholder="+998 __ ___ __ __" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition"/></div>
+              <div><label class="block text-[13px] font-semibold mb-1.5">Qaysi kurs?</label><select class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition"><option>Ingliz tili</option><option>Matematika</option><option>IT / Dasturlash</option><option>Rus tili</option><option>Arab tili</option></select></div>
+              <button type="submit" class="w-full rounded-pill bg-brand-red-600 px-6 py-3.5 text-[15px] font-semibold text-white transition hover:bg-brand-red-700 hover:-translate-y-0.5" style="box-shadow:0 12px 26px -10px rgba(192,26,32,.55)">Arizani yuborish</button>
+              <p class="text-center text-[12px] txt-soft">Yuborish orqali maʼlumotlaringizni qayta ishlashga rozilik bildirasiz.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="bg-alt border-t bd">
+    <div class="mx-auto max-w-content px-4 lg:px-8 py-12">
+      <div class="grid md:grid-cols-12 gap-8">
+        <div class="md:col-span-5">
+          <img src="logo.png" alt="Hope School" class="h-14 w-auto" />
+          <p class="mt-4 text-[14px] leading-relaxed txt-soft max-w-sm">Zamonaviy taʼlim markazi. Biz bilan farzandingiz kelajagiga ishonchli qadam qoʻying.</p>
+        </div>
+        <div class="md:col-span-3">
+          <h4 class="font-display font-bold text-[15px] mb-3">Sahifalar</h4>
+          <ul class="space-y-2 text-[14px] txt-soft">
+            <li><a href="#about" class="hover:text-brand-blue-600">Biz haqimizda</a></li>
+            <li><a href="#courses" class="hover:text-brand-blue-600">Kurslar</a></li>
+            <li><a href="#news" class="hover:text-brand-blue-600">Yangiliklar</a></li>
+            <li><a href="#teachers" class="hover:text-brand-blue-600">Oʻqituvchilar</a></li>
+          </ul>
+        </div>
+        <div class="md:col-span-4">
+          <h4 class="font-display font-bold text-[15px] mb-3">Bogʻlanish</h4>
+          <ul class="space-y-2 text-[14px] txt-soft">
+            <li>Toshkent sh., Chilonzor tumani</li><li>+998 90 123 45 67</li><li>info@hopeschool.uz</li>
+          </ul>
+          <div class="mt-4 flex items-center gap-2.5">
+            <a href="#" class="h-9 w-9 grid place-items-center rounded-lg border bd hover:text-brand-blue-600" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></a>
+            <a href="#" class="h-9 w-9 grid place-items-center rounded-lg border bd hover:text-brand-blue-600" aria-label="Telegram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.6 20c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.6 13.4l-4.8-1.5c-1-.3-1-1 .2-1.5l18.7-7.2c.9-.3 1.6.2 1.3 1.6z"/></svg></a>
+            <a href="#" class="h-9 w-9 grid place-items-center rounded-lg border bd hover:text-brand-blue-600" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 5.6c-.2-.9-1-1.5-1.9-1.6C17.9 3.7 12 3.7 12 3.7s-5.9 0-8 .3C3.1 4.1 2.3 4.7 2.1 5.6 1.8 7.4 1.8 12 1.8 12s0 4.6.3 6.4c.2.9 1 1.5 1.9 1.6 2.1.3 8 .3 8 .3s5.9 0 8-.3c.9-.1 1.7-.7 1.9-1.6.3-1.8.3-6.4.3-6.4s0-4.6-.3-6.4zM10 15.2V8.8l5.2 3.2L10 15.2z"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div class="mt-10 pt-6 border-t bd flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] txt-soft">
+        <p>© 2026 Hope School. Barcha huquqlar himoyalangan.</p><p>since 2023 · Toshkent</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- mobile sticky bottom bar -->
+  <div class="lg:hidden fixed bottom-0 inset-x-0 z-40 surface-card border-t bd px-3 py-2.5 flex items-center gap-2.5" style="padding-bottom:max(0.625rem,env(safe-area-inset-bottom))">
+    <a href="tel:+998901234567" class="grid place-items-center h-12 w-12 shrink-0 rounded-pill border bd text-brand-blue-600"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 2.1 4.1 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5l2.9.7A2 2 0 0 1 22 16.9z"/></svg></a>
+    <button data-open-modal class="flex-1 h-12 rounded-pill bg-brand-red-600 text-white font-semibold text-[15px]">Ariza qoldirish</button>
+  </div>
+
+  <!-- modal -->
+  <div id="modal" class="fixed inset-0 z-[100] hidden">
+    <div data-close-modal class="absolute inset-0 bg-black/55 backdrop-blur-sm"></div>
+    <div class="absolute inset-0 grid place-items-center p-4">
+      <div class="relative w-full max-w-md rounded-card surface-card shadow-strong p-6 sm:p-8" style="animation:fadeUp .35s ease">
+        <button data-close-modal class="absolute top-3.5 right-3.5 h-9 w-9 grid place-items-center rounded-lg txt-soft hover:bg-alt"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <div class="flex items-center gap-2.5 mb-1"><span class="grid place-items-center h-9 w-9 rounded-lg grad-cap text-white"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10 12 5 2 10l10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span><h3 class="font-display font-extrabold text-[20px]">Ariza qoldirish</h3></div>
+        <p class="text-[14px] txt-soft mb-5">Maʼlumotlaringizni qoldiring, tez orada bogʻlanamiz.</p>
+        <form onsubmit="return previewSubmit(event)" class="space-y-3">
+          <input required type="text" placeholder="Ism familiya" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition"/>
+          <input required type="tel" placeholder="+998 __ ___ __ __" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition"/>
+          <select class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition"><option>Ingliz tili</option><option>Matematika</option><option>IT / Dasturlash</option><option>Arab tili</option></select>
+          <button type="submit" class="w-full rounded-pill bg-brand-red-600 px-6 py-3.5 text-[15px] font-semibold text-white hover:bg-brand-red-700">Yuborish</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- toast -->
+  <div id="toast" class="fixed bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 z-[110] hidden">
+    <div class="flex items-center gap-3 rounded-pill bg-[#14181f] text-white px-5 py-3 shadow-strong text-[14px] font-medium"><span class="grid place-items-center h-6 w-6 rounded-full bg-green-500"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 4 4L19 6"/></svg></span> Arizangiz qabul qilindi! (demo)</div>
+  </div>
+
+  <script>
+    /* ---------- data (real saytda admin paneldan keladi) ---------- */
+    const courses = [
+      {n:'Ingliz tili',t:'Til',tcol:'blue',d:'Boshlangʻichdan IELTS darajasigacha.',m:'6 oy',g:'6–10',p:'600 000',ic:'<path d="M4 5h11a4 4 0 0 1 4 4v10a3 3 0 0 0-3-3H4z"/><path d="M20 5h-1a4 4 0 0 0-4 4v10"/>'},
+      {n:'Matematika',t:'Aniq fan',tcol:'blue',d:'Maktabdan oliygohga tayyorlovgacha.',m:'9 oy',g:'8',p:'550 000',ic:'<path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h5"/>'},
+      {n:'IT / Dasturlash',t:'Top',tcol:'red',d:'Frontend, Python va amaliy loyihalar.',m:'8 oy',g:'10',p:'750 000',ic:'<path d="m8 9-3 3 3 3M16 9l3 3-3 3M13 6l-2 12"/>'},
+      {n:'Arab tili',t:'Yangi',tcol:'red',d:'Qiroat, grammatika va soʻzlashuv.',m:'6 oy',g:'8',p:'500 000',ic:'<path d="M4 5h11a4 4 0 0 1 4 4v10a3 3 0 0 0-3-3H4z"/>'},
+      {n:'Rus tili',t:'Til',tcol:'blue',d:'Soʻzlashuv va grammatika.',m:'6 oy',g:'8',p:'500 000',ic:'<path d="M4 5h11a4 4 0 0 1 4 4v10a3 3 0 0 0-3-3H4z"/>'},
+      {n:'Prezident maktablariga',t:'Tayyorlov',tcol:'blue',d:'Imtihonga maxsus tayyorgarlik.',m:'7 oy',g:'8',p:'700 000',ic:'<path d="M12 3 1.5 8 12 13l8.5-4z"/><path d="M5.5 10.5V15c0 1.2 2.9 2.5 6.5 2.5s6.5-1.3 6.5-2.5v-4.5"/>'},
+    ];
+    const news = [
+      {tag:'Eʼlon',col:'red',date:'5-iyun, 2026',img:'arab',ti:'Arab tili kurslari ochildi',ex:'Yangi yoʻnalish! Tajribali ustozlar bilan arab tilini noldan oʻrganing.'},
+      {tag:'Yangilik',col:'blue',date:'28-may, 2026',img:'summer',ti:'Yozgi intensiv guruhlar',ex:'Yoz davomida tezlashtirilgan dasturlar boʻyicha qabul boshlandi.'},
+      {tag:'Tadbir',col:'blue',date:'15-may, 2026',img:'olymp',ti:'Ichki olimpiada gʻoliblari',ex:'Oʻquvchilarimiz yillik bilimlar bellashuvida ajoyib natija koʻrsatdi.'},
+      {tag:'Eʼlon',col:'red',date:'2-may, 2026',img:'ielts',ti:'Bepul IELTS sinov imtihoni',ex:'Haqiqiy formatdagi mock-test uchun roʻyxatdan oʻting.'},
+    ];
+    const teachers = [
+      {n:'Dilnoza Karimova',r:'Ingliz tili · IELTS 8.0',s:'teacher-a'},
+      {n:'Sardor Aliyev',r:'Matematika · 10 yil',s:'teacher-b'},
+      {n:'Madina Yusupova',r:'IT / Frontend',s:'teacher-c'},
+      {n:'Jasur Toʻrayev',r:'Rus tili · Filolog',s:'teacher-d'},
+      {n:'Ozoda Rashidova',r:'Arab tili',s:'teacher-e'},
+      {n:'Bobur Qodirov',r:'SAT · Matematika',s:'teacher-f'},
+    ];
+    const certs = [
+      {n:'Aziza R.',d:'IELTS Band 7.5',b:'IELTS',col:'blue',s:'cert1'},
+      {n:'Bekzod T.',d:'Cambridge B2',b:'PDF',col:'blue',s:'cert2'},
+      {n:'Madina X.',d:'Olimpiada I-oʻrin',b:'Gʻolib',col:'red',s:'cert3'},
+      {n:'Sardor M.',d:'SAT 1480',b:'SAT',col:'blue',s:'cert4'},
+      {n:'Laylo A.',d:'IELTS Band 8.0',b:'IELTS',col:'blue',s:'cert5'},
+    ];
+    const revs = [
+      {q:'Qizimning ingliz tili bir yilda tanib boʻlmas darajada oʻzgardi. Oʻqituvchilar juda mehribon.',n:'Nigora Saidova',r:'Ona · Aziza R.',s:'parent1'},
+      {q:'Oʻgʻlim Prezident maktabiga aynan shu yerdagi tayyorgarlik tufayli kirdi. Minnatdormiz!',n:'Akmal Rahimov',r:'Ota · Bekzod T.',s:'parent2'},
+      {q:'Kichik guruhlar va individual yondashuv natija berdi. Bolam darslarga ishtiyoq bilan boradi.',n:'Gulnora Tosheva',r:'Ona · Madina X.',s:'parent3'},
+      {q:'Markaz juda zamonaviy. Ustozlar har bir oʻquvchiga alohida eʼtibor qaratadi.',n:'Sherzod Yoʻldoshev',r:'Ota · Sardor M.',s:'parent4'},
+    ];
+    const gallery = ['g1','g2','g3','g4','g5','g6','g7','g8'];
+
+    const C = (col)=> col==='red' ? 'bg-brand-red-50 dark:bg-brand-red-500/15 text-brand-red-600 dark:text-brand-red-300' : 'bg-brand-blue-50 dark:bg-brand-blue-500/15 text-brand-blue-700 dark:text-brand-blue-300';
+    const ico = (p)=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">${p}</svg>`;
+    const clk = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+    const ppl = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h12"/></svg>';
+
+    // courses (grid)
+    document.getElementById('courses-grid').innerHTML = courses.map((c,i)=>`
+      <article class="sr card-hover group rounded-card surface-card border bd shadow-soft overflow-hidden" style="transition-delay:${(i%3)*.06}s">
+        <div class="p-5">
+          <div class="flex items-center justify-between">
+            <span class="grid place-items-center h-11 w-11 rounded-xl grad-cap text-white">${ico(c.ic)}</span>
+            <span class="rounded-pill ${C(c.tcol)} text-[12px] font-semibold px-3 py-1">${c.t}</span>
+          </div>
+          <h3 class="mt-4 font-display font-bold text-[18px]">${c.n}</h3>
+          <p class="mt-1.5 text-[14px] leading-relaxed txt-soft">${c.d}</p>
+          <div class="mt-4 flex items-center gap-4 text-[13px] txt-soft"><span class="inline-flex items-center gap-1.5">${clk} ${c.m}</span><span class="inline-flex items-center gap-1.5">${ppl} ${c.g} kishi</span></div>
+        </div>
+        <div class="flex items-center justify-between border-t bd px-5 py-3.5">
+          <div><span class="font-display font-extrabold text-[17px]">${c.p}</span><span class="text-[12.5px] txt-soft"> soʻm/oy</span></div>
+          <a href="#" class="inline-flex items-center gap-1 text-[14px] font-semibold text-brand-blue-700 dark:text-brand-blue-300 group-hover:gap-2 transition-all">Batafsil →</a>
+        </div>
+      </article>`).join('');
+
+    // news (slider)
+    document.getElementById('news-track').innerHTML = news.map(x=>`
+      <article class="snap-start shrink-0 w-[86%] sm:w-[47%] lg:w-[31.5%]">
+        <a href="#" class="card-hover group block rounded-card surface-card border bd shadow-soft overflow-hidden h-full">
+          <div class="duotone aspect-[16/9] overflow-hidden"><img src="https://picsum.photos/seed/${x.img}/700/400" alt="${x.ti}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105"/></div>
+          <div class="p-5">
+            <div class="flex items-center gap-2 text-[12px]"><span class="rounded-pill ${C(x.col)} font-semibold px-2.5 py-0.5">${x.tag}</span><span class="txt-soft">${x.date}</span></div>
+            <h3 class="mt-3 font-display font-bold text-[17px] leading-snug">${x.ti}</h3>
+            <p class="mt-1.5 text-[14px] leading-relaxed txt-soft">${x.ex}</p>
+            <span class="mt-3 inline-flex items-center gap-1 text-[13.5px] font-semibold text-brand-blue-700 dark:text-brand-blue-300 group-hover:gap-2 transition-all">Batafsil →</span>
+          </div>
+        </a>
+      </article>`).join('');
+
+    // teachers (slider)
+    document.getElementById('teachers-track').innerHTML = teachers.map(t=>`
+      <article class="snap-start shrink-0 w-[68%] sm:w-[42%] lg:w-[23.4%]">
+        <div class="card-hover group rounded-card surface-card border bd shadow-soft overflow-hidden h-full">
+          <div class="duotone aspect-[4/5] overflow-hidden"><img src="https://picsum.photos/seed/${t.s}/500/600" alt="${t.n}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105"/></div>
+          <div class="p-4">
+            <h3 class="font-display font-bold text-[16px]">${t.n}</h3>
+            <p class="text-[13px] text-brand-blue-600 dark:text-brand-blue-300 font-medium mt-0.5">${t.r}</p>
+            <div class="mt-3 flex items-center gap-2"><a href="#" class="h-8 w-8 grid place-items-center rounded-lg border bd hover:text-brand-blue-600"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c.6 0 1 .4 1 1s-.4 1-1 1-1-.4-1-1 .4-1 1-1zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></a><a href="#" class="h-8 w-8 grid place-items-center rounded-lg border bd hover:text-brand-blue-600"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.6 20c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.6 13.4l-4.8-1.5c-1-.3-1-1 .2-1.5l18.7-7.2c.9-.3 1.6.2 1.3 1.6z"/></svg></a></div>
+          </div>
+        </div>
+      </article>`).join('');
+
+    // certificates (slider)
+    document.getElementById('certs-track').innerHTML = certs.map(c=>`
+      <a href="#" class="snap-start shrink-0 w-[62%] sm:w-[40%] lg:w-[23.4%] card-hover group block rounded-card surface-card border bd shadow-soft overflow-hidden">
+        <div class="relative aspect-[1.4/1] overflow-hidden bg-brand-blue-50 dark:bg-brand-blue-500/10"><img src="https://picsum.photos/seed/${c.s}/500/360" alt="Sertifikat ${c.n}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105"/><span class="absolute top-3 left-3 rounded-pill bg-white/90 dark:bg-black/45 backdrop-blur px-2.5 py-1 text-[11px] font-bold ${c.col==='red'?'text-brand-red-600 dark:text-brand-red-300':'text-brand-blue-700 dark:text-brand-blue-300'}">${c.b}</span></div>
+        <div class="p-4"><p class="font-display font-bold text-[14px]">${c.n}</p><p class="text-[12px] txt-soft">${c.d}</p></div>
+      </a>`).join('');
+
+    // testimonials (slider)
+    document.getElementById('revs-track').innerHTML = revs.map(r=>`
+      <figure class="snap-start shrink-0 w-[88%] sm:w-[47%] lg:w-[32%] rounded-card surface-card border bd shadow-soft p-6">
+        <svg width="32" height="32" viewBox="0 0 24 24" class="text-brand-blue-200 dark:text-brand-blue-500/40" fill="currentColor"><path d="M10 7H6a3 3 0 0 0-3 3v7h7v-7H6c0-1.7 1.3-3 3-3V7zm11 0h-4a3 3 0 0 0-3 3v7h7v-7h-4c0-1.7 1.3-3 3-3V7z"/></svg>
+        <blockquote class="mt-3 text-[15px] leading-relaxed">${r.q}</blockquote>
+        <figcaption class="mt-5 flex items-center gap-3"><img class="h-11 w-11 rounded-full object-cover" src="https://picsum.photos/seed/${r.s}/80/80" alt=""><div><div class="font-display font-bold text-[14px]">${r.n}</div><div class="text-[12px] txt-soft">${r.r}</div></div></figcaption>
+      </figure>`).join('');
+
+    // gallery (slider)
+    document.getElementById('gallery-track').innerHTML = gallery.map(g=>`
+      <a href="#" class="snap-start shrink-0 w-[70%] sm:w-[44%] lg:w-[30%] group relative overflow-hidden rounded-card duotone aspect-[4/3]"><img src="https://picsum.photos/seed/${g}/600/450" alt="Galereya" class="h-full w-full object-cover transition duration-700 group-hover:scale-105"/></a>`).join('');
+
+    /* ---------- interactions ---------- */
+    // scroll progress + sticky header
+    const hdr = document.getElementById('hdr'), prog = document.getElementById('progress'), de = document.documentElement;
+    function onScroll(){
+      const p = de.scrollTop/(de.scrollHeight-de.clientHeight||1);
+      prog.style.transform = 'scaleX('+p+')';
+      if(window.scrollY>10){ hdr.style.background='var(--header)'; hdr.style.backdropFilter='blur(10px)'; hdr.classList.add('bd'); hdr.style.borderBottomWidth='1px'; hdr.style.boxShadow='0 2px 20px -14px rgba(0,0,0,.4)'; }
+      else { hdr.style.background='transparent'; hdr.style.backdropFilter='none'; hdr.style.borderBottomWidth='0'; hdr.style.boxShadow='none'; }
+    }
+    window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+    // theme
+    document.getElementById('theme-btn').addEventListener('click', ()=>{
+      de.classList.toggle('dark');
+      try{ localStorage.setItem('theme', de.classList.contains('dark')?'dark':'light'); }catch(e){}
+    });
+
+    // language dropdown
+    const lw=document.querySelector('[data-langwrap]'), lb=lw.querySelector('[data-langbtn]'), lm=lw.querySelector('[data-langmenu]'), lc=lw.querySelector('[data-langcur]');
+    lb.addEventListener('click',e=>{e.stopPropagation();lm.classList.toggle('hidden');});
+    lw.querySelectorAll('.lang-opt').forEach(o=>o.addEventListener('click',()=>{lc.textContent=o.dataset.code;lm.classList.add('hidden');}));
+    document.addEventListener('click',()=>lm.classList.add('hidden'));
+
+    // mobile drawer
+    const drawer=document.getElementById('drawer');
+    document.getElementById('burger').addEventListener('click',()=>drawer.classList.toggle('hidden'));
+    drawer.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>drawer.classList.add('hidden')));
+
+    // scroll reveal
+    const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
+    document.querySelectorAll('.sr').forEach(el=>io.observe(el));
+
+    // count up
+    const cio=new IntersectionObserver(es=>es.forEach(e=>{
+      if(!e.isIntersecting)return; const el=e.target,to=+el.dataset.to; let c=0; const step=Math.max(1,Math.round(to/45));
+      (function t(){c+=step; if(c>=to){el.textContent=to;}else{el.textContent=c;requestAnimationFrame(t);}})(); cio.unobserve(el);
+    }),{threshold:.6});
+    document.querySelectorAll('.count').forEach(c=>cio.observe(c));
+
+    // carousels (autoplay + arrows)
+    document.querySelectorAll('[data-carousel]').forEach(c=>{
+      const iv=+c.dataset.interval||3500; let t;
+      const page=()=>Math.max(c.clientWidth*0.86,180);
+      const next=()=>{const max=c.scrollWidth-c.clientWidth-6; if(c.scrollLeft>=max)c.scrollTo({left:0,behavior:'smooth'}); else c.scrollBy({left:page(),behavior:'smooth'});};
+      const prev=()=>c.scrollBy({left:-page(),behavior:'smooth'});
+      const start=()=>t=setInterval(next,iv); const stop=()=>clearInterval(t);
+      start();
+      c.addEventListener('mouseenter',stop); c.addEventListener('mouseleave',start);
+      c.addEventListener('touchstart',stop,{passive:true}); c.addEventListener('touchend',()=>{stop();start();},{passive:true});
+      const id=c.dataset.carousel;
+      document.querySelectorAll('[data-next="'+id+'"]').forEach(b=>b.onclick=()=>{stop();next();start();});
+      document.querySelectorAll('[data-prev="'+id+'"]').forEach(b=>b.onclick=()=>{stop();prev();start();});
+    });
+
+    // announcement ticker rotation
+    const tickerMsgs=['Arab tili kurslari ochildi — birinchi dars bepul!','Yozgi intensiv guruhlarga qabul boshlandi 🎓','Bepul IELTS sinov imtihoniga yoziling!'];
+    let ti=0; const tk=document.getElementById('ticker');
+    setInterval(()=>{ti=(ti+1)%tickerMsgs.length; tk.classList.remove('ticker-item'); void tk.offsetWidth; tk.textContent=tickerMsgs[ti]; tk.classList.add('ticker-item');},4000);
+
+    // modal
+    const modal=document.getElementById('modal');
+    function openM(){modal.classList.remove('hidden');document.body.style.overflow='hidden';}
+    function closeM(){modal.classList.add('hidden');document.body.style.overflow='';}
+    document.querySelectorAll('[data-open-modal]').forEach(b=>b.addEventListener('click',openM));
+    document.querySelectorAll('[data-close-modal]').forEach(b=>b.addEventListener('click',closeM));
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();});
+    function previewSubmit(e){e.preventDefault();closeM();const t=document.getElementById('toast');t.classList.remove('hidden');e.target.reset();setTimeout(()=>t.classList.add('hidden'),3200);return false;}
+    window.previewSubmit=previewSubmit;
+  </script>
+</body>
+</html>
