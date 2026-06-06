@@ -1,0 +1,58 @@
+{% extends "admin/base.html" %}
+{% comment %}
+  Admin language switcher (UZ / RU / EN).
+
+  This override replaces Unfold's admin/base_site.html. It MUST extend
+  "admin/base.html" (NOT "admin/base_site.html") to avoid infinite recursion,
+  and it re-declares Unfold's small base_site blocks (title, branding,
+  nav-global) so nothing is lost.
+
+  The switcher is rendered INSIDE the `header` block (re-including Unfold's
+  original header, then appending the switcher row). The `header` block is
+  rendered directly in the page flow (base.html -> header block), so it does
+  not depend on Unfold's silent {% capture %} / {{ nav_global_side }} path.
+
+  It is fully self-contained: each button posts to the already-mounted
+  `set_language` view, setting the `django_language` cookie that
+  LocaleMiddleware honours -> the whole admin UI switches language (given the
+  compiled .mo catalogs).
+
+  NOTE: the admin dashboard (templates/admin/index.html) extends admin/base.html
+  directly, so it does NOT inherit this override; the switcher therefore appears
+  on all content pages (changelists / change forms), not the dashboard index.
+{% endcomment %}
+{% load i18n %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block header %}
+    {% include "unfold/helpers/header.html" %}
+    {% get_current_language as LANGUAGE_CODE %}
+    {% get_available_languages as LANGUAGES %}
+    {% get_language_info_list for LANGUAGES as languages %}
+    <div class="px-4 -mt-2 mb-4">
+        <div class="{% if not cl.model_admin.list_fullwidth and is_fullwidth != "1" %}container{% endif %} mx-auto flex justify-end">
+            <div class="inline-flex flex-row items-center gap-1 rounded-default border border-base-200 bg-white px-1 py-1 dark:border-base-700 dark:bg-base-900">
+                <span class="material-symbols-outlined mr-1 text-base-400 dark:text-base-500" style="font-size:18px;">language</span>
+                {% for language in languages %}
+                    <form action="{% url 'set_language' %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <input name="language" type="hidden" value="{{ language.code }}">
+                        <button type="submit"
+                                title="{{ language.name_local }}"
+                                class="cursor-pointer rounded-default px-2.5 py-1 text-xs font-semibold uppercase tracking-wide transition-colors {% if language.code == LANGUAGE_CODE %}bg-primary-600 text-white{% else %}text-base-500 hover:bg-base-100 hover:text-base-700 dark:text-base-300 dark:hover:bg-base-700 dark:hover:text-base-200{% endif %}">
+                            {{ language.code }}
+                        </button>
+                    </form>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

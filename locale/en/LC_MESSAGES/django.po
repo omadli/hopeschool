@@ -1,0 +1,731 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: hopeschool 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-06 00:00+0500\n"
+"PO-Revision-Date: 2026-06-06 00:00+0500\n"
+"Last-Translator: i18n agent\n"
+"Language-Team: en\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "ALT matn (SEO)"
+msgstr "ALT text (SEO)"
+
+msgid "Albom"
+msgstr "Album"
+
+msgid "Albom nomi"
+msgstr "Album name"
+
+msgid "Analitika"
+msgstr "Analytics"
+
+msgid "Ariza"
+msgstr "Request"
+
+msgid "Ariza qoldirish"
+msgstr "Apply now"
+
+msgid "Arizalar"
+msgstr "Requests"
+
+msgid "Arizalar (30 kun)"
+msgstr "Requests (30 days)"
+
+msgid "Arizangiz qabul qilindi!"
+msgstr "Your request has been received!"
+
+msgid ""
+"Arizangizni qoldiring — mutaxassisimiz qaytib qoʻngʻiroq qiladi va sizga mos"
+" kursni tanlashda yordam beradi."
+msgstr ""
+"Leave your request — our specialist will call you back and help you choose "
+"the right course."
+
+msgid "Arizani yuborish"
+msgstr "Submit request"
+
+msgid "Asosiy telefon"
+msgstr "Primary phone"
+
+msgid "Baho (1–5)"
+msgstr "Rating (1–5)"
+
+msgid "Barcha huquqlar himoyalangan."
+msgstr "All rights reserved."
+
+msgid "Barcha sertifikatlar"
+msgstr "All certificates"
+
+msgid "Barchasi"
+msgstr "View all"
+
+msgid "Batafsil"
+msgstr "Learn more"
+
+msgid "Belgi"
+msgstr "Badge"
+
+msgid "Belgi (tag)"
+msgstr "Badge (tag)"
+
+msgid "Bepul darsga yoziling"
+msgstr "Book a free lesson"
+
+msgid "Bepul sinov darsiga yoziling"
+msgstr "Sign up for a free trial lesson"
+
+msgid "Bing verification"
+msgstr "Bing verification"
+
+msgid "Bio / tavsif"
+msgstr "Bio / description"
+
+msgid "Bitiruv shapkasi"
+msgstr "Graduation cap"
+
+msgid "Biz bilan bogʻlaning"
+msgstr "Get in touch"
+
+msgid "Biz haqimizda"
+msgstr "About us"
+
+msgid "Biz haqimizda bo'limi"
+msgstr "\"About us\" section"
+
+msgid "Bizning kurslarimiz"
+msgstr "Our courses"
+
+msgid "Bo'sh qoldirilsa, standart logo ishlatiladi."
+msgstr "If left empty, the default logo is used."
+
+msgid "Bogʻlanildi"
+msgstr "Contacted"
+
+msgid "Bogʻlanish"
+msgstr "Contact"
+
+msgid "Bosh sahifa"
+msgstr "Home"
+
+msgid "Bosh sahifa bloklari"
+msgstr "Home page blocks"
+
+msgid "Boshqa"
+msgstr "Other"
+
+msgid "Boshqa yangiliklar"
+msgstr "Other news"
+
+msgid "Boshqaruv"
+msgstr "Management"
+
+msgid "Boshqaruv paneli"
+msgstr "Control panel"
+
+msgid "Bot"
+msgstr "Bot"
+
+msgid "Brauzer"
+msgstr "Browser"
+
+msgid "Brauzer maʼlumoti"
+msgstr "User agent"
+
+msgid "Brending"
+msgstr "Branding"
+
+msgid "Bu oy"
+msgstr "This month"
+
+msgid "Bugungi tashriflar"
+msgstr "Visits today"
+
+msgid "Chop etilgan"
+msgstr "Published"
+
+msgid "Chop etilgan sana"
+msgstr "Published date"
+
+msgid "Darsga yoziling"
+msgstr "Book a lesson"
+
+msgid "Davomiyligi"
+msgstr "Duration"
+
+msgid "Domen"
+msgstr "Domain"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "F.I.Sh."
+msgstr "Full name"
+
+msgid "Facebook"
+msgstr "Facebook"
+
+msgid "Fanlar"
+msgstr "Subjects"
+
+msgid "Faqat maxsus embed kerak bo‘lsa to‘ldiring. Bo‘sh qoldirilsa, "
+msgstr "Fill in only if a custom embed is needed. If left empty, "
+
+msgid "Farzandingiz kelajagi"
+msgstr "Your child's future"
+
+msgid "Favicon"
+msgstr "Favicon"
+
+msgid "Fayl hajmi %(mb)s MB dan oshmasligi kerak."
+msgstr "File size must not exceed %(mb)s MB."
+
+msgid "Fikr"
+msgstr "Review"
+
+msgid "Fikr matni"
+msgstr "Review text"
+
+msgid "Fikrlar"
+msgstr "Reviews"
+
+msgid "Fikrlar (ota-onalar)"
+msgstr "Reviews (parents)"
+
+msgid "Foydalanuvchi"
+msgstr "User"
+
+msgid "Foydalanuvchilar"
+msgstr "Users"
+
+msgid "Galereya"
+msgstr "Gallery"
+
+msgid "Galereya albomi"
+msgstr "Gallery album"
+
+msgid "Galereya albomlari"
+msgstr "Gallery albums"
+
+msgid "Galereya rasmi"
+msgstr "Gallery image"
+
+msgid "Galereya rasmlari"
+msgstr "Gallery images"
+
+msgid "Google Analytics 4 ID"
+msgstr "Google Analytics 4 ID"
+
+msgid "Google Maps embed"
+msgstr "Google Maps embed"
+
+msgid "Google verification"
+msgstr "Google verification"
+
+msgid "Grafik"
+msgstr "Chart"
+
+msgid "Guruh"
+msgstr "Group"
+
+msgid "Guruh hajmi"
+msgstr "Group size"
+
+msgid "Hisob / matematika"
+msgstr "Calculation / math"
+
+msgid "Holat"
+msgstr "Status"
+
+msgid "Hozircha rasm yo'q."
+msgstr "No images yet."
+
+msgid "Hozircha sertifikat yo'q."
+msgstr "No certificates yet."
+
+msgid "Hozircha yangilik yo'q."
+msgstr "No news yet."
+
+msgid "IP manzil"
+msgstr "IP address"
+
+msgid "Ijtimoiy tarmoqlar"
+msgstr "Social networks"
+
+msgid "Ikonka"
+msgstr "Icon"
+
+msgid "Instagram"
+msgstr "Instagram"
+
+msgid "Ish vaqti"
+msgstr "Working hours"
+
+msgid "Ism familiya"
+msgstr "Full name"
+
+msgid "Ismingiz"
+msgstr "Your name"
+
+msgid "Izoh"
+msgstr "Note"
+
+msgid "Jami tashriflar"
+msgstr "Total visits"
+
+msgid "Jamoa"
+msgstr "Team"
+
+msgid "Jamoamiz bilan tanishing"
+msgstr "Meet our team"
+
+msgid "Joylashuv (xaritadan tanlang)"
+msgstr "Location (pick on the map)"
+
+msgid "Joylashuv admin paneldan belgilanadi"
+msgstr "Location is set in the admin panel"
+
+msgid "Juda koʻp soʻrov. Birozdan soʻng urinib koʻring."
+msgstr "Too many requests. Please try again shortly."
+
+msgid "Kanal"
+msgstr "Channel"
+
+msgid "Kenglik (lat)"
+msgstr "Latitude (lat)"
+
+msgid "Kichik raqam yuqorida ko'rinadi."
+msgstr "A smaller number is shown higher."
+
+msgid "Kichik sarlavha"
+msgstr "Subtitle"
+
+msgid "Kitob / til"
+msgstr "Book / language"
+
+msgid "Kod / IT"
+msgstr "Code / IT"
+
+msgid "Kompyuter"
+msgstr "Desktop"
+
+msgid "Kontaktlar"
+msgstr "Contacts"
+
+msgid "Kurs"
+msgstr "Course"
+
+msgid "Kurs turkumi"
+msgstr "Course category"
+
+msgid "Kurs turkumlari"
+msgstr "Course categories"
+
+msgid "Kurslar"
+msgstr "Courses"
+
+msgid "Kurslar / oʻqituvchilar"
+msgstr "Courses / teachers"
+
+msgid "Kurslarni koʻrish"
+msgstr "View courses"
+
+msgid "Kursni tanlang (ixtiyoriy)"
+msgstr "Choose a course (optional)"
+
+msgid "Lavozim / yo'nalish"
+msgstr "Position / field"
+
+msgid "Logo"
+msgstr "Logo"
+
+msgid "Manba"
+msgstr "Source"
+
+msgid "Manzil"
+msgstr "Address"
+
+msgid "Manzilni qidiring (masalan: Chilonzor, Toshkent)…"
+msgstr "Search for an address (e.g. Chilanzar, Tashkent)…"
+
+msgid "Markaz yangiliklari"
+msgstr "Center news"
+
+msgid "Masalan: hopeschool.uz (protokolsiz). Sitemap/canonical uchun."
+msgstr "E.g. hopeschool.uz (without protocol). For sitemap/canonical."
+
+msgid "Matn"
+msgstr "Text"
+
+msgid "Maʻlumotlaringizni qoldiring, tez orada bogʻlanamiz."
+msgstr "Leave your details and we'll get in touch soon."
+
+msgid "Metod"
+msgstr "Method"
+
+msgid "Metodika"
+msgstr "Methodology"
+
+msgid "Muallif"
+msgstr "Author"
+
+msgid "Muqova rasmi"
+msgstr "Cover image"
+
+msgid "Murojaatlar"
+msgstr "Inquiries"
+
+msgid "Narx"
+msgstr "Price"
+
+msgid "Narx izohi"
+msgstr "Price note"
+
+msgid "Narx ko'rsatilsin"
+msgstr "Show price"
+
+msgid "Narx — murojaat orqali"
+msgstr "Price — on request"
+
+msgid "Natijalar"
+msgstr "Results"
+
+msgid "Nega biz"
+msgstr "Why us"
+
+msgid "Nega biz — karta"
+msgstr "Why us — card"
+
+msgid "Nega biz — kartalar"
+msgstr "Why us — cards"
+
+msgid "Nomi"
+msgstr "Name"
+
+msgid "O'qituvchi"
+msgstr "Teacher"
+
+msgid "O'qituvchilar"
+msgstr "Teachers"
+
+msgid "O'quvchi ismi"
+msgstr "Student name"
+
+msgid "OG rasm"
+msgstr "OG image"
+
+msgid "OG rasm (ulashish)"
+msgstr "OG image (sharing)"
+
+msgid "Operatsion tizim"
+msgstr "Operating system"
+
+msgid "Ota-onalar fikri"
+msgstr "Parents' reviews"
+
+msgid "Oʻqituvchilar"
+msgstr "Teachers"
+
+msgid "Oʻquv jarayonimizdan lavhalar"
+msgstr "Moments from our learning process"
+
+msgid "Oʻquvchi boʻldi"
+msgstr "Enrolled"
+
+msgid "Oʻquvchilarimiz sertifikatlari"
+msgstr "Our students' certificates"
+
+msgid "Oʻquvchilarimiz yutuqlari"
+msgstr "Our students' achievements"
+
+msgid "PDF fayl"
+msgstr "PDF file"
+
+msgid "Planshet"
+msgstr "Tablet"
+
+msgid "Qalqon (kafolat)"
+msgstr "Shield (guarantee)"
+
+msgid "Qaysi kurs?"
+msgstr "Which course?"
+
+msgid "Qidirish"
+msgstr "Search"
+
+msgid "Qisqa matn"
+msgstr "Short text"
+
+msgid "Qisqa tavsif"
+msgstr "Short description"
+
+msgid "Qizil belgi"
+msgstr "Red badge"
+
+msgid "Qizil ikonka"
+msgstr "Red icon"
+
+msgid "Qizil rang bilan"
+msgstr "In red color"
+
+msgid "Qo'shimcha telefon"
+msgstr "Secondary phone"
+
+msgid "Qoʻngʻiroq"
+msgstr "Call"
+
+msgid "Qoʻshimcha izoh"
+msgstr "Additional note"
+
+msgid "Qoʻshimcha izoh (ixtiyoriy)"
+msgstr "Additional note (optional)"
+
+msgid "Qurilma turi"
+msgstr "Device type"
+
+msgid "Qurilmalar"
+msgstr "Devices"
+
+msgid "Rad etildi"
+msgstr "Rejected"
+
+msgid "Raqam"
+msgstr "Number"
+
+msgid "Rasm"
+msgstr "Image"
+
+msgid "Rasm, PDF yoki tashqi havoladan kamida bittasini kiriting."
+msgstr "Provide at least one of: image, PDF, or external link."
+
+msgid "Rejimni almashtirish"
+msgstr "Toggle theme"
+
+msgid "Roli"
+msgstr "Role"
+
+msgid "SEO"
+msgstr "SEO"
+
+msgid "SEO sarlavha"
+msgstr "SEO title"
+
+msgid "SEO tavsif"
+msgstr "SEO description"
+
+msgid "Sahifa"
+msgstr "Page"
+
+msgid "Sahifalar"
+msgstr "Pages"
+
+msgid "Sarlavha"
+msgstr "Title"
+
+msgid "Savolingiz yoki qoʻshimcha maʼlumot…"
+msgstr "Your question or additional details…"
+
+msgid "Sayt mazmuni"
+msgstr "Site content"
+
+msgid "Sayt nomi"
+msgstr "Site name"
+
+msgid "Sayt sozlamalari"
+msgstr "Site settings"
+
+msgid "Saytda ko'rsatilsin"
+msgstr "Show on site"
+
+msgid "Saytni koʻrish"
+msgstr "View site"
+
+msgid "Sertifikat"
+msgstr "Certificate"
+
+msgid "Sertifikatlar"
+msgstr "Certificates"
+
+msgid "Shior"
+msgstr "Tagline"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "Soat"
+msgstr "Clock"
+
+msgid "Sozlamalar"
+msgstr "Settings"
+
+msgid "Statistika"
+msgstr "Statistics"
+
+msgid "Statistika raqami"
+msgstr "Statistic item"
+
+msgid "Statistika raqamlari"
+msgstr "Statistic items"
+
+msgid "Tajriba (yil)"
+msgstr "Experience (years)"
+
+msgid "Tajribali oʻqituvchilar"
+msgstr "Experienced teachers"
+
+msgid "Tanlangan"
+msgstr "Featured"
+
+msgid "Tartib raqami"
+msgstr "Order number"
+
+msgid "Tashqi havola"
+msgstr "External link"
+
+msgid "Tashrif"
+msgstr "Visit"
+
+msgid "Tashriflar"
+msgstr "Visits"
+
+msgid "Tashriflar (30 kun)"
+msgstr "Visits (30 days)"
+
+msgid "Tavsif"
+msgstr "Description"
+
+msgid "Telefon"
+msgstr "Phone"
+
+msgid "Telefon raqam"
+msgstr "Phone number"
+
+msgid "Telefon raqamni +998XXXXXXXXX koʻrinishida kiriting."
+msgstr "Enter the phone number in the format +998XXXXXXXXX."
+
+msgid "Telegram"
+msgstr "Telegram"
+
+msgid "Telegram bildirishnomalari yoniq"
+msgstr "Telegram notifications enabled"
+
+msgid "Telegram guruh"
+msgstr "Telegram group"
+
+msgid "Telegram kanal"
+msgstr "Telegram channel"
+
+msgid "Telegramga yuborildi"
+msgstr "Sent to Telegram"
+
+msgid "TikTok"
+msgstr "TikTok"
+
+msgid "Til"
+msgstr "Language"
+
+msgid "Til (globus)"
+msgstr "Language (globe)"
+
+msgid "To'liq matn"
+msgstr "Full text"
+
+msgid "To'liq tavsif"
+msgstr "Full description"
+
+msgid "Top kurs (qizil belgi)"
+msgstr "Top course (red badge)"
+
+msgid "Turkum"
+msgstr "Category"
+
+msgid "UTM yoki referrer (avtomatik toʻldiriladi)."
+msgstr "UTM or referrer (filled automatically)."
+
+msgid "Uzunlik (lng)"
+msgstr "Longitude (lng)"
+
+msgid "Vaqti"
+msgstr "Time"
+
+msgid "Xarita — qo‘lda override (ixtiyoriy)"
+msgstr "Map — manual override (optional)"
+
+msgid "Xaritani bosib yoki qidirib joylashuvni tanlang. "
+msgstr "Pick the location by clicking the map or searching. "
+
+msgid "Xaritani bosing yoki belgini suring — koordinatalar avtomatik to‘ladi."
+msgstr "Click the map or drag the marker — coordinates fill in automatically."
+
+msgid "Yandex Maps embed"
+msgstr "Yandex Maps embed"
+
+msgid "Yandex Metrica ID"
+msgstr "Yandex Metrica ID"
+
+msgid "Yandex verification"
+msgstr "Yandex verification"
+
+msgid "Yangi"
+msgstr "New"
+
+msgid "Yangi arizalar"
+msgstr "New requests"
+
+msgid "Yangilangan"
+msgstr "Updated"
+
+msgid "Yangilik / eʼlon"
+msgstr "News / announcement"
+
+msgid "Yangiliklar"
+msgstr "News"
+
+msgid "Yangiliklar va eʻlonlar"
+msgstr "News and announcements"
+
+msgid "Yangiliklar va eʼlonlar"
+msgstr "News and announcements"
+
+msgid "Yaratilgan"
+msgstr "Created"
+
+msgid "Yopish"
+msgstr "Close"
+
+msgid "YouTube"
+msgstr "YouTube"
+
+msgid "Yoʻnalishlar"
+msgstr "Programs"
+
+msgid "Yoʻnaltiruvchi"
+msgstr "Referrer"
+
+msgid "Yuborish"
+msgstr "Send"
+
+msgid "Yulduz"
+msgstr "Star"
+
+msgid "Zamonaviy taʻlim markazi · Toshkent"
+msgstr "Modern education center · Tashkent"
+
+msgid "dan boshlanadi"
+msgstr " starts with"
+
+msgid "oʻrtacha"
+msgstr "average"
+
+msgid "yangi oʻquvchi"
+msgstr "new students"
+
+msgid "%(years)s yil tajriba"
+msgid_plural "%(years)s yil tajriba"
+msgstr[0] "%(years)s year of experience"
+msgstr[1] "%(years)s years of experience"
