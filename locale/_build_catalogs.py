@@ -107,6 +107,12 @@ for sing, _plur in plural_pairs:
 # Translation maps, keyed by NORMALIZED Uzbek source.
 # ---------------------------------------------------------------------------
 RU = {
+    # --- Accessibility (a11y) ---
+    "Asosiy kontentga oʻtish": "Перейти к основному содержимому",
+    "Menyu": "Меню",
+    "Tilni tanlash": "Выбрать язык",
+    "Oldingi": "Назад",
+    "Keyingi": "Далее",
     # --- Navigation / header / footer ---
     "Biz haqimizda": "О нас",
     "Kurslar": "Курсы",
@@ -390,6 +396,11 @@ RU = {
 }
 
 EN = {
+    "Asosiy kontentga oʻtish": "Skip to main content",
+    "Menyu": "Menu",
+    "Tilni tanlash": "Choose language",
+    "Oldingi": "Previous",
+    "Keyingi": "Next",
     "Biz haqimizda": "About us",
     "Kurslar": "Courses",
     "Yangiliklar": "News",

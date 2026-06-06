@@ -50,6 +50,9 @@ msgstr ""
 msgid "Arizani yuborish"
 msgstr "Submit request"
 
+msgid "Asosiy kontentga oʻtish"
+msgstr "Skip to main content"
+
 msgid "Asosiy telefon"
 msgstr "Primary phone"
 
@@ -299,6 +302,9 @@ msgstr "Channel"
 msgid "Kenglik (lat)"
 msgstr "Latitude (lat)"
 
+msgid "Keyingi"
+msgstr "Next"
+
 msgid "Kichik raqam yuqorida ko'rinadi."
 msgstr "A smaller number is shown higher."
 
@@ -365,6 +371,9 @@ msgstr "Text"
 msgid "Maʻlumotlaringizni qoldiring, tez orada bogʻlanamiz."
 msgstr "Leave your details and we'll get in touch soon."
 
+msgid "Menyu"
+msgstr "Menu"
+
 msgid "Metod"
 msgstr "Method"
 
@@ -421,6 +430,9 @@ msgstr "OG image"
 
 msgid "OG rasm (ulashish)"
 msgstr "OG image (sharing)"
+
+msgid "Oldingi"
+msgstr "Previous"
 
 msgid "Operatsion tizim"
 msgstr "Operating system"
@@ -631,6 +643,9 @@ msgstr "Language"
 
 msgid "Til (globus)"
 msgstr "Language (globe)"
+
+msgid "Tilni tanlash"
+msgstr "Choose language"
 
 msgid "To'liq matn"
 msgstr "Full text"

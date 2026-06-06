@@ -50,6 +50,9 @@ msgstr ""
 msgid "Arizani yuborish"
 msgstr "Отправить заявку"
 
+msgid "Asosiy kontentga oʻtish"
+msgstr "Перейти к основному содержимому"
+
 msgid "Asosiy telefon"
 msgstr "Основной телефон"
 
@@ -300,6 +303,9 @@ msgstr "Канал"
 msgid "Kenglik (lat)"
 msgstr "Широта (lat)"
 
+msgid "Keyingi"
+msgstr "Далее"
+
 msgid "Kichik raqam yuqorida ko'rinadi."
 msgstr "Меньший номер отображается выше."
 
@@ -366,6 +372,9 @@ msgstr "Текст"
 msgid "Maʻlumotlaringizni qoldiring, tez orada bogʻlanamiz."
 msgstr "Оставьте свои данные, мы скоро свяжемся с вами."
 
+msgid "Menyu"
+msgstr "Меню"
+
 msgid "Metod"
 msgstr "Метод"
 
@@ -422,6 +431,9 @@ msgstr "OG-изображение"
 
 msgid "OG rasm (ulashish)"
 msgstr "OG-изображение (для шеринга)"
+
+msgid "Oldingi"
+msgstr "Назад"
 
 msgid "Operatsion tizim"
 msgstr "Операционная система"
@@ -632,6 +644,9 @@ msgstr "Язык"
 
 msgid "Til (globus)"
 msgstr "Язык (глобус)"
+
+msgid "Tilni tanlash"
+msgstr "Выбрать язык"
 
 msgid "To'liq matn"
 msgstr "Полный текст"
