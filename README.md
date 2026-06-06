@@ -20,7 +20,8 @@
 11. [SEO](#seo)
 12. [i18n / Tarjima](#i18n--tarjima)
 13. [Media xavfsizligi va CKEditor](#media-xavfsizligi-va-ckeditor)
-14. [Deployment](#deployment)
+14. [Tezlik, rasm optimizatsiyasi va accessibility](#tezlik-rasm-optimizatsiyasi-va-accessibility)
+15. [Deployment](#deployment)
 
 ---
 
@@ -56,6 +57,8 @@ Asosiy xususiyatlar:
 | 14 | **CKEditor 5 rich-text** | ✓ Tayyor | Admin kontent maydonlarida formatlash, rasm yuklash |
 | 15 | **Media xavfsizligi** | ✓ Tayyor | Rasm: jpg/jpeg/png/webp/gif, maks 5 MB; PDF: 10 MB; CKEditor yuklash faqat `staff` |
 | 16 | **Telegram integratsiya** | ✓ Tayyor | Bot token + admin chat ID orqali yangi arizalar real vaqtda adminlarga yetkaziladi; daemon-thread orqali soʻrov bloklanmaydi |
+| 17 | **Tezlik va optimizatsiya** | ✓ Tayyor | WebP responsive rasmlar (`easy_thumbnails`, `<picture>`), `loading="lazy"`, `width`/`height` (CLS oldini olish), shrift preconnect + `font-display: swap`, JS defer, Core Web Vitals (LCP/CLS/INP) maqsadlari |
+| 18 | **Accessibility (a11y)** | ✓ Tayyor | Skip-to-content havolasi + `id="main"`, `:focus-visible` uslublari, `prefers-reduced-motion` qoʻllab-quvvatlash |
 
 ---
 
@@ -563,6 +566,130 @@ CKEditor 5 quyidagi kontent maydonlarida ishlatiladi:
 
 ---
 
+## Tezlik, rasm optimizatsiyasi va accessibility
+
+> **Phase 6 — tayyor**
+
+Ushbu boʻlim saytning yuklanish tezligini, rasm samaradorligini va barcha foydalanuvchilar uchun qulayligini taʼminlovchi optimizatsiyalarni qamrab oladi.
+
+### Responsive WebP rasmlar (easy_thumbnails)
+
+`easy_thumbnails` (allaqachon `requirements.txt` da mavjud) yordamida yuklangan har bir rasm uchun optimallashtrilgan versiyalar avtomatik yaratiladi.
+
+Shablonlarda `<picture>` elementi qoʻllaniladi — brauzer WebP formatini qoʻllab-quvvatlasa WebP, qoʻllab-quvvatlamasa asl rasm yuklaydi:
+
+```html
+<picture>
+  <source srcset="rasm.webp" type="image/webp">
+  <img src="rasm.jpg" alt="..." width="800" height="450"
+       loading="lazy" class="...">
+</picture>
+```
+
+**Asosiy jihatlar:**
+
+| Xususiyat | Tavsif |
+|-----------|--------|
+| `loading="lazy"` | Ekranda koʻrinmagan rasmlar keyinchalik yuklanadi — sahifaning dastlabki yuklanishi tezlashadi |
+| `width` + `height` atributlari | Brauzer rasm joyi uchun joy ajratadi — layout sakrashining (CLS) oldini oladi |
+| WebP format | JPEG/PNG ga nisbatan oʻrtacha 25–35% kichikroq hajm, sifat yoʻqotilmaydi |
+| Responsive oʻlchamlar | Turli ekran kengliklariga mos miniatyuralar yaratiladi |
+
+> **easy_thumbnails va media papkasi:** `easy_thumbnails` yaratilgan miniatyuralarni `media/` papkasida `cache/` quyi-papkasida saqlaydi. Production serverida `media/` papkasi **yozish huquqi bilan mavjud** boʻlishi va serverlar orasida **doimiy (persistent)** boʻlishi shart — aks holda har deployment da miniatyuralar qayta hisoblab chiqiladi. Docker yoki AWS kabi muhitlarda `media/` uchun alohida volume yoki S3 kabi tashqi xotira tavsiya etiladi.
+
+---
+
+### Shrift optimizatsiyasi
+
+Tashqi shrift provayderlariga (masalan, Google Fonts) ulanish vaqtini qisqartirish uchun `<head>` da preconnect havolasi qoʻshilgan:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+```
+
+Shuningdek, `font-display: swap` CSS xossasi qoʻllaniladi — shrift yuklanayotgan vaqtda tizim shrifti koʻrsatiladi, sahifa bo'shliq qolmaydi (FOUT xatti-harakati qabul qilinadi, FOIT emas).
+
+---
+
+### JavaScript defer
+
+Interaktivlik talab qilmaydigan skriptlar `defer` atributi bilan yuklangan — brauzer HTML ni to'liq tahlil qilgandan soʻng skriptlarni bajaradi, bu LCP va INP koʻrsatkichlarini yaxshilaydi.
+
+---
+
+### Accessibility (a11y)
+
+**Skip-to-content havolasi**
+
+Klaviatura va ekran oʻquvchi foydalanuvchilari uchun sahifa boshida "Asosiy mazmunga oʻtish" havolasi joylashtirilgan. Havola odatda yashirin boʻladi, lekin fokus olganda koʻrinadi:
+
+```html
+<a href="#main" class="skip-link">Asosiy mazmunga oʻtish</a>
+...
+<main id="main">...</main>
+```
+
+**`:focus-visible` uslublari**
+
+Faqat klaviatura navigatsiyasida fokus ramkasi koʻrsatiladi — sichqoncha foydalanuvchilari uchun ortiqcha vizual shovqin boʻlmaydi:
+
+```css
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+```
+
+**`prefers-reduced-motion`**
+
+Harakatga sezgir foydalanuvchilar uchun animatsiyalar minimal darajaga tushiriladi:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+---
+
+### Core Web Vitals maqsadlari
+
+Google tomonidan belgilangan "yaxshi" koʻrsatkichlar:
+
+| Koʻrsatkich | Toʻliq nomi | Maqsad |
+|-------------|------------|--------|
+| **LCP** | Largest Contentful Paint (eng katta element yuklanishi) | ≤ 2.5 s |
+| **CLS** | Cumulative Layout Shift (to'plangan layout sakrashi) | ≤ 0.1 |
+| **INP** | Interaction to Next Paint (interaktivlikka javob) | ≤ 200 ms |
+
+> **Eslatma:** INP 2024 yildan boshlab FID (First Input Delay) oʻrnini egalladi va hozirda Google tomonidan asosiy koʻrsatkich sifatida hisoblanadi.
+
+---
+
+### Lighthouse auditi (qoʻlda)
+
+Lighthouse avtomatik CI pipeline ga kiritilmagan — uni qoʻlda tekshirish tavsiya etiladi:
+
+**Chrome DevTools orqali:**
+
+1. Saytni Chrome brauzerida oching.
+2. `F12` → **Lighthouse** tabiga oʻting.
+3. "Categories": Performance, Accessibility, Best Practices, SEO ni belgilang.
+4. **"Analyze page load"** tugmasini bosing.
+5. Natijalar boʻyicha tavsiyalarni koʻring va hal qiling.
+
+**PageSpeed Insights orqali (tashqi):**
+
+Brauzerda [pagespeed.web.dev](https://pagespeed.web.dev/) manzilini oching → sayt URLini kiriting → natijalarni koʻring. Bu asbob haqiqiy foydalanuvchi maʼlumotlari (CrUX) bilan laboratoriya natijalarini birga koʻrsatadi.
+
+> **Development vs Production:** Lighthouse natijalarini `DEBUG=False` holatida va statik fayllar `collectstatic` qilingan production-ga yaqin muhitda oʻlchash aniqroq natija beradi. `DEBUG=True` rejimida WhiteNoise kompressiyasi va kesh sarlavhalari toʻliq ishlamaydi.
+
+---
+
 ## Deployment
 
 Toʻliq AWS Ubuntu (gunicorn + nginx + systemd) deployment qoʻllanmasi **Phase 7** da qoʻshiladi.
@@ -578,6 +705,8 @@ python manage.py migrate
 # gunicorn bilan ishga tushirish
 gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
 ```
+
+> **easy_thumbnails (media keshi):** `easy_thumbnails` yaratgan miniatyuralar `media/cache/` papkasida saqlanadi. Deployment vaqtida bu papka avtomatik tozalanmaydi — miniatyuralar talab boʻyicha qayta yaratiladi. `media/` papkasi serverda **doimiy va yozish huquqi bilan** mavjud boʻlishi shart.
 
 Qoʻshimcha:
 - [`docs/ORNATISH.md`](docs/ORNATISH.md) — batafsil oʻrnatish qoʻllanmasi
