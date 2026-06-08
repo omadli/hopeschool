@@ -273,9 +273,11 @@ UNFOLD = {
             {
                 "title": _("Bosh sahifa bloklari"),
                 "items": [
+                    {"title": _("Hero bo'limi"), "icon": "wallpaper", "link": reverse_lazy("admin:pages_herosection_changelist")},
                     {"title": _("Biz haqimizda"), "icon": "article", "link": reverse_lazy("admin:pages_aboutsection_changelist")},
                     {"title": _("Statistika"), "icon": "bar_chart", "link": reverse_lazy("admin:pages_statitem_changelist")},
                     {"title": _("Nega biz"), "icon": "verified", "link": reverse_lazy("admin:pages_whyusitem_changelist")},
+                    {"title": _("Sayt matnlari"), "icon": "edit_note", "link": reverse_lazy("admin:pages_sitecopy_changelist")},
                 ],
             },
             {

@@ -5,9 +5,10 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+from apps.certificates.models import Certificate
 from apps.courses.models import Course
 from apps.news.models import NewsPost
-from apps.pages.models import AboutSection
+from apps.pages.models import AboutSection, HeroSection, SiteCopy
 from apps.siteconfig.models import SiteConfig
 
 User = get_user_model()
@@ -90,6 +91,70 @@ class PagesAdminTests(TestCase):
     def test_whyusitem_changelist(self):
         url = reverse("admin:pages_whyusitem_changelist")
         self.assertEqual(self._get(url).status_code, 200)
+
+    def test_herosection_changelist(self):
+        url = reverse("admin:pages_herosection_changelist")
+        self.assertEqual(self._get(url).status_code, 200)
+
+    def test_sitecopy_changelist(self):
+        url = reverse("admin:pages_sitecopy_changelist")
+        self.assertEqual(self._get(url).status_code, 200)
+
+
+# ---------------------------------------------------------------------------
+# Phase B: admin-editable site copy (hero badge, section headings, form texts)
+# ---------------------------------------------------------------------------
+@override_settings(STORAGES=_STATIC_STORAGE)
+class EditableSiteCopyTests(TestCase):
+    """Hero/section/form copy lives in singletons and is rendered from the DB."""
+
+    def test_singletons_created_with_defaults(self):
+        hero = HeroSection.get_solo()
+        copy = SiteCopy.get_solo()
+        self.assertIn("Buxoro", hero.badge_text)
+        self.assertIn("natijalari", copy.results_title)
+        self.assertTrue(copy.contact_intro)
+
+    def test_i18n_fields_exist(self):
+        """modeltranslation creates _uz / _ru / _en variants for copy fields."""
+        self.assertTrue(hasattr(HeroSection(), "badge_text_uz"))
+        self.assertTrue(hasattr(HeroSection(), "badge_text_ru"))
+        self.assertTrue(hasattr(SiteCopy(), "results_title_en"))
+
+    def test_home_renders_editable_defaults(self):
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertIn("Buxoro", body)
+        self.assertIn("Arizangizni qoldiring", body)  # contact intro
+        # old hardcoded "· Toshkent" badge must be gone
+        self.assertNotIn("markazi · Toshkent", body)
+
+    def test_editing_hero_badge_updates_home(self):
+        hero = HeroSection.get_solo()
+        hero.badge_text = "Sinov Shahar Yorligi"
+        hero.save()
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertIn("Sinov Shahar Yorligi", body)
+
+    def test_editing_results_title_updates_home(self):
+        # The results section only renders when a certificate (or testimonial)
+        # exists, so create one before asserting the editable heading.
+        Certificate.objects.create(
+            title="Sinov sertifikati",
+            external_url="https://example.com/cert",
+            is_active=True,
+        )
+        copy = SiteCopy.get_solo()
+        copy.results_title = "Bizning Natijalar 2026"
+        copy.save()
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertIn("Bizning Natijalar 2026", body)
+
+    def test_editing_footer_note_updates_all_pages(self):
+        copy = SiteCopy.get_solo()
+        copy.footer_note = "Sinov footer 2026"
+        copy.save()
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertIn("Sinov footer 2026", body)
 
 
 # ---------------------------------------------------------------------------

@@ -5,10 +5,10 @@
     {% if certificates %}
     <div class="sr flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
       <div>
-        <span class="text-[12.5px] font-bold uppercase tracking-[0.18em] text-brand-blue-600 dark:text-brand-blue-300">{% translate "Natijalar" %}</span>
-        <h2 class="mt-2 font-display font-extrabold tracking-tight text-[clamp(1.7rem,3.4vw,2.5rem)] leading-tight">{% translate "Oʻquvchilarimiz yutuqlari" %}</h2>
+        <span class="text-[12.5px] font-bold uppercase tracking-[0.18em] text-brand-blue-600 dark:text-brand-blue-300">{{ site_copy.results_eyebrow }}</span>
+        <h2 class="mt-2 font-display font-extrabold tracking-tight text-[clamp(1.7rem,3.4vw,2.5rem)] leading-tight">{{ site_copy.results_title }}</h2>
       </div>
-      <a href="{% url 'certificates:list' %}" class="inline-flex items-center gap-2 rounded-pill border bd surface-card px-5 py-2.5 text-[14px] font-semibold text-brand-blue-700 dark:text-brand-blue-300 self-start">{% translate "Barcha sertifikatlar" %} →</a>
+      <a href="{% url 'certificates:list' %}" class="inline-flex items-center gap-2 rounded-pill border bd surface-card px-5 py-2.5 text-[14px] font-semibold text-brand-blue-700 dark:text-brand-blue-300 self-start">{{ site_copy.results_link_label }} →</a>
     </div>
     <div data-carousel="certs" data-interval="3000" class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1 mb-12">
       {% for c in certificates %}
@@ -25,7 +25,7 @@
 
     {% if testimonials %}
     <div class="sr mb-6 flex items-center justify-between">
-      <h3 class="font-display font-bold text-[20px]">{% translate "Ota-onalar fikri" %}</h3>
+      <h3 class="font-display font-bold text-[20px]">{{ site_copy.testimonials_title }}</h3>
       <div class="hidden sm:flex items-center gap-2">
         <button data-prev="revs" aria-label="{% translate 'Oldingi' %}" class="h-9 w-9 grid place-items-center rounded-pill border bd surface-card"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
         <button data-next="revs" aria-label="{% translate 'Keyingi' %}" class="h-9 w-9 grid place-items-center rounded-pill border bd surface-card"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>

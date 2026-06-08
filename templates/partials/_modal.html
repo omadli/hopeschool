@@ -6,9 +6,9 @@
       <button data-close-modal class="absolute top-3.5 right-3.5 h-9 w-9 grid place-items-center rounded-lg txt-soft hover:bg-alt" aria-label="{% translate 'Yopish' %}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       <div class="flex items-center gap-2.5 mb-1">
         <span class="grid place-items-center h-9 w-9 rounded-lg grad-cap text-white"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10 12 5 2 10l10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
-        <h3 class="font-display font-extrabold text-[20px]">{% translate "Ariza qoldirish" %}</h3>
+        <h3 class="font-display font-extrabold text-[20px]">{{ site_copy.modal_title }}</h3>
       </div>
-      <p class="text-[14px] txt-soft mb-5">{% translate "Maʻlumotlaringizni qoldiring, tez orada bogʻlanamiz." %}</p>
+      <p class="text-[14px] txt-soft mb-5">{{ site_copy.modal_subtitle }}</p>
       <form action="{% url 'lead_create' %}" method="post" onsubmit="return previewSubmit(event)" class="space-y-3">
         {% csrf_token %}
         <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
@@ -20,7 +20,7 @@
         </select>
         <textarea name="message" rows="2" placeholder="{% translate 'Qoʻshimcha izoh (ixtiyoriy)' %}" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition resize-none"></textarea>
         <p data-form-error class="hidden text-[13px] font-medium text-brand-red-600" role="alert" aria-live="polite"></p>
-        <button type="submit" class="w-full rounded-pill bg-brand-red-600 px-6 py-3.5 text-[15px] font-semibold text-white hover:bg-brand-red-700">{% translate "Yuborish" %}</button>
+        <button type="submit" class="w-full rounded-pill bg-brand-red-600 px-6 py-3.5 text-[15px] font-semibold text-white hover:bg-brand-red-700">{{ site_copy.modal_submit_label }}</button>
       </form>
     </div>
   </div>
