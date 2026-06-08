@@ -2,11 +2,13 @@ from django.contrib import admin
 from modeltranslation.admin import TabbedTranslationAdmin
 from unfold.admin import ModelAdmin
 
+from apps.common.admin import AutoTranslateAdminMixin
+
 from .models import Teacher
 
 
 @admin.register(Teacher)
-class TeacherAdmin(ModelAdmin, TabbedTranslationAdmin):
+class TeacherAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin):
     list_display = ("full_name", "position", "experience_years", "is_active", "order")
     list_editable = ("is_active", "order")
     list_filter = ("is_active",)

@@ -585,3 +585,130 @@ class Phase6MediaTagsTests(TestCase):
             "media_tags must define a 'register = template.Library()' object",
         )
         self.assertIsInstance(self._tag_module.register, django_template.Library)
+
+
+# ---------------------------------------------------------------------------
+# Phase C — auto-translation (uz -> ru/en), engine mocked (no network)
+# ---------------------------------------------------------------------------
+from unittest.mock import patch
+
+from django.contrib.auth import get_user_model
+from django.urls import reverse
+from django.utils import translation as dj_translation
+
+from apps.common.translation import (
+    fill_translations,
+    missing_translation_fields,
+    translate_html,
+    translate_text,
+)
+
+User = get_user_model()
+
+
+def _fake_engine(text, target, source):
+    """Deterministic stand-in for the MT engine: tags each string with target."""
+    return f"[{target}]{text}"
+
+
+@patch("apps.common.translation._engine_translate", _fake_engine)
+class TranslateBackendTests(SimpleTestCase):
+    """translate_text / translate_html primitives."""
+
+    def test_translate_text_basic(self):
+        self.assertEqual(translate_text("Salom", "ru"), "[ru]Salom")
+
+    def test_translate_text_empty(self):
+        self.assertEqual(translate_text("", "ru"), "")
+        self.assertEqual(translate_text("   ", "ru"), "")
+
+    def test_translate_text_same_language_skipped(self):
+        self.assertEqual(translate_text("Salom", "uz", source="uz"), "")
+
+    def test_translate_html_preserves_tags(self):
+        out = translate_html("<p>Salom <b>dunyo</b></p>", "ru")
+        self.assertIn("<p>", out)
+        self.assertIn("<b>", out)
+        self.assertIn("</b>", out)
+        self.assertIn("[ru]Salom", out)
+        self.assertIn("[ru]dunyo", out)
+
+    def test_translate_html_empty(self):
+        self.assertEqual(translate_html("", "ru"), "")
+
+
+@patch("apps.common.translation._engine_translate", _fake_engine)
+class FillTranslationsTests(TestCase):
+    """fill_translations is generic over modeltranslation fields."""
+
+    def _make_course(self):
+        from apps.courses.models import Course
+        with dj_translation.override("uz"):
+            return Course.objects.create(
+                name="Matematika",
+                slug="matematika",
+                short_description="Qisqa tavsif",
+                description="<p>Salom <b>dunyo</b></p>",
+                is_active=True,
+            )
+
+    def test_fills_empty_target_fields(self):
+        course = self._make_course()
+        filled = fill_translations(course)
+        self.assertGreater(filled, 0)
+        self.assertEqual(course.name_ru, "[ru]Matematika")
+        self.assertEqual(course.name_en, "[en]Matematika")
+
+    def test_html_field_translated_tag_safe(self):
+        course = self._make_course()
+        fill_translations(course)
+        self.assertIn("<b>", course.description_ru)
+        self.assertIn("[ru]Salom", course.description_ru)
+
+    def test_does_not_overwrite_existing(self):
+        course = self._make_course()
+        course.name_ru = "Qolsin"
+        fill_translations(course)
+        self.assertEqual(course.name_ru, "Qolsin")     # preserved
+        self.assertEqual(course.name_en, "[en]Matematika")  # filled
+
+    def test_overwrite_flag_replaces(self):
+        course = self._make_course()
+        course.name_ru = "Qolsin"
+        fill_translations(course, overwrite=True)
+        self.assertEqual(course.name_ru, "[ru]Matematika")
+
+    def test_missing_translation_fields_reports_gaps(self):
+        course = self._make_course()
+        missing = missing_translation_fields(course)
+        self.assertTrue(any("(ru)" in m for m in missing))
+        self.assertTrue(any("(en)" in m for m in missing))
+        # after filling, no gaps remain
+        fill_translations(course)
+        course.save()
+        self.assertEqual(missing_translation_fields(course), [])
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+@patch("apps.common.translation._engine_translate", _fake_engine)
+class AutoTranslateAdminActionTests(TestCase):
+    """The bulk changelist action fills empty RU/EN for selected rows."""
+
+    def setUp(self):
+        self.user = User.objects.create_superuser(
+            username="admin_tr", password="pw12345678", email="tr@test.com")
+        self.client.force_login(self.user)
+
+    def test_bulk_action_translates_selected(self):
+        from apps.courses.models import Course
+        with dj_translation.override("uz"):
+            course = Course.objects.create(
+                name="Fizika", slug="fizika", short_description="Qisqa", is_active=True)
+        url = reverse("admin:courses_course_changelist")
+        self.client.post(url, {
+            "action": "auto_translate_selected",
+            "_selected_action": [str(course.pk)],
+        })
+        course.refresh_from_db()
+        self.assertEqual(course.name_ru, "[ru]Fizika")
+        self.assertEqual(course.name_en, "[en]Fizika")

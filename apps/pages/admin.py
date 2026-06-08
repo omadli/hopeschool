@@ -4,29 +4,31 @@ from modeltranslation.admin import TabbedTranslationAdmin
 from solo.admin import SingletonModelAdmin
 from unfold.admin import ModelAdmin
 
+from apps.common.admin import AutoTranslateAdminMixin
+
 from .models import AboutSection, HeroSection, SiteCopy, StatItem, WhyUsItem
 
 
 @admin.register(AboutSection)
-class AboutSectionAdmin(ModelAdmin, TabbedTranslationAdmin):
+class AboutSectionAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin):
     list_display = ("title", "is_active", "order")
     list_editable = ("is_active", "order")
 
 
 @admin.register(StatItem)
-class StatItemAdmin(ModelAdmin, TabbedTranslationAdmin):
+class StatItemAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin):
     list_display = ("label", "number", "suffix", "accent", "is_active", "order")
     list_editable = ("number", "suffix", "accent", "is_active", "order")
 
 
 @admin.register(WhyUsItem)
-class WhyUsItemAdmin(ModelAdmin, TabbedTranslationAdmin):
+class WhyUsItemAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin):
     list_display = ("title", "icon", "accent", "is_active", "order")
     list_editable = ("icon", "accent", "is_active", "order")
 
 
 @admin.register(HeroSection)
-class HeroSectionAdmin(ModelAdmin, TabbedTranslationAdmin, SingletonModelAdmin):
+class HeroSectionAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin, SingletonModelAdmin):
     fieldsets = (
         (_("Yorliq va sarlavha"), {
             "fields": ("badge_text", "title_prefix", "title_suffix"),
@@ -39,7 +41,7 @@ class HeroSectionAdmin(ModelAdmin, TabbedTranslationAdmin, SingletonModelAdmin):
 
 
 @admin.register(SiteCopy)
-class SiteCopyAdmin(ModelAdmin, TabbedTranslationAdmin, SingletonModelAdmin):
+class SiteCopyAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin, SingletonModelAdmin):
     fieldsets = (
         (_("Natijalar bo'limi"), {
             "fields": ("results_eyebrow", "results_title",

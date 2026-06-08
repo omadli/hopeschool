@@ -1,0 +1,316 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: hopeschool-admin-uz 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-08 00:00+0500\n"
+"PO-Revision-Date: 2026-06-08 00:00+0500\n"
+"Last-Translator: hopeschool\n"
+"Language-Team: uz\n"
+"Language: uz\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "LogEntry Object"
+msgstr "Jurnal yozuvi"
+
+msgid "Added {name} “{object}”."
+msgstr "{name} \"{object}\" qo'shildi."
+
+msgid "Added."
+msgstr "Qo'shildi."
+
+msgid "Changed {fields} for {name} “{object}”."
+msgstr "{name} \"{object}\" uchun {fields} o'zgartirildi."
+
+msgid "Changed {fields}."
+msgstr "{fields} o'zgartirildi."
+
+msgid "Deleted {name} “{object}”."
+msgstr "{name} \"{object}\" o'chirildi."
+
+msgid "No fields changed."
+msgstr "Hech qanday maydon o'zgartirilmadi."
+
+msgid "Hold down “Control”, or “Command” on a Mac, to select more than one."
+msgstr ""
+"Bir nechtasini tanlash uchun \"Control\" (yoki Mac'da \"Command\") tugmasini"
+" bosib turing."
+
+msgid "Select this object for an action - {}"
+msgstr "Bu obyektni amal uchun tanlang - {}"
+
+msgid "The {name} “{obj}” was added successfully."
+msgstr "{name} \"{obj}\" muvaffaqiyatli qo'shildi."
+
+msgid "You may edit it again below."
+msgstr "Uni quyida qayta tahrirlashingiz mumkin."
+
+msgid ""
+"The {name} “{obj}” was added successfully. You may add another {name} below."
+msgstr ""
+"{name} \"{obj}\" muvaffaqiyatli qo'shildi. Quyida yana {name} qo'shishingiz "
+"mumkin."
+
+msgid ""
+"The {name} “{obj}” was changed successfully. You may edit it again below."
+msgstr ""
+"{name} \"{obj}\" muvaffaqiyatli o'zgartirildi. Uni quyida qayta "
+"tahrirlashingiz mumkin."
+
+msgid ""
+"The {name} “{obj}” was added successfully. You may edit it again below."
+msgstr ""
+"{name} \"{obj}\" muvaffaqiyatli qo'shildi. Uni quyida qayta tahrirlashingiz "
+"mumkin."
+
+msgid ""
+"The {name} “{obj}” was changed successfully. You may add another {name} "
+"below."
+msgstr ""
+"{name} \"{obj}\" muvaffaqiyatli o'zgartirildi. Quyida yana {name} "
+"qo'shishingiz mumkin."
+
+msgid ""
+"Items must be selected in order to perform actions on them. No items have "
+"been changed."
+msgstr ""
+"Amal bajarish uchun elementlar tanlanishi kerak. Hech narsa o'zgartirilmadi."
+
+msgid "No action selected."
+msgstr "Hech qanday amal tanlanmadi."
+
+msgid "%(name)s with ID “%(key)s” doesn’t exist. Perhaps it was deleted?"
+msgstr "ID \"%(key)s\" ga ega %(name)s mavjud emas. Ehtimol, u o'chirilgan?"
+
+msgid "%(count)s %(name)s was changed successfully."
+msgid_plural "%(count)s %(name)s were changed successfully."
+msgstr[0] "%(count)s ta %(name)s muvaffaqiyatli o'zgartirildi."
+
+msgid "%(total_count)s selected"
+msgid_plural "All %(total_count)s selected"
+msgstr[0] "%(total_count)s ta tanlandi"
+
+msgid "0 of %(cnt)s selected"
+msgstr "%(cnt)s tadan 0 tasi tanlandi"
+
+msgid "Change history: %s"
+msgstr "O'zgarishlar tarixi: %s"
+
+msgid "Django site admin"
+msgstr "Boshqaruv paneli"
+
+msgid "Django administration"
+msgstr "Boshqaruv paneli"
+
+msgid "Site administration"
+msgstr "Sayt boshqaruvi"
+
+msgid "Log in"
+msgstr "Kirish"
+
+msgid "%(app)s administration"
+msgstr "%(app)s boshqaruvi"
+
+msgid "Page not found"
+msgstr "Sahifa topilmadi"
+
+msgid "We’re sorry, but the requested page could not be found."
+msgstr "Kechirasiz, so'ralgan sahifa topilmadi."
+
+msgid "Home"
+msgstr "Bosh sahifa"
+
+msgid "Go"
+msgstr "O'tish"
+
+msgid "Click here to select the objects across all pages"
+msgstr "Barcha sahifalardagi obyektlarni tanlash uchun shu yerni bosing"
+
+msgid "Select all %(total_count)s %(module_name)s"
+msgstr "Barcha %(total_count)s ta %(module_name)s ni tanlash"
+
+msgid "Clear selection"
+msgstr "Tanlovni tozalash"
+
+msgid "Breadcrumbs"
+msgstr "Yo'l ko'rsatkich"
+
+msgid "Models in the %(name)s application"
+msgstr "%(name)s ilovasidagi modellar"
+
+msgid "You don’t have permission to view or edit anything."
+msgstr "Sizda hech narsani ko'rish yoki tahrirlash huquqi yo'q."
+
+msgid ""
+"First, enter a username and password. Then, you’ll be able to edit more user"
+" options."
+msgstr ""
+"Avval foydalanuvchi nomi va parolni kiriting. So'ng boshqa sozlamalarni "
+"tahrirlashingiz mumkin."
+
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Quyidagi xatolarni tuzating."
+
+msgid "Enter a new password for the user <strong>%(username)s</strong>."
+msgstr ""
+"<strong>%(username)s</strong> foydalanuvchisi uchun yangi parol kiriting."
+
+msgid "Skip to main content"
+msgstr "Asosiy kontentga o'tish"
+
+msgid "History"
+msgstr "Tarix"
+
+msgid "Hide counts"
+msgstr "Sonlarni yashirish"
+
+msgid "Show counts"
+msgstr "Sonlarni ko'rsatish"
+
+msgid "Clear all filters"
+msgstr "Barcha filtrlarni tozalash"
+
+msgid "Sorting priority: %(priority_number)s"
+msgstr "Saralash ustuvorligi: %(priority_number)s"
+
+msgid "Toggle sorting"
+msgstr "Saralashni almashtirish"
+
+msgid "Toggle theme (current theme: auto)"
+msgstr "Mavzuni almashtirish (joriy mavzu: avto)"
+
+msgid "Toggle theme (current theme: light)"
+msgstr "Mavzuni almashtirish (joriy mavzu: yorug')"
+
+msgid "Toggle theme (current theme: dark)"
+msgstr "Mavzuni almashtirish (joriy mavzu: tungi)"
+
+msgid ""
+"Are you sure you want to delete the %(object_name)s \"%(escaped_object)s\"? "
+"All of the following related items will be deleted:"
+msgstr ""
+"\"%(escaped_object)s\" nomli %(object_name)s ni o'chirmoqchimisiz? Quyidagi "
+"bog'liq elementlarning barchasi o'chiriladi:"
+
+msgid "Objects"
+msgstr "Obyektlar"
+
+msgid "Yes, I’m sure"
+msgstr "Ha, ishonchim komil"
+
+msgid "No, take me back"
+msgstr "Yo'q, ortga qaytar"
+
+msgid "Delete multiple objects"
+msgstr "Bir nechta obyektni o'chirish"
+
+msgid ""
+"Are you sure you want to delete the selected %(objects_name)s? All of the "
+"following objects and their related items will be deleted:"
+msgstr ""
+"Tanlangan %(objects_name)s ni o'chirmoqchimisiz? Quyidagi obyektlar va "
+"ularga bog'liq elementlarning barchasi o'chiriladi:"
+
+msgid " By %(filter_title)s "
+msgstr " %(filter_title)s bo'yicha "
+
+msgid "None available"
+msgstr "Mavjud emas"
+
+msgid "Added:"
+msgstr "Qo'shildi:"
+
+msgid "Changed:"
+msgstr "O'zgartirildi:"
+
+msgid "Deleted:"
+msgstr "O'chirildi:"
+
+msgid "Unknown content"
+msgstr "Noma'lum kontent"
+
+msgid ""
+"You are authenticated as %(username)s, but are not authorized to access this"
+" page. Would you like to login to a different account?"
+msgstr ""
+"Siz %(username)s sifatida tizimga kirgansiz, lekin bu sahifaga ruxsatingiz "
+"yo'q. Boshqa hisob bilan kirishni xohlaysizmi?"
+
+msgid "Forgotten your password or username?"
+msgstr "Parol yoki foydalanuvchi nomini unutdingizmi?"
+
+msgid "Sidebar"
+msgstr "Yon panel"
+
+msgid "Start typing to filter…"
+msgstr "Filtrlash uchun yozing…"
+
+msgid "Filter navigation items"
+msgstr "Navigatsiya elementlarini filtrlash"
+
+msgid "Date/time"
+msgstr "Sana/vaqt"
+
+msgid "User"
+msgstr "Foydalanuvchi"
+
+msgid "Action"
+msgstr "Amal"
+
+msgid "entry"
+msgid_plural "entries"
+msgstr[0] "yozuv"
+
+msgid ""
+"This object doesn’t have a change history. It probably wasn’t added via this"
+" admin site."
+msgstr ""
+"Bu obyektda o'zgarishlar tarixi yo'q. Ehtimol, u shu admin sayti orqali "
+"qo'shilmagan."
+
+msgid "Show all"
+msgstr "Barchasini ko'rsatish"
+
+msgid "Popup closing…"
+msgstr "Oyna yopilmoqda…"
+
+msgid "%(counter)s result"
+msgid_plural "%(counter)s results"
+msgstr[0] "%(counter)s ta natija"
+
+msgid "%(full_result_count)s total"
+msgstr "Jami %(full_result_count)s ta"
+
+msgid "Save as new"
+msgstr "Yangi sifatida saqlash"
+
+msgid "Save and add another"
+msgstr "Saqlash va yana qo'shish"
+
+msgid "Save and continue editing"
+msgstr "Saqlash va tahrirni davom ettirish"
+
+msgid "Save and view"
+msgstr "Saqlash va ko'rish"
+
+msgid "Close"
+msgstr "Yopish"
+
+msgid "Change selected %(model)s"
+msgstr "Tanlangan %(model)s ni o'zgartirish"
+
+msgid "Add another %(model)s"
+msgstr "Yana %(model)s qo'shish"
+
+msgid "Delete selected %(model)s"
+msgstr "Tanlangan %(model)s ni o'chirish"
+
+msgid "View selected %(model)s"
+msgstr "Tanlangan %(model)s ni ko'rish"
+
+msgid "Thanks for spending some quality time with the web site today."
+msgstr "Bugun saytda vaqt ajratganingiz uchun rahmat."

@@ -5,6 +5,8 @@ from modeltranslation.admin import TabbedTranslationAdmin
 from solo.admin import SingletonModelAdmin
 from unfold.admin import ModelAdmin
 
+from apps.common.admin import AutoTranslateAdminMixin
+
 from .models import SiteConfig
 from .widgets import LeafletLocationWidget
 
@@ -19,7 +21,7 @@ class SiteConfigForm(forms.ModelForm):
 
 
 @admin.register(SiteConfig)
-class SiteConfigAdmin(ModelAdmin, TabbedTranslationAdmin, SingletonModelAdmin):
+class SiteConfigAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin, SingletonModelAdmin):
     form = SiteConfigForm
     fieldsets = (
         (_("Brending"), {

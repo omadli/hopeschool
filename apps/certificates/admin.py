@@ -2,11 +2,13 @@ from django.contrib import admin
 from modeltranslation.admin import TabbedTranslationAdmin
 from unfold.admin import ModelAdmin
 
+from apps.common.admin import AutoTranslateAdminMixin
+
 from .models import Certificate
 
 
 @admin.register(Certificate)
-class CertificateAdmin(ModelAdmin, TabbedTranslationAdmin):
+class CertificateAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin):
     list_display = ("title", "student_name", "badge", "is_active", "order")
     list_editable = ("is_active", "order")
     list_filter = ("badge", "is_active")

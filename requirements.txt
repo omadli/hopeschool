@@ -9,6 +9,10 @@ django-import-export>=4.0
 # --- i18n ---
 django-modeltranslation>=0.19
 
+# --- Auto-translation (admin-triggered uz->ru/en; human-reviewed) ---
+deep-translator>=1.11      # free Google backend, no API key
+beautifulsoup4>=4.12       # tag-safe HTML (CKEditor) translation
+
 # --- Rich text editor (admin) ---
 django-ckeditor-5>=0.2.18
 
