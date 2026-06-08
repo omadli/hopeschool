@@ -1,0 +1,91 @@
+/* ===========================================================================
+   Hope School — qo'shimcha admin uslublari
+   Unfold "STYLES" orqali yuklanadi (config/settings.py: UNFOLD["STYLES"]).
+   =========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   CKEditor 5 — tungi rejim (dark mode) tuzatmasi.
+
+   django-ckeditor-5 faqat YORUG' mavzu CSS o'zgaruvchilari bilan keladi
+   (barchasi `:root` da, default ranglar: oq fon / qora matn). Unfold tungi
+   rejimda <html> ga `.dark` klassini qo'yadi, lekin CKEditor o'zgaruvchilari
+   yangilanmaydi — natijada muharrir oq bo'lib qoladi (bildirilgan bug).
+
+   Yechim: `html.dark` (specificity 0,1,1 > `:root` 0,1,0) ostida CKEditor BASE
+   o'zgaruvchilarini qayta belgilaymiz. Ko'p hosila o'zgaruvchilar (toolbar,
+   panel, input, list foni) `var(--ck-color-base-background)` ga ishora qiladi,
+   shuning uchun ular avtomatik ergashadi. Ranglar Unfold palitrasidan
+   (`--color-base-*`) olinadi — fallback qiymatlar bilan (Unfold yuklanmasa).
+   Balloon/dropdown panellari <body> ga qo'shiladi, lekin o'zgaruvchilar
+   <html> dan meros olinadi — ular ham qamrab olinadi.
+   --------------------------------------------------------------------------- */
+html.dark {
+  /* Base — qolgan ko'p o'zgaruvchilar shularga ergashadi */
+  --ck-color-base-background: rgb(var(--color-base-800, 31 41 55));
+  --ck-color-base-foreground: rgb(var(--color-base-900, 17 24 39));
+  --ck-color-base-border: rgb(var(--color-base-700, 55 65 81));
+  --ck-color-base-text: rgb(var(--color-base-200, 229 231 235));
+  --ck-color-base-active: rgb(var(--color-primary-500, 44 107 212));
+  --ck-color-base-active-focus: rgb(var(--color-primary-600, 34 87 179));
+
+  /* Tugmalar */
+  --ck-color-button-default-hover-background: rgb(var(--color-base-700, 55 65 81));
+  --ck-color-button-default-active-background: rgb(var(--color-base-700, 55 65 81));
+  --ck-color-button-on-background: rgb(var(--color-base-700, 55 65 81));
+  --ck-color-button-on-hover-background: rgb(var(--color-base-600, 75 85 99));
+  --ck-color-button-on-color: rgb(var(--color-primary-300, 132 172 247));
+  --ck-color-button-on-active-background: rgb(var(--color-base-700, 55 65 81));
+  --ck-color-split-button-hover-background: rgb(var(--color-base-600, 75 85 99));
+  --ck-color-split-button-hover-border: rgb(var(--color-base-600, 75 85 99));
+
+  /* Ro'yxat (dropdown) tugmalari */
+  --ck-color-list-button-hover-background: rgb(var(--color-base-700, 55 65 81));
+  --ck-color-list-button-on-background: rgb(var(--color-base-700, 55 65 81));
+  --ck-color-list-button-on-background-focus: rgb(var(--color-base-600, 75 85 99));
+  --ck-color-list-button-on-text: rgb(var(--color-primary-300, 132 172 247));
+
+  /* Inputlar (link/rasm dialoglari) */
+  --ck-color-input-background: rgb(var(--color-base-900, 17 24 39));
+  --ck-color-input-border: rgb(var(--color-base-700, 55 65 81));
+  --ck-color-input-text: rgb(var(--color-base-100, 243 244 246));
+  --ck-color-input-disabled-background: rgb(var(--color-base-800, 31 41 55));
+  --ck-color-input-disabled-border: rgb(var(--color-base-700, 55 65 81));
+  --ck-color-input-disabled-text: rgb(var(--color-base-400, 156 163 175));
+  --ck-color-labeled-field-label-background: rgb(var(--color-base-800, 31 41 55));
+
+  /* Matn / link / placeholder */
+  --ck-color-text: rgb(var(--color-base-200, 229 231 235));
+  --ck-color-engine-placeholder-text: rgb(var(--color-base-500, 107 114 128));
+  --ck-color-link-default: rgb(var(--color-primary-300, 132 172 247));
+  --ck-color-link-selected-background: rgba(44, 107, 212, .25);
+  --ck-color-link-fake-selection: rgba(44, 107, 212, .25);
+
+  /* Soyalar — dark fonda yumshoqroq */
+  --ck-color-shadow-drop: rgba(0, 0, 0, .45);
+  --ck-color-shadow-drop-active: rgba(0, 0, 0, .55);
+  --ck-color-shadow-inner: rgba(0, 0, 0, .4);
+
+  /* Tahrirlash maydonidagi (content) matn rangi — alohida o'zgaruvchi */
+  --ck-content-font-color: rgb(var(--color-base-100, 243 244 246));
+
+  /* Rasm/jadval izohlari (caption) — dark fonga moslash */
+  --ck-content-color-image-caption-background: rgb(var(--color-base-700, 55 65 81));
+  --ck-content-color-image-caption-text: rgb(var(--color-base-200, 229 231 235));
+  --ck-content-color-table-caption-background: rgb(var(--color-base-700, 55 65 81));
+  --ck-content-color-table-caption-text: rgb(var(--color-base-200, 229 231 235));
+}
+
+/* Tahrirlash maydoni matni ba'zi build'larda ck-content o'zgaruvchisiga
+   ergashmaydi — to'g'ridan-to'g'ri ham beramiz (ishonchlilik uchun). */
+html.dark .ck.ck-editor__main > .ck-editor__editable {
+  color: rgb(var(--color-base-100, 243 244 246));
+}
+html.dark .ck.ck-editor__main > .ck-editor__editable a {
+  color: rgb(var(--color-primary-300, 132 172 247));
+}
+
+/* Inline `code` foni dark fonda yetarlicha ko'rinishi uchun */
+html.dark .ck-content code {
+  background-color: rgba(255, 255, 255, .08);
+  color: rgb(var(--color-base-100, 243 244 246));
+}

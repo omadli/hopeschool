@@ -218,6 +218,7 @@ TAILWIND_CLI_AUTOMATIC_DOWNLOAD = True
 # ---------------------------------------------------------------------------
 # Unfold admin (expanded with dashboard/sidebar in later phases)
 # ---------------------------------------------------------------------------
+from django.templatetags.static import static  # noqa: E402
 from django.urls import reverse_lazy  # noqa: E402
 from django.utils.translation import gettext_lazy as _  # noqa: E402
 
@@ -228,6 +229,10 @@ UNFOLD = {
     "DASHBOARD_CALLBACK": "apps.analytics.dashboard.dashboard_callback",
     "SITE_SYMBOL": "school",
     "SITE_URL": "/",  # "Saytni koʻrish" tugmasi
+    # Qo'shimcha admin CSS (CKEditor tungi rejim tuzatmasi + UI tweaks)
+    "STYLES": [
+        lambda request: static("css/admin_extra.css"),
+    ],
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": True,
     "COLORS": {
