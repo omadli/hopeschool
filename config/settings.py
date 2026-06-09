@@ -257,6 +257,7 @@ UNFOLD = {
     ],
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": True,
+    "SHOW_BACK_BUTTON": True,
     "COLORS": {
         "primary": {
             "50": "238 244 255",
@@ -282,7 +283,19 @@ UNFOLD = {
                 ],
             },
             {
+                "title": _("Murojaatlar"),
+                "items": [
+                    {
+                        "title": _("Arizalar"),
+                        "icon": "inbox",
+                        "link": reverse_lazy("admin:leads_lead_changelist"),
+                        "badge": "apps.leads.badges.new_leads_count",
+                    },
+                ],
+            },
+            {
                 "title": _("Sayt mazmuni"),
+                "collapsible": True,
                 "items": [
                     {"title": _("Kurslar"), "icon": "menu_book", "link": reverse_lazy("admin:courses_course_changelist")},
                     {"title": _("Oʻqituvchilar"), "icon": "groups", "link": reverse_lazy("admin:teachers_teacher_changelist")},
@@ -295,6 +308,7 @@ UNFOLD = {
             },
             {
                 "title": _("Bosh sahifa bloklari"),
+                "collapsible": True,
                 "items": [
                     {"title": _("Hero bo'limi"), "icon": "wallpaper", "link": reverse_lazy("admin:pages_herosection_changelist")},
                     {"title": _("Bosh sahifa videosi"), "icon": "smart_display", "link": reverse_lazy("admin:pages_homevideo_changelist")},
@@ -305,17 +319,6 @@ UNFOLD = {
                 ],
             },
             {
-                "title": _("Murojaatlar"),
-                "items": [
-                    {
-                        "title": _("Arizalar"),
-                        "icon": "inbox",
-                        "link": reverse_lazy("admin:leads_lead_changelist"),
-                        "badge": "apps.leads.badges.new_leads_count",
-                    },
-                ],
-            },
-            {
                 "title": _("Analitika"),
                 "items": [
                     {"title": _("Tashriflar"), "icon": "analytics", "link": reverse_lazy("admin:analytics_visitlog_changelist")},
@@ -323,6 +326,7 @@ UNFOLD = {
             },
             {
                 "title": _("Sozlamalar"),
+                "collapsible": True,
                 "items": [
                     {"title": _("Sayt sozlamalari"), "icon": "settings", "link": reverse_lazy("admin:siteconfig_siteconfig_changelist")},
                     {"title": _("Ijtimoiy tarmoqlar"), "icon": "share", "link": reverse_lazy("admin:siteconfig_sociallink_changelist")},

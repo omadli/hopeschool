@@ -51,11 +51,14 @@ class SiteConfigAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmi
         (_("SEO"), {
             "fields": ("seo_title", "seo_description", "og_image",
                        "google_site_verification", "yandex_verification", "bing_msvalidate"),
+            "classes": ("collapse",),
         }),
         (_("Analitika"), {
             "fields": ("ga4_measurement_id", "yandex_metrica_id"),
+            "classes": ("collapse",),
         }),
         (_("Telegram"), {
             "fields": ("telegram_notifications_enabled",),
+            "classes": ("collapse",),
         }),
     )

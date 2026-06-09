@@ -47,6 +47,9 @@ class AutoTranslateAdminMixin:
     Place FIRST in the admin base list so its ``save_model`` wraps Unfold's.
     """
 
+    # Warn before navigating away from a change form with unsaved edits.
+    warn_unsaved_form = True
+
     actions_submit_line = ("auto_translate_object",)
 
     @action(description=_("UZ → RU/EN avto-tarjima"), icon="translate")
