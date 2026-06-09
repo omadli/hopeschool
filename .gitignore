@@ -42,3 +42,4 @@ desktop.ini
 # ---- Scratch / temporary ----
 _*.png
 _verify*.py
+_scratch/

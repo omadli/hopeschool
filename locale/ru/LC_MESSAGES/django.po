@@ -67,6 +67,9 @@ msgstr "Основной телефон"
 msgid "Asosiy tugma"
 msgstr "Основная кнопка"
 
+msgid "Avto-import boʻlmadi: %(e)s"
+msgstr "Автоимпорт не удался: %(e)s"
+
 msgid "Avto-tarjima: %(n)d ta maydon toʻldirildi. Tekshirib, saqlang."
 msgstr "Автоперевод: заполнено %(n)d полей. Проверьте и сохраните."
 
@@ -165,6 +168,16 @@ msgstr "В этом месяце"
 
 msgid "Bugungi tashriflar"
 msgstr "Визиты сегодня"
+
+msgid "CEFR / havola (QR skaner)"
+msgstr "CEFR / ссылка (QR-сканер)"
+
+msgid ""
+"CEFR sertifikati havolasini kiriting yoki QR kodni skanerlang — saqlaganda "
+"PDF rasmga aylantiriladi va oʻquvchi ismi aniqlanadi."
+msgstr ""
+"Введите ссылку на сертификат CEFR или отсканируйте QR-код — при сохранении "
+"PDF преобразуется в изображение и определяется имя ученика."
 
 msgid "Chop etilgan"
 msgstr "Опубликовано"
@@ -285,6 +298,14 @@ msgstr "Размер группы"
 msgid "Havola"
 msgstr "Ссылка"
 
+msgid "Havoladan import qilindi (rasm + ism aniqlandi). Tekshirib saqlang."
+msgstr ""
+"Импортировано по ссылке (изображение + имя определены). Проверьте и "
+"сохраните."
+
+msgid "Havoladan qayta import qilish (PDF→rasm + ism)"
+msgstr "Повторно импортировать по ссылке (PDF→изображение + имя)"
+
 msgid "Hero bo'limi"
 msgstr "Раздел героев"
 
@@ -320,6 +341,9 @@ msgstr "Дополнительная кнопка"
 
 msgid "Ikonka"
 msgstr "Иконка"
+
+msgid "Import yakunlandi — muvaffaqiyatli: %(ok)d, xato: %(f)d."
+msgstr "Импорт завершён — успешно: %(ok)d, ошибок: %(f)d."
 
 msgid "Instagram"
 msgstr "Instagram"

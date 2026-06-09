@@ -13,8 +13,8 @@
     <div data-carousel="certs" data-interval="3000" class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1 mb-12">
       {% for c in certificates %}
       <a href="{{ c.link }}" target="_blank" rel="noopener" class="snap-start shrink-0 w-[62%] sm:w-[40%] lg:w-[23.4%] card-hover group block rounded-card surface-card border bd shadow-soft overflow-hidden">
-        <div class="relative aspect-[1.4/1] overflow-hidden grad-cap">
-          {% if c.image %}{% responsive_img c.image alt=c.title css="h-full w-full object-cover transition duration-500 group-hover:scale-105" width=420 width_2x=720 sizes="(min-width:1024px) 23vw, (min-width:640px) 40vw, 62vw" %}{% endif %}
+        <div class="relative aspect-[5/7] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+          {% if c.image %}{% responsive_img c.image alt=c.title css="h-full w-full object-contain transition duration-500 group-hover:scale-[1.03]" width=480 width_2x=900 sizes="(min-width:1024px) 23vw, (min-width:640px) 40vw, 62vw" %}{% endif %}
           {% if c.badge %}<span class="absolute top-3 left-3 rounded-pill bg-white/90 dark:bg-black/45 backdrop-blur px-2.5 py-1 text-[11px] font-bold {% if c.badge_accent %}text-brand-red-600 dark:text-brand-red-300{% else %}text-brand-blue-700 dark:text-brand-blue-300{% endif %}">{{ c.badge }}</span>{% endif %}
         </div>
         <div class="p-4"><p class="font-display font-bold text-[14px]">{{ c.student_name|default:c.title }}</p>{% if c.description %}<p class="text-[12px] txt-soft">{{ c.description }}</p>{% endif %}</div>

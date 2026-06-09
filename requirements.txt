@@ -21,6 +21,10 @@ django-solo>=2.4
 Pillow>=10.4
 easy-thumbnails>=2.10
 
+# --- CEFR certificate import (PDF -> image + name parse; permissive licences) ---
+pypdfium2>=4.30      # PDF render, Apache-2.0/BSD (NOT AGPL like PyMuPDF)
+pypdf>=4.3           # PDF text extraction, BSD
+
 # --- Integrations ---
 requests>=2.32
 user-agents>=2.2.0

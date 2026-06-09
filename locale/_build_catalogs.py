@@ -271,6 +271,17 @@ RU = {
     "Sertifikat": "Сертификат",
     "Rasm, PDF yoki tashqi havoladan kamida bittasini kiriting.":
         "Укажите хотя бы одно: изображение, PDF или внешнюю ссылку.",
+    # certificates — CEFR import (admin)
+    "CEFR / havola (QR skaner)": "CEFR / ссылка (QR-сканер)",
+    "CEFR sertifikati havolasini kiriting yoki QR kodni skanerlang — saqlaganda PDF rasmga aylantiriladi va oʻquvchi ismi aniqlanadi.":
+        "Введите ссылку на сертификат CEFR или отсканируйте QR-код — при сохранении PDF преобразуется в изображение и определяется имя ученика.",
+    "Havoladan import qilindi (rasm + ism aniqlandi). Tekshirib saqlang.":
+        "Импортировано по ссылке (изображение + имя определены). Проверьте и сохраните.",
+    "Avto-import boʻlmadi: %(e)s": "Автоимпорт не удался: %(e)s",
+    "Havoladan qayta import qilish (PDF→rasm + ism)":
+        "Повторно импортировать по ссылке (PDF→изображение + имя)",
+    "Import yakunlandi — muvaffaqiyatli: %(ok)d, xato: %(f)d.":
+        "Импорт завершён — успешно: %(ok)d, ошибок: %(f)d.",
     # gallery
     "Albom nomi": "Название альбома",
     "Tavsif": "Описание",
@@ -540,6 +551,17 @@ EN = {
     "Sertifikat": "Certificate",
     "Rasm, PDF yoki tashqi havoladan kamida bittasini kiriting.":
         "Provide at least one of: image, PDF, or external link.",
+    # certificates — CEFR import (admin)
+    "CEFR / havola (QR skaner)": "CEFR / link (QR scanner)",
+    "CEFR sertifikati havolasini kiriting yoki QR kodni skanerlang — saqlaganda PDF rasmga aylantiriladi va oʻquvchi ismi aniqlanadi.":
+        "Enter the CEFR certificate link or scan the QR code — on save the PDF is converted to an image and the student's name is detected.",
+    "Havoladan import qilindi (rasm + ism aniqlandi). Tekshirib saqlang.":
+        "Imported from the link (image + name detected). Review and save.",
+    "Avto-import boʻlmadi: %(e)s": "Auto-import failed: %(e)s",
+    "Havoladan qayta import qilish (PDF→rasm + ism)":
+        "Re-import from the link (PDF→image + name)",
+    "Import yakunlandi — muvaffaqiyatli: %(ok)d, xato: %(f)d.":
+        "Import finished — successful: %(ok)d, failed: %(f)d.",
     "Albom nomi": "Album name",
     "Tavsif": "Description",
     "Muqova rasmi": "Cover image",
