@@ -31,13 +31,14 @@ db.sqlite3-journal
 .django_tailwind_cli/
 assets/css/tailwind.css
 
-# ---- OS / editors ----
+# ---- OS / AI / editors ----
 .DS_Store
 Thumbs.db
 desktop.ini
 .idea/
 .vscode/
 *.swp
+.claude/
 
 # ---- Scratch / temporary ----
 _*.png
