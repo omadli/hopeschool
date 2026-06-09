@@ -132,6 +132,68 @@ def _build_context(request, context):
         "rows": [[r["referrer"], r["total"]] for r in top_referrers],
     }
 
+    # ---- Leads per day, last 14 days (gap-filled) -------------------------
+    leads_per_day = (
+        leads.filter(created_at__date__gte=span_start)
+        .annotate(day=TruncDate("created_at"))
+        .values("day")
+        .annotate(total=Count("id"))
+    )
+    leads_by_day = {row["day"]: row["total"] for row in leads_per_day}
+    lead_series = [leads_by_day.get(span_start + timedelta(days=o), 0) for o in range(14)]
+    context["leads_chart"] = json.dumps({
+        "labels": labels,
+        "datasets": [{
+            "label": str(_("Arizalar")),
+            "data": lead_series,
+            "borderColor": "var(--color-primary-600)",
+            "backgroundColor": _FILL_COLOR,
+            "fill": True,
+            "tension": 0.4,
+        }],
+    })
+
+    # ---- Leads by status --------------------------------------------------
+    status_labels = dict(Lead.Status.choices)
+    status_rows = leads.values("status").annotate(total=Count("id")).order_by("-total")
+    context["leads_by_status"] = {
+        "headers": [str(_("Holat")), str(_("Soni"))],
+        "rows": [[str(status_labels.get(r["status"], r["status"])), r["total"]]
+                 for r in status_rows],
+    }
+
+    # ---- Top countries (resolved by resolve_geoip) ------------------------
+    country_rows = (
+        visits.exclude(country="")
+        .values("country")
+        .annotate(total=Count("id"))
+        .order_by("-total")[:8]
+    )
+    context["top_countries"] = {
+        "headers": [str(_("Davlat")), str(_("Tashriflar"))],
+        "rows": [[r["country"], r["total"]] for r in country_rows],
+    }
+
+    # ---- Content inventory (totals + active/published) --------------------
+    from apps.certificates.models import Certificate
+    from apps.gallery.models import GalleryImage
+    from apps.news.models import NewsPost
+    from apps.testimonials.models import Testimonial
+
+    inventory = [
+        (_("Kurslar"), Course.objects, {"is_active": True}),
+        (_("Oʻqituvchilar"), Teacher.objects, {"is_active": True}),
+        (_("Yangiliklar"), NewsPost.objects, {"is_published": True}),
+        (_("Sertifikatlar"), Certificate.objects, {"is_active": True}),
+        (_("Fikrlar"), Testimonial.objects, {"is_active": True}),
+        (_("Galereya rasmlari"), GalleryImage.objects, {"is_active": True}),
+    ]
+    context["content_inventory"] = {
+        "headers": [str(_("Boʻlim")), str(_("Jami")), str(_("Faol / chop etilgan"))],
+        "rows": [[str(label), mgr.count(), mgr.filter(**flt).count()]
+                 for label, mgr, flt in inventory],
+    }
+
     return context
 
 
@@ -143,6 +205,10 @@ def dashboard_callback(request, context):
         context.setdefault("kpis", [])
         context.setdefault("visits_chart", _empty_chart())
         context.setdefault("device_chart", _empty_chart())
+        context.setdefault("leads_chart", _empty_chart())
         context.setdefault("top_paths", {"headers": [], "rows": []})
         context.setdefault("top_referrers", {"headers": [], "rows": []})
+        context.setdefault("leads_by_status", {"headers": [], "rows": []})
+        context.setdefault("top_countries", {"headers": [], "rows": []})
+        context.setdefault("content_inventory", {"headers": [], "rows": []})
         return context

@@ -34,6 +34,10 @@ class VisitLog(models.Model):
     browser = models.CharField(_("Brauzer"), max_length=80, blank=True)
     os = models.CharField(_("Operatsion tizim"), max_length=80, blank=True)
     language = models.CharField(_("Til"), max_length=8, blank=True)
+    # Geo (resolved out-of-band by the resolve_geoip management command, never
+    # in the request path). Empty until resolved; private/local IPs stay empty.
+    country = models.CharField(_("Davlat"), max_length=80, blank=True, db_index=True)
+    country_code = models.CharField(_("Davlat kodi"), max_length=2, blank=True)
     created_at = models.DateTimeField(_("Vaqti"), auto_now_add=True, db_index=True)
 
     class Meta:

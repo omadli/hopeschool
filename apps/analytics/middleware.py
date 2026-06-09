@@ -63,6 +63,11 @@ class VisitLogMiddleware:
             return
         if response.status_code >= 400:
             return
+        # Don't count internal traffic: logged-in staff browsing the live site
+        # (this middleware runs after AuthenticationMiddleware, so user is set).
+        user = getattr(request, "user", None)
+        if user is not None and user.is_authenticated and user.is_staff:
+            return
 
         ua_string = request.META.get("HTTP_USER_AGENT", "")
         ua = user_agents.parse(ua_string)

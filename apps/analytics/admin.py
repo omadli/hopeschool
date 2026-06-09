@@ -12,17 +12,20 @@ class VisitLogAdmin(ModelAdmin):
         "device_type",
         "browser",
         "os",
+        "country",
         "ip_address",
         "language",
     )
-    list_filter = ("device_type", "created_at", "language")
-    search_fields = ("path", "ip_address")
+    list_filter = ("device_type", "country", "created_at", "language")
+    search_fields = ("path", "ip_address", "country")
     date_hierarchy = "created_at"
     readonly_fields = (
         "path",
         "method",
         "referrer",
         "ip_address",
+        "country",
+        "country_code",
         "user_agent",
         "device_type",
         "browser",

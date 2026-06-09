@@ -38,14 +38,39 @@
         </div>
     </div>
 
+    {# ---- Leads: trend + status ---- #}
+    <div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-3">
+        <div class="lg:col-span-2">
+            {% component "unfold/components/card.html" with title=_('Arizalar (soʻnggi 14 kun)') class="h-full" %}
+                {% component "unfold/components/chart/line.html" with data=leads_chart height="280" %}{% endcomponent %}
+            {% endcomponent %}
+        </div>
+        <div>
+            {% component "unfold/components/card.html" with title=_('Arizalar holati boʻyicha') class="h-full" %}
+                {% component "unfold/components/table.html" with table=leads_by_status %}{% endcomponent %}
+            {% endcomponent %}
+        </div>
+    </div>
+
     {# ---- Tables ---- #}
-    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-2">
         {% component "unfold/components/card.html" with title=_('Top sahifalar') class="h-full" %}
             {% component "unfold/components/table.html" with table=top_paths %}{% endcomponent %}
         {% endcomponent %}
 
         {% component "unfold/components/card.html" with title=_('Top manbalar') class="h-full" %}
             {% component "unfold/components/table.html" with table=top_referrers %}{% endcomponent %}
+        {% endcomponent %}
+    </div>
+
+    {# ---- Geography + content inventory ---- #}
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {% component "unfold/components/card.html" with title=_('Davlatlar boʻyicha tashriflar') class="h-full" %}
+            {% component "unfold/components/table.html" with table=top_countries %}{% endcomponent %}
+        {% endcomponent %}
+
+        {% component "unfold/components/card.html" with title=_('Sayt kontenti') class="h-full" %}
+            {% component "unfold/components/table.html" with table=content_inventory %}{% endcomponent %}
         {% endcomponent %}
     </div>
 {% endblock %}
