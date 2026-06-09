@@ -139,33 +139,34 @@ class CertificateAdminTests(TestCase):
 # CEFR import — parser (pure function, no network/PII)
 # ---------------------------------------------------------------------------
 class ParseCefrTests(SimpleTestCase):
+    # NB: all names/serials below are fictional — never real student data.
     def test_pymupdf_style_each_token_own_line(self):
-        lines = ["24BBA1263659AA", "AD 4165352", "AZIMOV", "AMIN",
-                 "SHERALI O‘G‘LI", "INGLIZ TILI", "B2", "62"]
+        lines = ["00AAA0000001XX", "AD 0000001", "ALIYEV", "BOBUR",
+                 "KARIM O‘G‘LI", "INGLIZ TILI", "B2", "62"]
         d = parse_cefr(lines)
-        self.assertEqual(d["name"], "Azimov Amin Sherali o‘g‘li")
+        self.assertEqual(d["name"], "Aliyev Bobur Karim o‘g‘li")
         self.assertEqual(d["level"], "B2")
         self.assertEqual(d["subject"], "INGLIZ TILI")
-        self.assertEqual(d["serial"], "24BBA1263659AA")
+        self.assertEqual(d["serial"], "00AAA0000001XX")
 
     def test_pypdf_style_subject_and_level_merged(self):
-        lines = ["24BBA1277677MM", "AD 6350889", "MARDONOV", "MIRFAYZBEK",
-                 "JO‘RABEK O‘G‘LI", "INGLIZ TILI B2", "51 52"]
+        lines = ["00AAA0000002XX", "AD 0000002", "VALIYEV", "SARDOR",
+                 "AKMAL O‘G‘LI", "INGLIZ TILI B2", "51 52"]
         d = parse_cefr(lines)
-        self.assertEqual(d["name"], "Mardonov Mirfayzbek Jo‘rabek o‘g‘li")
+        self.assertEqual(d["name"], "Valiyev Sardor Akmal o‘g‘li")
         self.assertEqual(d["level"], "B2")
         self.assertEqual(d["subject"], "INGLIZ TILI")
 
     def test_qizi_suffix_lowercased(self):
-        lines = ["25BBA1X", "AD 1", "SHUXRATOVA", "ZAHROBEGIM",
-                 "SHERALI QIZI", "INGLIZ TILI B2"]
-        self.assertEqual(parse_cefr(lines)["name"], "Shuxratova Zahrobegim Sherali qizi")
+        lines = ["00AAA0000003XX", "AD 1", "KARIMOVA", "NODIRA",
+                 "AKMAL QIZI", "INGLIZ TILI B2"]
+        self.assertEqual(parse_cefr(lines)["name"], "Karimova Nodira Akmal qizi")
 
     def test_cyrillic_name_with_latin_subject(self):
         # Real-world variant: Cyrillic name, but the subject line is still Latin.
-        lines = ["X", "AD 1", "САТТОРОВ", "АБДУСАТТОР",
-                 "СОДИҚ ЎҒЛИ", "INGLIZ TILI B2"]
-        self.assertEqual(parse_cefr(lines)["name"], "Сатторов Абдусаттор Содиқ ўғли")
+        lines = ["X", "AD 1", "ТОШЕВ", "ЖАСУР",
+                 "КАРИМ ЎҒЛИ", "INGLIZ TILI B2"]
+        self.assertEqual(parse_cefr(lines)["name"], "Тошев Жасур Карим ўғли")
 
     def test_no_subject_yields_empty_name(self):
         d = parse_cefr(["RANDOM", "TEXT", "HERE"])
@@ -185,15 +186,15 @@ class RenderTests(SimpleTestCase):
 class PopulateCertificateTests(TestCase):
     def test_populate_sets_fields_and_image(self):
         cert = Certificate(external_url="https://example.com/cert.pdf")
-        lines = ["24BBA1263659AA", "AD 4165352", "AZIMOV", "AMIN",
-                 "SHERALI O‘G‘LI", "INGLIZ TILI", "B2"]
+        lines = ["00AAA0000001XX", "AD 0000001", "ALIYEV", "BOBUR",
+                 "KARIM O‘G‘LI", "INGLIZ TILI", "B2"]
         with tempfile.TemporaryDirectory() as d, override_settings(MEDIA_ROOT=d):
             with mock.patch("apps.certificates.services.extract_text_lines",
                             return_value=lines):
                 data = populate_certificate(
                     cert, fetcher=lambda url: _blank_pdf(), save=False
                 )
-        self.assertEqual(cert.student_name, "Azimov Amin Sherali o‘g‘li")
+        self.assertEqual(cert.student_name, "Aliyev Bobur Karim o‘g‘li")
         self.assertEqual(cert.badge, "B2")
         self.assertIn("Ingliz tili", cert.description)
         self.assertTrue(cert.image.name.endswith(".jpg"))
