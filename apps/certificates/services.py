@@ -9,6 +9,7 @@ renders, pypdf (BSD) extracts text. No AGPL (PyMuPDF), no system poppler.
 """
 from __future__ import annotations
 
+import hashlib
 import io
 import re
 
@@ -187,7 +188,9 @@ def populate_certificate(cert, *, fetcher=fetch_pdf_bytes, save=False):
     jpeg = render_first_page_jpeg(pdf_bytes)
     data = parse_cefr(extract_text_lines(pdf_bytes))
 
-    ref = data.get("serial") or str(abs(hash(url)))[:12]
+    # Stable filename (hash() is per-process randomized → would orphan the old
+    # image on every --force re-import for serial-less certs).
+    ref = data.get("serial") or hashlib.md5(url.encode()).hexdigest()[:12]
     cert.image.save(f"cefr-{ref}.jpg", ContentFile(jpeg), save=False)
 
     if data.get("name"):
