@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 from unfold.decorators import action
 
-from apps.common.translation import fill_translations, missing_translation_fields
+from apps.common.translation import fill_translations_bulk, missing_translation_fields
 
 # Kichik marketing sayt uchun Group modeli kerak emas — admindan olib tashlaymiz.
 try:
@@ -16,8 +16,10 @@ except admin.sites.NotRegistered:
 def auto_translate_selected(modeladmin, request, queryset):
     """Bulk changelist action: fill empty target-language fields from UZ."""
     objs = fields = 0
-    for obj in queryset:
-        filled = fill_translations(obj)
+    # Parallel + deduped: fan the per-field translation requests across a thread
+    # pool instead of one blocking request-after-request (was minutes for a few
+    # rows). Saves stay on the main thread.
+    for obj, filled in fill_translations_bulk(list(queryset)):
         if filled:
             obj.save()
             objs += 1
@@ -54,7 +56,7 @@ class AutoTranslateAdminMixin:
 
     @action(description=_("UZ → RU/EN avto-tarjima"), icon="translate")
     def auto_translate_object(self, request, obj):
-        filled = fill_translations(obj)
+        _, filled = fill_translations_bulk([obj])[0]
         if filled:
             obj.save()
             messages.success(

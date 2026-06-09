@@ -831,3 +831,56 @@ class AutoTranslateAdminActionTests(TestCase):
         course.refresh_from_db()
         self.assertEqual(course.name_ru, "[ru]Fizika")
         self.assertEqual(course.name_en, "[en]Fizika")
+
+
+# ---------------------------------------------------------------------------
+# Bulk auto-translate is parallel + deduped (engine mocked, no network)
+# ---------------------------------------------------------------------------
+from apps.common.translation import fill_translations_bulk  # noqa: E402
+
+
+@patch("apps.common.translation._engine_translate", _fake_engine)
+class FillTranslationsBulkTests(TestCase):
+    """fill_translations_bulk fills many objects at once, without saving them."""
+
+    def _course(self, **kw):
+        from apps.courses.models import Course
+        with dj_translation.override("uz"):
+            return Course.objects.create(is_active=True, **kw)
+
+    def test_fills_multiple_objects(self):
+        c1 = self._course(name="Algebra", slug="algebra")
+        c2 = self._course(name="Geometriya", slug="geometriya")
+        results = fill_translations_bulk([c1, c2])
+        self.assertTrue(all(n > 0 for _, n in results))
+        self.assertEqual(c1.name_ru, "[ru]Algebra")
+        self.assertEqual(c1.name_en, "[en]Algebra")
+        self.assertEqual(c2.name_ru, "[ru]Geometriya")
+        # Not persisted — the caller decides when to save.
+        c1.refresh_from_db()
+        self.assertFalse(c1.name_ru)
+
+    def test_returns_zero_when_nothing_to_fill(self):
+        c = self._course(name="Fizika", slug="fizika")
+        for obj, _ in fill_translations_bulk([c]):
+            obj.save()
+        self.assertEqual(fill_translations_bulk([c]), [(c, 0)])
+
+
+class FillTranslationsBulkCacheTests(TestCase):
+    """Identical source strings cost a single engine request across rows."""
+
+    def test_dedupes_identical_strings(self):
+        from apps.courses.models import Course
+        engine = MagicMock(side_effect=_fake_engine)
+        with dj_translation.override("uz"):
+            c1 = Course.objects.create(name="Bir", slug="dup1", is_active=True)
+            c2 = Course.objects.create(name="Bir", slug="dup2", is_active=True)
+        with patch("apps.common.translation._engine_translate", engine):
+            # max_workers=1 keeps the call-count assertion deterministic; the
+            # in-run cache (not the worker count) is what dedupes.
+            fill_translations_bulk([c1, c2], max_workers=1)
+        # "Bir" -> ru and en, once each despite two rows.
+        self.assertEqual(engine.call_count, 2)
+        self.assertEqual(c1.name_ru, "[ru]Bir")
+        self.assertEqual(c2.name_en, "[en]Bir")

@@ -16,6 +16,9 @@ Design constraints (see Phase C):
 from __future__ import annotations
 
 import logging
+import threading
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 
 from django.conf import settings
 
@@ -23,6 +26,35 @@ logger = logging.getLogger(__name__)
 
 # GoogleTranslator rejects payloads above 5000 chars; stay safely under.
 _MAX_CHUNK = 4500
+
+# Bulk auto-translate fans the per-(row, field, language) requests out across a
+# small thread pool (the work is network-I/O bound, not CPU) and dedupes
+# identical source strings via a shared in-run cache. Together these are why
+# selecting many rows no longer blocks the admin request for a minute.
+_MAX_WORKERS = 8
+_cache_lock = threading.Lock()
+_run_cache: dict | None = None   # (source, target, text) -> result, while active
+_run_locks: dict = {}            # (source, target, text) -> Lock, to translate once
+
+
+@contextmanager
+def translation_cache():
+    """Enable a thread-shared translation cache for the duration of the block.
+
+    Re-entrant: nested calls reuse the outermost cache. Outside this context the
+    engine never caches, so unit tests that count engine calls are unaffected.
+    """
+    global _run_cache
+    outer = _run_cache
+    if outer is None:
+        _run_cache = {}
+        _run_locks.clear()
+    try:
+        yield
+    finally:
+        if outer is None:
+            _run_cache = None
+            _run_locks.clear()
 
 
 def _engine_translate(text: str, target: str, source: str) -> str:
@@ -39,6 +71,32 @@ def _engine_translate(text: str, target: str, source: str) -> str:
     except Exception as exc:  # pragma: no cover - network/engine errors
         logger.warning("MT failed (%s->%s): %s", source, target, exc)
         return ""
+
+
+def _cached_translate(text: str, target: str, source: str) -> str:
+    """Cache layer over :func:`_engine_translate`, active only inside a
+    :func:`translation_cache` block. Identical (source, target, text) triples are
+    translated exactly once, even across worker threads (per-key locking), so the
+    free Google endpoint isn't hammered with duplicate requests when many rows
+    share the same short value (badges, "soʻm/oy", "Doimiy qabul", …).
+    """
+    cache = _run_cache
+    if cache is None:
+        return _engine_translate(text, target, source)
+    key = (source, target, text)
+    with _cache_lock:
+        if key in cache:
+            return cache[key]
+        lock = _run_locks.setdefault(key, threading.Lock())
+    with lock:
+        # Another thread may have produced it while we waited on the key lock.
+        with _cache_lock:
+            if key in cache:
+                return cache[key]
+        result = _engine_translate(text, target, source)
+        with _cache_lock:
+            cache[key] = result
+        return result
 
 
 def _chunks(text: str, size: int = _MAX_CHUNK):
@@ -62,9 +120,9 @@ def translate_text(text: str, target: str, source: str = "uz") -> str:
     if not text or target == source:
         return ""
     if len(text) <= _MAX_CHUNK:
-        return _engine_translate(text, target, source)
+        return _cached_translate(text, target, source)
     return " ".join(
-        part for part in (_engine_translate(c, target, source) for c in _chunks(text)) if part
+        part for part in (_cached_translate(c, target, source) for c in _chunks(text)) if part
     ).strip()
 
 
@@ -94,13 +152,13 @@ def _translate_segments(texts: list, target: str, source: str) -> list:
 
     result = []
     for chunk in chunks:
-        translated = _engine_translate("\n".join(chunk), target, source)
+        translated = _cached_translate("\n".join(chunk), target, source)
         lines = translated.split("\n")
         if len(lines) == len(chunk):
             result.extend(lines)
         else:
             # Alignment broke for this block — translate its items individually.
-            result.extend(_engine_translate(item, target, source) for item in chunk)
+            result.extend(_cached_translate(item, target, source) for item in chunk)
     return result
 
 
@@ -189,6 +247,78 @@ def fill_translations(obj, *, overwrite: bool = False) -> int:
                 setattr(obj, attr, translated)
                 filled += 1
     return filled
+
+
+def _pending_units(obj, *, overwrite, source, targets):
+    """Yield (field_name, attr, src_text, is_html, lang) for each empty target.
+
+    Pure read of already-loaded attributes + model metadata (no DB query), so it
+    is safe to call before fanning the actual translation out to threads.
+    """
+    from django_ckeditor_5.fields import CKEditor5Field
+    from modeltranslation.translator import NotRegistered, translator
+    from modeltranslation.utils import build_localized_fieldname
+
+    try:
+        opts = translator.get_options_for_model(type(obj))
+    except NotRegistered:
+        return
+    for field_name in opts.fields:
+        src_value = getattr(obj, build_localized_fieldname(field_name, source), None)
+        if not src_value or not str(src_value).strip():
+            continue
+        is_html = isinstance(obj._meta.get_field(field_name), CKEditor5Field)
+        for lang in targets:
+            attr = build_localized_fieldname(field_name, lang)
+            current = getattr(obj, attr, None)
+            if current and str(current).strip() and not overwrite:
+                continue
+            yield field_name, attr, str(src_value), is_html, lang
+
+
+def fill_translations_bulk(objects, *, overwrite=False, max_workers=_MAX_WORKERS):
+    """Parallel, deduped equivalent of calling :func:`fill_translations` per object.
+
+    Flattens every (object, field, target-language) that still needs filling into
+    one work list and translates them concurrently (the cost is network latency,
+    not CPU) under a shared :func:`translation_cache`, so identical strings cost a
+    single request. Attributes are set on the main thread; objects are NOT saved
+    (the caller decides when to persist, so the admin can review first).
+
+    Returns ``[(obj, filled_count), ...]`` aligned to ``objects``.
+    """
+    source = getattr(settings, "MODELTRANSLATION_DEFAULT_LANGUAGE", "uz")
+    targets = target_languages(source)
+
+    jobs = []  # (obj, attr, src_text, is_html, lang)
+    for obj in objects:
+        for _field, attr, src, is_html, lang in _pending_units(
+            obj, overwrite=overwrite, source=source, targets=targets
+        ):
+            jobs.append((obj, attr, src, is_html, lang))
+
+    counts: dict[int, int] = {id(obj): 0 for obj in objects}
+    if not jobs:
+        return [(obj, 0) for obj in objects]
+
+    def _run(job):
+        _obj, _attr, src, is_html, lang = job
+        try:
+            fn = translate_html if is_html else translate_text
+            return job, fn(src, lang, source)
+        except Exception:  # pragma: no cover - defensive; engine already swallows
+            logger.warning("translate unit failed", exc_info=True)
+            return job, ""
+
+    workers = max(1, min(max_workers, len(jobs)))
+    with translation_cache():
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            # Threads only translate; setattr happens here on the main thread.
+            for (obj, attr, _src, _h, _l), translated in pool.map(_run, jobs):
+                if translated:
+                    setattr(obj, attr, translated)
+                    counts[id(obj)] += 1
+    return [(obj, counts[id(obj)]) for obj in objects]
 
 
 def missing_translation_fields(obj) -> list[str]:
