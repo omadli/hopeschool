@@ -1,0 +1,30 @@
+# Hope School — resolve visitor IPs to countries (out-of-band, see analytics app)
+#
+# Oneshot run, triggered by resolve-geoip.timer. Resolving geo-IP inside the
+# request path would slow every page load and burn the ip-api.com rate limit,
+# so it is done here on a schedule instead.
+#
+# Install (alongside the .timer):
+#   sudo cp deploy/resolve-geoip.service /etc/systemd/system/
+#   sudo cp deploy/resolve-geoip.timer   /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now resolve-geoip.timer
+
+[Unit]
+Description=Hope School — resolve VisitLog IPs to countries
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=hopeschool
+Group=www-data
+WorkingDirectory=/home/hopeschool/app
+EnvironmentFile=/home/hopeschool/app/.env
+ExecStart=/home/hopeschool/app/venv/bin/python manage.py resolve_geoip
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/home/hopeschool/app

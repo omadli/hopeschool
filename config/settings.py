@@ -4,6 +4,7 @@ Django settings for Hope School.
 from pathlib import Path
 
 import environ
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,9 +23,60 @@ DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
+# Number of trusted reverse proxies in front of the app (nginx = 1; add 1 if a
+# CDN/WAF such as Cloudflare also proxies). The real client IP is read this many
+# hops from the END of X-Forwarded-For — client-supplied prefixes are untrusted,
+# so the lead-form rate-limit (apps/leads/views.py) cannot be bypassed by sending
+# a forged X-Forwarded-For header.
+TRUSTED_PROXY_COUNT = env.int("TRUSTED_PROXY_COUNT", default=1)
+
 # Telegram (lead notifications) — filled in later phases
 TELEGRAM_BOT_TOKEN = env("TELEGRAM_BOT_TOKEN", default="")
 TELEGRAM_ADMIN_CHAT_ID = env("TELEGRAM_ADMIN_CHAT_ID", default="")
+
+# ---------------------------------------------------------------------------
+# Security — production hardening (active only when DEBUG=False)
+# ---------------------------------------------------------------------------
+# These browser-facing protections require HTTPS, so they are gated on DEBUG:
+# local development over plain http keeps working, while production (DEBUG=False
+# behind nginx + Certbot) switches them all on. `manage.py check --deploy`
+# reports zero issues with this block active (see apps/common/test_deploy.py).
+if not DEBUG:
+    # Fail fast rather than silently shipping the insecure development defaults.
+    if SECRET_KEY.startswith("django-insecure-") or SECRET_KEY in ("", "change-me"):
+        raise ImproperlyConfigured(
+            "SECRET_KEY production uchun yaroqsiz (dev qiymati ishlatilyapti). "
+            "Kuchli kalit yarating va .env ga yozing:\n"
+            '  python -c "from django.core.management.utils import '
+            'get_random_secret_key; print(get_random_secret_key())"'
+        )
+    if "*" in ALLOWED_HOSTS:
+        raise ImproperlyConfigured(
+            "ALLOWED_HOSTS production-da '*' boʻlishi mumkin emas — aniq "
+            "domenlarni koʻrsating, masalan: hopeschool.uz,www.hopeschool.uz"
+        )
+
+    # nginx/Certbot terminates TLS and forwards the original scheme.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    USE_X_FORWARDED_HOST = True
+    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
+
+    # HTTP Strict Transport Security. Env-tunable because it is hard to undo
+    # once browsers cache it — drop SECURE_HSTS_SECONDS to a small value (e.g.
+    # 3600) on the very first HTTPS deploy, then raise to a year once stable.
+    SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=31536000)  # 1 yil
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=True)
+    SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=True)
+
+    # Cookies travel only over HTTPS.
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # Defence in depth.
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+    SESSION_COOKIE_HTTPONLY = True
+    X_FRAME_OPTIONS = "DENY"
 
 # ---------------------------------------------------------------------------
 # Applications
@@ -129,6 +181,25 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # ---------------------------------------------------------------------------
+# Cache — DatabaseCache: shared across gunicorn workers (no Redis needed)
+# ---------------------------------------------------------------------------
+# The lead-form rate-limit (apps/leads/views.py) counts submissions per IP in
+# the cache. With the default per-process LocMemCache each gunicorn worker keeps
+# its own counter, so the effective limit becomes (workers × RATE_LIMIT_MAX) and
+# resets on every restart. A shared backend makes the limit accurate. DatabaseCache
+# needs no extra service — create its table once at deploy:
+#   python manage.py createcachetable
+# (Django's test runner creates it automatically during tests.)
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "hopeschool_cache",
+        "TIMEOUT": 300,
+        "OPTIONS": {"MAX_ENTRIES": 5000},
+    }
+}
+
+# ---------------------------------------------------------------------------
 # Internationalization (uz default, ru, en)
 # ---------------------------------------------------------------------------
 LANGUAGE_CODE = "uz"
@@ -228,6 +299,49 @@ STORAGES = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ---------------------------------------------------------------------------
+# Logging — stream to stderr so systemd/journald (or gunicorn) captures it.
+# ---------------------------------------------------------------------------
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{asctime} [{levelname}] {name}: {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": env("DJANGO_LOG_LEVEL", default="INFO"),
+            "propagate": False,
+        },
+        # Suspicious-operation / disallowed-host attempts, etc.
+        "django.security": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        # Lead-notification failures (Telegram) bubble up here.
+        "apps": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
 
 # ---------------------------------------------------------------------------
 # Tailwind CSS (standalone CLI, Tailwind v4 — no Node)

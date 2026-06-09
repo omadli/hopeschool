@@ -3,12 +3,13 @@ import json
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.test import TestCase, override_settings
+from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
 from apps.leads.badges import new_leads_count
 from apps.leads.forms import LeadForm
 from apps.leads.models import Lead
+from apps.leads.views import _client_ip
 
 User = get_user_model()
 
@@ -245,6 +246,39 @@ class LeadCreateViewTests(TestCase):
         self.assertFalse(body["ok"])
         # No new lead created on the 6th request
         self.assertEqual(Lead.objects.count(), 5)
+
+
+# ---------------------------------------------------------------------------
+# Client-IP resolution (anti-spoof for the rate-limit)
+# ---------------------------------------------------------------------------
+class ClientIpTests(SimpleTestCase):
+    """_client_ip reads the real peer from the RIGHT of X-Forwarded-For."""
+
+    def _req(self, xff=None, remote="10.0.0.1"):
+        req = RequestFactory().post(LEAD_URL)
+        req.META["REMOTE_ADDR"] = remote
+        if xff is not None:
+            req.META["HTTP_X_FORWARDED_FOR"] = xff
+        return req
+
+    def test_no_xff_falls_back_to_remote_addr(self):
+        self.assertEqual(_client_ip(self._req(remote="10.0.0.5")), "10.0.0.5")
+
+    def test_single_proxy_uses_last_xff_entry(self):
+        # nginx appends the real peer; the client-supplied prefix is ignored.
+        self.assertEqual(_client_ip(self._req(xff="1.2.3.4, 9.9.9.9")), "9.9.9.9")
+
+    def test_spoofed_prefix_does_not_change_the_key(self):
+        a = _client_ip(self._req(xff="1.1.1.1, 9.9.9.9"))
+        b = _client_ip(self._req(xff="2.2.2.2, 9.9.9.9"))
+        self.assertEqual(a, b, "Forged XFF prefix must not yield a different IP")
+
+    @override_settings(TRUSTED_PROXY_COUNT=2)
+    def test_two_proxies_skip_the_extra_hop(self):
+        # client, real-edge(nginx-seen), cdn-to-origin → real client is -2.
+        self.assertEqual(
+            _client_ip(self._req(xff="9.9.9.9, 8.8.8.8, 7.7.7.7")), "8.8.8.8"
+        )
 
 
 # ---------------------------------------------------------------------------

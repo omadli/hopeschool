@@ -1,0 +1,46 @@
+# Hope School — gunicorn (Django/WSGI) service
+#
+# Install:
+#   sudo cp deploy/gunicorn.service /etc/systemd/system/gunicorn.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now gunicorn
+#   sudo systemctl status gunicorn
+#
+# Adjust User/Group, WorkingDirectory and paths to match your server.
+
+[Unit]
+Description=Hope School gunicorn daemon
+After=network.target
+
+[Service]
+User=hopeschool
+Group=www-data
+
+WorkingDirectory=/home/hopeschool/app
+EnvironmentFile=/home/hopeschool/app/.env
+
+# systemd creates /run/hopeschool owned by User:Group on start, where gunicorn
+# places its unix socket; it is removed automatically on stop.
+RuntimeDirectory=hopeschool
+RuntimeDirectoryMode=0750
+
+ExecStart=/home/hopeschool/app/venv/bin/gunicorn \
+    --config /home/hopeschool/app/deploy/gunicorn.conf.py \
+    config.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+
+Restart=always
+RestartSec=3
+KillMode=mixed
+TimeoutStopSec=30
+
+# --- Hardening (sandbox the service) ---
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+# The app needs to write uploads (media/), the SQLite DB and WAL files:
+ReadWritePaths=/home/hopeschool/app
+
+[Install]
+WantedBy=multi-user.target
