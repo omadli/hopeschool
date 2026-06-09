@@ -100,6 +100,10 @@ class PagesAdminTests(TestCase):
         url = reverse("admin:pages_sitecopy_changelist")
         self.assertEqual(self._get(url).status_code, 200)
 
+    def test_homevideo_changelist(self):
+        url = reverse("admin:pages_homevideo_changelist")
+        self.assertEqual(self._get(url).status_code, 200)
+
 
 # ---------------------------------------------------------------------------
 # Phase B: admin-editable site copy (hero badge, section headings, form texts)

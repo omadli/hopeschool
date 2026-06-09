@@ -25,6 +25,10 @@ def video_embed_url(url):
     Returns an already-embeddable URL unchanged, recognises the common YouTube
     (watch / youtu.be / shorts) and Vimeo forms, and falls back to the original
     URL for anything else (best effort — admins can paste a raw embed link).
+
+    Note: a watch URL where ``v=`` is not the first query param
+    (e.g. ``watch?list=...&v=ID``) is not matched and passes through; uncommon
+    for pasted share links, and the admin previews the result visually.
     """
     if not url:
         return ""
