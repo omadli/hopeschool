@@ -97,7 +97,10 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
+    # Custom staticfiles config: excludes the Tailwind source (source.css) from
+    # collectstatic so WhiteNoise's manifest storage never chokes on its
+    # `@import "tailwindcss";`. App label stays "staticfiles". See apps/common/apps.py.
+    "apps.common.apps.CustomStaticFilesConfig",
     "django.contrib.sitemaps",
 
     # Third-party

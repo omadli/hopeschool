@@ -8,6 +8,7 @@ django-import-export>=4.0
 
 # --- i18n ---
 django-modeltranslation>=0.19
+polib>=1.2          # compile .po -> .mo without GNU gettext (manage.py compilemo)
 
 # --- Auto-translation (admin-triggered uz->ru/en; human-reviewed) ---
 deep-translator>=1.11      # free Google backend, no API key

@@ -1,10 +1,10 @@
-# Hope School — gunicorn (Django/WSGI) service
+# Hope School — gunicorn (Django/WSGI) service, unit name: hopeschool.service
 #
 # Install:
-#   sudo cp deploy/gunicorn.service /etc/systemd/system/gunicorn.service
+#   sudo cp deploy/hopeschool.service /etc/systemd/system/hopeschool.service
 #   sudo systemctl daemon-reload
-#   sudo systemctl enable --now gunicorn
-#   sudo systemctl status gunicorn
+#   sudo systemctl enable --now hopeschool
+#   sudo systemctl status hopeschool
 #
 # Adjust User/Group, WorkingDirectory and paths to match your server.
 

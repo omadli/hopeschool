@@ -4,14 +4,14 @@ Loaded by the systemd unit:
     gunicorn --config deploy/gunicorn.conf.py config.wsgi:application
 
 Access/error logs go to stdout/stderr, which systemd captures in the journal
-(``journalctl -u gunicorn``). Tune workers via the GUNICORN_WORKERS env var —
+(``journalctl -u hopeschool``). Tune workers via the GUNICORN_WORKERS env var —
 the SQLite backend prefers a small pool to avoid write contention, so the
 default is intentionally modest rather than the (2*CPU)+1 rule of thumb.
 """
 import os
 
 # Bind to a unix socket in the systemd RuntimeDirectory (/run/hopeschool).
-# nginx (www-data) reads it; see gunicorn.service Group=www-data + umask below.
+# nginx (www-data) reads it; see hopeschool.service Group=www-data + umask below.
 bind = os.environ.get("GUNICORN_BIND", "unix:/run/hopeschool/gunicorn.sock")
 
 workers = int(os.environ.get("GUNICORN_WORKERS", "3"))

@@ -212,10 +212,10 @@ TELEGRAM_ADMIN_CHAT_ID=-1001234567890
 | `python manage.py createsuperuser` | Admin foydalanuvchi yaratadi |
 | `python manage.py collectstatic` | Statik fayllarni `staticfiles/` ga yigʻadi (production) |
 | `python manage.py makemessages -l ru -l en` | `ru` va `en` uchun `.po` fayllarini yaratadi/yangilaydi |
-| `python manage.py compilemessages` | `.po` → `.mo` fayllarini kompilatsiya qiladi (Linux/macOS); Windows da quyidagi eslatmaga qarang |
+| `python manage.py compilemo` | `.po` → `.mo` fayllarini `polib` bilan kompilatsiya qiladi (GNU `gettext` talab qilinmaydi) |
 | `python manage.py prune_visitlogs` | Eski tashrif yozuvlarini oʻchiradi — `--days N` parametri bilan (Analitika; qoʻshilmoqda) |
 
-> **Windows + compilemessages:** GNU `msgfmt` Windows da odatda mavjud emas. Buning oʻrniga `polib` kutubxonasidan foydalaniladi — `.po` fayllarini `.mo` ga aylantirish uchun maxsus skript yoki `polib`-asosidagi yechim ishlatiladi (qarang: `docs/ORNATISH.md`).
+> **`.mo` kompilatsiyasi:** GNU `msgfmt` (gettext) Windows va bu serverda mavjud emas, shuning uchun standart `compilemessages` ishlamaydi. Buning oʻrniga `manage.py compilemo` ishlating — u `polib` (requirements.txt'da) yordamida barcha `locale/**/*.po` fayllarini `.mo` ga aylantiradi.
 
 ---
 
@@ -515,19 +515,12 @@ python manage.py makemessages -l ru -l en
 Tarjimalar kiritilgandan soʻng kompilatsiya:
 
 ```bash
-# Linux / macOS (GNU gettext oʻrnatilgan boʻlsa)
-python manage.py compilemessages
-
-# Windows — GNU msgfmt mavjud emas, polib bilan:
-python -c "
-import polib, pathlib
-for po_path in pathlib.Path('locale').rglob('*.po'):
-    po = polib.pofile(str(po_path))
-    po.save_as_mofile(str(po_path.with_suffix('.mo')))
-"
+python manage.py compilemo   # .po → .mo (polib; GNU gettext talab qilinmaydi)
 ```
 
-> **Windows eslatma:** `compilemessages` buyruqi GNU `msgfmt` dasturini talab qiladi va Windowsda ishlamaydi. `polib` kutubxonasi (`pip install polib`) bu muammoni hal qiladi.
+> **Eslatma:** standart `compilemessages` GNU `msgfmt` (gettext) dasturini talab qiladi —
+> u Windowsda ham, serverda ham mavjud emas. `compilemo` esa `polib` (requirements.txt'da)
+> yordamida barcha `locale/**/*.po` fayllarini `.mo` ga aylantiradi.
 
 ### 3. Til almashtirgich
 

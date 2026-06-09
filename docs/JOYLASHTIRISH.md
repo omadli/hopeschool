@@ -134,14 +134,12 @@ TELEGRAM_ADMIN_CHAT_ID=<chat-id>
 # venv aktiv, /home/hopeschool/app da
 python manage.py migrate
 python manage.py createcachetable          # rate-limit uchun umumiy cache jadvali
-python manage.py collectstatic --noinput   # → staticfiles/
-python manage.py tailwind build            # → assets/css/tailwind.css
+python manage.py tailwind build            # → assets/css/tailwind.css (collectstatic'dan OLDIN!)
+python manage.py collectstatic --noinput   # → staticfiles/  (tailwind.css yig'iladi; source.css o'tkazib yuboriladi)
 python manage.py createsuperuser
 
-# i18n (.mo) — bu serverda gettext oʻrnatilgan boʻlsa:
-python manage.py compilemessages
-# gettext yoʻq boʻlsa (polib bilan):
-python -c "import polib, pathlib; [polib.pofile(str(p)).save_as_mofile(str(p.with_suffix('.mo'))) for p in pathlib.Path('locale').rglob('*.po')]"
+# i18n (.mo) — bu serverda GNU gettext (msgfmt) yo'q, shuning uchun polib bilan:
+python manage.py compilemo                 # locale/**/*.po → .mo (polib, requirements.txt'da)
 
 # CEFR sertifikatlari — rasmlar media/ ga render qilinadi (git'da yo'q) va
 # URL'lar `cefr_urls.txt` faylidan o'qiladi (bu fayl gitignored — real o'quvchi
@@ -178,13 +176,13 @@ tekshiruvni avtomatlashtirilgan testda ham ushlab turadi
 ## gunicorn (systemd)
 
 ```bash
-sudo cp /home/hopeschool/app/deploy/gunicorn.service /etc/systemd/system/gunicorn.service
+sudo cp /home/hopeschool/app/deploy/hopeschool.service /etc/systemd/system/hopeschool.service
 # Unit sintaksisini tekshiring:
-systemd-analyze verify /etc/systemd/system/gunicorn.service
+systemd-analyze verify /etc/systemd/system/hopeschool.service
 sudo systemctl daemon-reload
-sudo systemctl enable --now gunicorn
-sudo systemctl status gunicorn          # active (running) boʻlishi kerak
-journalctl -u gunicorn -f               # loglar
+sudo systemctl enable --now hopeschool
+sudo systemctl status hopeschool        # active (running) boʻlishi kerak
+journalctl -u hopeschool -f             # loglar
 ```
 
 gunicorn unix-socketni `/run/hopeschool/gunicorn.sock` da yaratadi
@@ -199,8 +197,8 @@ sozlash mumkin (SQLite uchun 2–3 yetarli).
 # Rate-limit zonalari (http kontekstida — conf.d ga):
 sudo cp /home/hopeschool/app/deploy/nginx-ratelimit.conf /etc/nginx/conf.d/hopeschool-ratelimit.conf
 # Sayt konfiguratsiyasi:
-sudo cp /home/hopeschool/app/deploy/nginx.conf /etc/nginx/sites-available/hopeschool
-sudo ln -s /etc/nginx/sites-available/hopeschool /etc/nginx/sites-enabled/
+sudo cp /home/hopeschool/app/deploy/hopeschool.uz.conf /etc/nginx/sites-available/hopeschool.uz.conf
+sudo ln -s /etc/nginx/sites-available/hopeschool.uz.conf /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
 ```
@@ -213,11 +211,11 @@ sudo nginx -t && sudo systemctl reload nginx
 sudo certbot --nginx -d hopeschool.uz -d www.hopeschool.uz
 ```
 
-Certbot `nginx.conf` ni avtomatik tahrirlaydi: 443-portli TLS bloki va
+Certbot `hopeschool.uz.conf` ni avtomatik tahrirlaydi: 443-portli TLS bloki va
 HTTP→HTTPS yoʻnaltirishni qoʻshadi. Sertifikat avtomatik yangilanadi
 (`systemctl status certbot.timer`).
 
-HTTPS ishlagach, kerak boʻlsa `nginx.conf` dagi **CSP** (Content-Security-Policy)
+HTTPS ishlagach, kerak boʻlsa `hopeschool.uz.conf` dagi **CSP** (Content-Security-Policy)
 blokini izohdan chiqaring va brauzer konsolida har bir sahifani tekshiring
 (barcha tashqi resurslar — shriftlar, xaritalar, video — ishlashini).
 
@@ -303,11 +301,11 @@ cd /home/hopeschool/app && source venv/bin/activate
 git pull
 pip install -r requirements.txt
 python manage.py migrate
+python manage.py tailwind build            # collectstatic'dan OLDIN — aks holda CSS yig'ilmaydi
 python manage.py collectstatic --noinput
-python manage.py tailwind build
-python manage.py compilemessages   # yoki polib skripti
+python manage.py compilemo                 # .po → .mo (polib; serverda msgfmt yo'q)
 exit
-sudo systemctl restart gunicorn
+sudo systemctl restart hopeschool
 ```
 
 ---
@@ -333,8 +331,8 @@ tar czf /home/hopeschool/backups/media-$(date +%F).tar.gz -C /home/hopeschool/ap
 ### 502 Bad Gateway
 gunicorn ishlamayapti yoki socketga ruxsat yoʻq.
 ```bash
-sudo systemctl status gunicorn
-journalctl -u gunicorn -n 50
+sudo systemctl status hopeschool
+journalctl -u hopeschool -n 50
 ls -l /run/hopeschool/gunicorn.sock     # www-data oʻqiy olishi kerak
 ```
 

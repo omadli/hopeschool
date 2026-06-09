@@ -225,35 +225,20 @@ Bu buyruq `locale/ru/LC_MESSAGES/django.po` va `locale/en/LC_MESSAGES/django.po`
 
 ### .po → .mo kompilatsiyasi
 
-**Linux / macOS** (GNU `gettext` oʻrnatilgan boʻlsa):
+Standart `manage.py compilemessages` GNU `msgfmt` (gettext) ni talab qiladi — u Windowsda
+ham, bu Ubuntu serverda ham mavjud emas. Shuning uchun loyiha `polib`-asosidagi
+`compilemo` buyrugʻidan foydalanadi (`polib` `requirements.txt` ichida):
 
 ```bash
-python manage.py compilemessages
+python manage.py compilemo
 ```
 
-**Windows** — `compilemessages` GNU `msgfmt` ni talab qiladi, u Windowsda odatda mavjud emas. `polib` kutubxonasidan foydalaning:
+Bu barcha `locale/**/*.po` fayllarini `.mo` ga aylantiradi. Buyruq mavjud `.po`
+fayllarni faqat kompilatsiya qiladi (qayta yaratmaydi), shuning uchun har bir
+deployda xavfsiz ishga tushiriladi.
 
-```bash
-pip install polib
-```
-
-Soʻng quyidagi skriptni ishga tushiring (loyiha ildizidan):
-
-```python
-import polib, pathlib
-
-for po_path in pathlib.Path("locale").rglob("*.po"):
-    po = polib.pofile(str(po_path))
-    mo_path = po_path.with_suffix(".mo")
-    po.save_as_mofile(str(mo_path))
-    print(f"  {po_path} → {mo_path}")
-```
-
-Yoki bir satrda:
-
-```powershell
-python -c "import polib, pathlib; [polib.pofile(str(p)).save_as_mofile(str(p.with_suffix('.mo'))) for p in pathlib.Path('locale').rglob('*.po')]"
-```
+> `.po` fayllarini Uzbek manbadan **qayta yaratish** (yangi `_()` satrlari qoʻshilganda)
+> uchun esa `locale/_build_catalogs.py` (Windows dev vositasi) ishlatiladi.
 
 > **Eslatma:** `.mo` fayllari ikkilik formatda boʻlib, Git da hisobga olinmaydi (`.gitignore` da). Serverga joylashtirilganda kompilatsiya qayta bajarilishi kerak.
 
