@@ -43,3 +43,6 @@ desktop.ini
 _*.png
 _verify*.py
 _scratch/
+
+# ---- Real student data — MUST NOT enter the repo ----
+cefr_urls.txt

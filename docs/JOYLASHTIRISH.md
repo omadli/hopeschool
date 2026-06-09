@@ -143,9 +143,11 @@ python manage.py compilemessages
 # gettext yoʻq boʻlsa (polib bilan):
 python -c "import polib, pathlib; [polib.pofile(str(p)).save_as_mofile(str(p.with_suffix('.mo'))) for p in pathlib.Path('locale').rglob('*.po')]"
 
-# CEFR sertifikatlari — rasmlar media/ ga render qilinadi (git'da yo'q), shuning
-# uchun serverda qayta import qilinadi. URL'lar koddagi roʻyxatdan olinadi:
-python manage.py import_cefr
+# CEFR sertifikatlari — rasmlar media/ ga render qilinadi (git'da yo'q) va
+# URL'lar `cefr_urls.txt` faylidan o'qiladi (bu fayl gitignored — real o'quvchi
+# ma'lumotlari repo'da bo'lmaydi). Faylni serverga qo'lda ko'chiring, so'ng:
+python manage.py import_cefr            # cefr_urls.txt dan o'qiydi
+# yoki:  python manage.py import_cefr --file /path/urls.txt
 ```
 
 Kataloglarga yozish huquqini taʼminlang:
