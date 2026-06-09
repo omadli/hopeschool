@@ -7,8 +7,15 @@ from unfold.admin import ModelAdmin
 
 from apps.common.admin import AutoTranslateAdminMixin
 
-from .models import SiteConfig
+from .models import SiteConfig, SocialLink
 from .widgets import LeafletLocationWidget
+
+
+@admin.register(SocialLink)
+class SocialLinkAdmin(ModelAdmin):
+    list_display = ("__str__", "platform", "url", "is_active", "order")
+    list_editable = ("is_active", "order")
+    list_filter = ("platform", "is_active")
 
 
 class SiteConfigForm(forms.ModelForm):
@@ -40,10 +47,6 @@ class SiteConfigAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmi
             "classes": ("collapse",),
             "description": _("Faqat maxsus embed kerak bo‘lsa to‘ldiring. Bo‘sh qoldirilsa, "
                              "yuqoridagi koordinatalardan foydalaniladi."),
-        }),
-        (_("Ijtimoiy tarmoqlar"), {
-            "fields": ("instagram_url", "telegram_url", "telegram_group_url",
-                       "youtube_url", "facebook_url", "tiktok_url"),
         }),
         (_("SEO"), {
             "fields": ("seo_title", "seo_description", "og_image",

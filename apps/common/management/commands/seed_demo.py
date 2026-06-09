@@ -10,7 +10,7 @@ from apps.courses.models import Course, CourseCategory
 from apps.gallery.models import GalleryAlbum, GalleryImage
 from apps.news.models import NewsPost
 from apps.pages.models import AboutSection, StatItem, WhyUsItem
-from apps.siteconfig.models import SiteConfig
+from apps.siteconfig.models import SiteConfig, SocialLink
 from apps.teachers.models import Teacher
 from apps.testimonials.models import Testimonial
 
@@ -48,7 +48,8 @@ class Command(BaseCommand):
 
     def _clear(self):
         for model in (GalleryImage, GalleryAlbum, Course, CourseCategory, Teacher,
-                      NewsPost, Certificate, Testimonial, WhyUsItem, StatItem, AboutSection):
+                      NewsPost, Certificate, Testimonial, WhyUsItem, StatItem,
+                      AboutSection, SocialLink):
             model.objects.all().delete()
 
     def _siteconfig(self):
@@ -64,13 +65,14 @@ class Command(BaseCommand):
         s.working_hours = "Dush–Shan, 09:00–18:00"
         s.latitude = "40.001100"
         s.longitude = "64.379700"
-        s.telegram_url = "https://t.me/Hope_school_channel"
-        s.telegram_group_url = "https://t.me/hope_school_group"
         s.seo_title = "Hope School — Bogʻiturkon, Romitan | Ingliz tili, matematika, kimyo, biologiya"
         s.seo_description = ("Bogʻiturkon qishlogʻidagi Hope School oʻquv markazi. 0 dan boshlab "
                              "ingliz tili, matematika, kimyo va biologiya boʻyicha milliy va xalqaro "
                              "sertifikatlarga tayyorlov.")
         s.save()
+
+        SocialLink.objects.create(platform="telegram", url="https://t.me/Hope_school_channel", order=0)
+        SocialLink.objects.create(platform="telegram_group", url="https://t.me/hope_school_group", order=1)
 
     def _about(self):
         AboutSection.objects.create(

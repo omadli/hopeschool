@@ -3,7 +3,7 @@ from django.urls import translate_url
 
 from apps.courses.models import Course
 from apps.pages.models import HeroSection, SiteCopy
-from apps.siteconfig.models import SiteConfig
+from apps.siteconfig.models import SiteConfig, SocialLink
 
 
 def site_context(request):
@@ -18,6 +18,7 @@ def site_context(request):
         "site_config": SiteConfig.get_solo(),
         "hero_section": HeroSection.get_solo(),
         "site_copy": SiteCopy.get_solo(),
+        "social_links": SocialLink.objects.filter(is_active=True),
         "alt_urls": alt_urls,
         "lead_courses": Course.objects.filter(is_active=True).only("id", "name"),
     }

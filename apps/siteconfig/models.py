@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel
 
+from apps.common.models import OrderedActiveModel
 from apps.common.utils import normalize_phone
 from apps.common.validators import image_validators
 
@@ -37,13 +38,7 @@ class SiteConfig(SingletonModel):
     google_maps_embed = models.TextField(_("Google Maps embed"), blank=True)
     yandex_maps_embed = models.TextField(_("Yandex Maps embed"), blank=True)
 
-    # --- Social ---
-    instagram_url = models.URLField(_("Instagram"), blank=True)
-    telegram_url = models.URLField(_("Telegram kanal"), blank=True)
-    telegram_group_url = models.URLField(_("Telegram guruh"), blank=True)
-    youtube_url = models.URLField(_("YouTube"), blank=True)
-    facebook_url = models.URLField(_("Facebook"), blank=True)
-    tiktok_url = models.URLField(_("TikTok"), blank=True)
+    # --- Social links are now managed via the repeatable SocialLink model ---
 
     # --- SEO defaults ---
     seo_title = models.CharField(_("SEO sarlavha"), max_length=200, blank=True)
@@ -109,3 +104,43 @@ class SiteConfig(SingletonModel):
             return (f"https://yandex.com/maps/?ll={self.longitude}%2C{self.latitude}"
                     f"&z=16&pt={self.longitude}%2C{self.latitude}")
         return ""
+
+
+class SocialLink(OrderedActiveModel):
+    """A site-wide social network link. Repeatable so links can be added/removed
+    freely; the platform drives the brand icon (see social_icon template tag)."""
+
+    class Platform(models.TextChoices):
+        INSTAGRAM = "instagram", "Instagram"
+        TELEGRAM = "telegram", "Telegram"
+        TELEGRAM_GROUP = "telegram_group", _("Telegram guruh")
+        YOUTUBE = "youtube", "YouTube"
+        FACEBOOK = "facebook", "Facebook"
+        TIKTOK = "tiktok", "TikTok"
+        TWITTER = "twitter", "X (Twitter)"
+        LINKEDIN = "linkedin", "LinkedIn"
+        WHATSAPP = "whatsapp", "WhatsApp"
+        WEBSITE = "website", _("Veb-sayt")
+
+    platform = models.CharField(_("Platforma"), max_length=20, choices=Platform.choices)
+    label = models.CharField(
+        _("Nomi (ixtiyoriy)"), max_length=60, blank=True,
+        help_text=_("Boʻsh qoldirilsa, platforma nomi ishlatiladi."),
+    )
+    url = models.URLField(_("Havola"))
+
+    class Meta(OrderedActiveModel.Meta):
+        verbose_name = _("Ijtimoiy tarmoq")
+        verbose_name_plural = _("Ijtimoiy tarmoqlar")
+
+    def __str__(self):
+        return self.label or self.get_platform_display()
+
+    @property
+    def display_label(self):
+        return self.label or self.get_platform_display()
+
+    @property
+    def icon_key(self):
+        # telegram_group shares the telegram brand icon
+        return "telegram" if self.platform == self.Platform.TELEGRAM_GROUP else self.platform

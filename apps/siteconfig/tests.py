@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from apps.siteconfig.models import SiteConfig
+from apps.siteconfig.models import SiteConfig, SocialLink
 
 User = get_user_model()
 
@@ -90,3 +90,56 @@ class SiteConfigAdminTests(TestCase):
         SiteConfig.get_solo()  # ensure the singleton exists
         url = reverse("admin:siteconfig_siteconfig_change", args=[1])
         self.assertEqual(self._get(url).status_code, 200)
+
+
+# ---------------------------------------------------------------------------
+# Phase F — repeatable SocialLink
+# ---------------------------------------------------------------------------
+class SocialLinkModelTests(TestCase):
+    def test_str_uses_platform_when_no_label(self):
+        s = SocialLink(platform="instagram", url="https://instagram.com/x")
+        self.assertEqual(str(s), "Instagram")
+
+    def test_str_uses_custom_label(self):
+        s = SocialLink(platform="instagram", label="Bizning IG", url="https://instagram.com/x")
+        self.assertEqual(str(s), "Bizning IG")
+
+    def test_telegram_group_shares_telegram_icon(self):
+        s = SocialLink(platform="telegram_group", url="https://t.me/g")
+        self.assertEqual(s.icon_key, "telegram")
+
+    def test_icon_key_default(self):
+        s = SocialLink(platform="youtube", url="https://youtube.com/x")
+        self.assertEqual(s.icon_key, "youtube")
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class SocialLinkRenderTests(TestCase):
+    def test_link_renders_in_footer_and_jsonld(self):
+        SocialLink.objects.create(
+            platform="telegram", url="https://t.me/hope_demo", is_active=True)
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertIn("https://t.me/hope_demo", body)      # footer icon link
+        self.assertIn('"sameAs"', body)                     # JSON-LD block present
+
+    def test_inactive_link_not_rendered(self):
+        SocialLink.objects.create(
+            platform="tiktok", url="https://tiktok.com/@hidden", is_active=False)
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertNotIn("tiktok.com/@hidden", body)
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class SocialLinkAdminTests(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username="admin_social", password="adminpass123", email="s@test.com")
+        self.client.force_login(self.superuser)
+
+    def test_changelist(self):
+        url = reverse("admin:siteconfig_sociallink_changelist")
+        self.assertEqual(self.client.get(url, follow=True).status_code, 200)
+
+    def test_add(self):
+        url = reverse("admin:siteconfig_sociallink_add")
+        self.assertEqual(self.client.get(url, follow=True).status_code, 200)

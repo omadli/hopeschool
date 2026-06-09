@@ -245,6 +245,26 @@ class IconTagTests(SimpleTestCase):
         self.assertIn('class="my-class"', result)
 
 
+class SocialIconTagTests(SimpleTestCase):
+    """apps.common.templatetags.ui — social_icon brand SVG tag."""
+
+    def setUp(self):
+        from apps.common.templatetags.ui import social_icon
+        self.social_icon = social_icon
+
+    def test_known_platform_svg(self):
+        result = self.social_icon("telegram")
+        self.assertIn("<svg", result)
+        self.assertIn('fill="currentColor"', result)
+
+    def test_unknown_platform_falls_back(self):
+        result = self.social_icon("myspace")
+        self.assertIn("<svg", result)  # falls back to website icon
+
+    def test_custom_size(self):
+        self.assertIn('width="24"', self.social_icon("youtube", size=24))
+
+
 class MapSrcTagTests(SimpleTestCase):
     """apps.common.templatetags.ui — google_map_src / yandex_map_src tags."""
 

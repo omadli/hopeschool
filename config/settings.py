@@ -186,11 +186,33 @@ CKEDITOR_5_MAX_FILE_SIZE = 5  # MB
 CKEDITOR_5_CONFIGS = {
     "default": {
         "toolbar": [
-            "heading", "|", "bold", "italic", "underline", "link", "|",
-            "bulletedList", "numberedList", "blockQuote", "|",
-            "insertImage", "undo", "redo",
+            "heading", "|",
+            "bold", "italic", "underline", "strikethrough", "code", "|",
+            "fontSize", "fontColor", "highlight", "|",
+            "alignment", "|",
+            "bulletedList", "numberedList", "todoList", "outdent", "indent", "|",
+            "link", "blockQuote", "insertImage", "mediaEmbed", "insertTable",
+            "horizontalLine", "|",
+            "removeFormat", "sourceEditing", "|",
+            "undo", "redo",
         ],
-        "height": "320px",
+        "height": "420px",
+        "image": {
+            "toolbar": ["imageTextAlternative", "|", "resizeImage"],
+        },
+        "table": {
+            "contentToolbar": ["tableColumn", "tableRow", "mergeTableCells"],
+        },
+        # Save the real <iframe> into the field HTML so embeds render on the site.
+        "mediaEmbed": {"previewsInData": True},
+        "heading": {
+            "options": [
+                {"model": "paragraph", "title": "Paragraph", "class": "ck-heading_paragraph"},
+                {"model": "heading2", "view": "h2", "title": "Sarlavha 2", "class": "ck-heading_heading2"},
+                {"model": "heading3", "view": "h3", "title": "Sarlavha 3", "class": "ck-heading_heading3"},
+                {"model": "heading4", "view": "h4", "title": "Sarlavha 4", "class": "ck-heading_heading4"},
+            ],
+        },
     },
 }
 
@@ -303,6 +325,7 @@ UNFOLD = {
                 "title": _("Sozlamalar"),
                 "items": [
                     {"title": _("Sayt sozlamalari"), "icon": "settings", "link": reverse_lazy("admin:siteconfig_siteconfig_changelist")},
+                    {"title": _("Ijtimoiy tarmoqlar"), "icon": "share", "link": reverse_lazy("admin:siteconfig_sociallink_changelist")},
                     {"title": _("Foydalanuvchilar"), "icon": "person", "link": reverse_lazy("admin:auth_user_changelist")},
                 ],
             },

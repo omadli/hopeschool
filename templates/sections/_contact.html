@@ -73,9 +73,7 @@
         <div>
           <div class="font-display font-bold text-[14px]">{% translate "Ijtimoiy tarmoqlar" %}</div>
           <div class="mt-1 flex flex-wrap items-center gap-2">
-            {% if site_config.telegram_url %}<a href="{{ site_config.telegram_url }}" target="_blank" rel="noopener" class="text-[13px] font-semibold text-brand-blue-600 dark:text-brand-blue-300 hover:underline">{% translate "Kanal" %}</a>{% endif %}
-            {% if site_config.telegram_group_url %}<span class="txt-soft">·</span><a href="{{ site_config.telegram_group_url }}" target="_blank" rel="noopener" class="text-[13px] font-semibold text-brand-blue-600 dark:text-brand-blue-300 hover:underline">{% translate "Guruh" %}</a>{% endif %}
-            {% if site_config.instagram_url %}<span class="txt-soft">·</span><a href="{{ site_config.instagram_url }}" target="_blank" rel="noopener" class="text-[13px] font-semibold text-brand-blue-600 dark:text-brand-blue-300 hover:underline">Instagram</a>{% endif %}
+            {% for s in social_links %}<a href="{{ s.url }}" target="_blank" rel="noopener" class="h-8 w-8 grid place-items-center rounded-lg border bd text-brand-blue-600 dark:text-brand-blue-300 hover:border-brand-blue-300 transition" aria-label="{{ s.display_label }}" title="{{ s.display_label }}">{% social_icon s.icon_key size=15 %}</a>{% empty %}<span class="text-[13px] txt-soft">—</span>{% endfor %}
           </div>
         </div>
       </div>
