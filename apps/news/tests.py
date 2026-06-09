@@ -94,6 +94,12 @@ class NewsAdminTests(TestCase):
         url = reverse("admin:news_newspost_add")
         self.assertEqual(self._get(url).status_code, 200)
 
+    def test_ckeditor_richer_toolbar_config(self):
+        """The expanded CKEditor toolbar config must reach the change form."""
+        html = self._get(reverse("admin:news_newspost_add")).content.decode("utf-8", "replace")
+        for item in ("mediaEmbed", "fontColor", "insertTable", "sourceEditing"):
+            self.assertIn(item, html)
+
 
 # ---------------------------------------------------------------------------
 # Phase E — news video
