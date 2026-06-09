@@ -68,11 +68,48 @@ def translate_text(text: str, target: str, source: str = "uz") -> str:
     ).strip()
 
 
+def _translate_segments(texts: list, target: str, source: str) -> list:
+    """Translate many short strings with FEW requests by joining on newlines.
+
+    An HTML article has dozens of text nodes; translating each with its own HTTP
+    round-trip would blow past the request timeout. Instead we newline-join them
+    (a boundary the engine preserves) and translate in <=_MAX_CHUNK blocks. If
+    the line counts ever fail to line up, we fall back to per-item translation so
+    correctness is never sacrificed for speed. Returns a list aligned to `texts`.
+    """
+    if not texts:
+        return []
+    flat = [t.replace("\n", " ").strip() for t in texts]
+
+    chunks, cur, cur_len = [], [], 0
+    for line in flat:
+        add = len(line) + 1
+        if cur and cur_len + add > _MAX_CHUNK:
+            chunks.append(cur)
+            cur, cur_len = [], 0
+        cur.append(line)
+        cur_len += add
+    if cur:
+        chunks.append(cur)
+
+    result = []
+    for chunk in chunks:
+        translated = _engine_translate("\n".join(chunk), target, source)
+        lines = translated.split("\n")
+        if len(lines) == len(chunk):
+            result.extend(lines)
+        else:
+            # Alignment broke for this block — translate its items individually.
+            result.extend(_engine_translate(item, target, source) for item in chunk)
+    return result
+
+
 def translate_html(html: str, target: str, source: str = "uz") -> str:
     """Translate the text nodes of an HTML fragment, preserving all markup.
 
     Used for CKEditor fields: translating the raw HTML string directly would
-    corrupt tags/attributes, so we walk the DOM and translate only visible text.
+    corrupt tags/attributes, so we walk the DOM and translate only visible text
+    (batched — see _translate_segments).
     """
     html = (html or "").strip()
     if not html or target == source:
@@ -85,20 +122,25 @@ def translate_html(html: str, target: str, source: str = "uz") -> str:
 
     soup = BeautifulSoup(html, "html.parser")
     skip_parents = {"script", "style"}
-    for node in list(soup.descendants):
+    nodes, raws = [], []
+    for node in soup.descendants:
         if not isinstance(node, NavigableString):
             continue
         if node.parent and node.parent.name in skip_parents:
             continue
-        raw = str(node)
-        if not raw.strip():
+        if not str(node).strip():
             continue
-        translated = translate_text(raw, target, source)
-        if translated:
-            # Preserve leading/trailing whitespace around the text node.
-            lead = raw[: len(raw) - len(raw.lstrip())]
-            trail = raw[len(raw.rstrip()):]
-            node.replace_with(f"{lead}{translated}{trail}")
+        nodes.append(node)
+        raws.append(str(node))
+
+    translated = _translate_segments([r.strip() for r in raws], target, source)
+    for node, raw, tr in zip(nodes, raws, translated):
+        if not tr:
+            continue
+        # Preserve leading/trailing whitespace around the text node.
+        lead = raw[: len(raw) - len(raw.lstrip())]
+        trail = raw[len(raw.rstrip()):]
+        node.replace_with(f"{lead}{tr}{trail}")
     return str(soup)
 
 

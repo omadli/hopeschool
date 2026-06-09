@@ -590,7 +590,7 @@ class Phase6MediaTagsTests(TestCase):
 # ---------------------------------------------------------------------------
 # Phase C — auto-translation (uz -> ru/en), engine mocked (no network)
 # ---------------------------------------------------------------------------
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -607,8 +607,12 @@ User = get_user_model()
 
 
 def _fake_engine(text, target, source):
-    """Deterministic stand-in for the MT engine: tags each string with target."""
-    return f"[{target}]{text}"
+    """Deterministic stand-in for the MT engine: tags each line with target.
+
+    Line-aware so it mimics a real engine preserving newline boundaries — this
+    lets the batched translate_html path (newline-joined segments) be tested.
+    """
+    return "\n".join(f"[{target}]{line}" for line in text.split("\n"))
 
 
 @patch("apps.common.translation._engine_translate", _fake_engine)
@@ -635,6 +639,16 @@ class TranslateBackendTests(SimpleTestCase):
 
     def test_translate_html_empty(self):
         self.assertEqual(translate_html("", "ru"), "")
+
+    def test_translate_html_batches_requests(self):
+        """A many-node article must not fan out into one HTTP call per node."""
+        html = "<p>" + "</p><p>".join(f"Qator {i}" for i in range(30)) + "</p>"
+        engine = MagicMock(side_effect=_fake_engine)
+        with patch("apps.common.translation._engine_translate", engine):
+            out = translate_html(html, "ru")
+        self.assertLessEqual(engine.call_count, 2)  # batched, not 30 calls
+        self.assertIn("[ru]Qator 0", out)
+        self.assertIn("[ru]Qator 29", out)
 
 
 @patch("apps.common.translation._engine_translate", _fake_engine)
