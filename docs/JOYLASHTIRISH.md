@@ -142,6 +142,10 @@ python manage.py createsuperuser
 python manage.py compilemessages
 # gettext yoʻq boʻlsa (polib bilan):
 python -c "import polib, pathlib; [polib.pofile(str(p)).save_as_mofile(str(p.with_suffix('.mo'))) for p in pathlib.Path('locale').rglob('*.po')]"
+
+# CEFR sertifikatlari — rasmlar media/ ga render qilinadi (git'da yo'q), shuning
+# uchun serverda qayta import qilinadi. URL'lar koddagi roʻyxatdan olinadi:
+python manage.py import_cefr
 ```
 
 Kataloglarga yozish huquqini taʼminlang:
