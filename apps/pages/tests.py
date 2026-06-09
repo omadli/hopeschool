@@ -8,7 +8,7 @@ from django.urls import reverse
 from apps.certificates.models import Certificate
 from apps.courses.models import Course
 from apps.news.models import NewsPost
-from apps.pages.models import AboutSection, HeroSection, SiteCopy
+from apps.pages.models import AboutSection, HeroSection, HomeVideo, SiteCopy
 from apps.siteconfig.models import SiteConfig
 
 User = get_user_model()
@@ -155,6 +155,25 @@ class EditableSiteCopyTests(TestCase):
         copy.save()
         body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
         self.assertIn("Sinov footer 2026", body)
+
+
+# ---------------------------------------------------------------------------
+# Phase E — home page video block
+# ---------------------------------------------------------------------------
+@override_settings(STORAGES=_STATIC_STORAGE)
+class HomeVideoTests(TestCase):
+    def test_disabled_video_not_rendered(self):
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertNotIn('id="video"', body)
+
+    def test_enabled_video_rendered(self):
+        hv = HomeVideo.get_solo()
+        hv.is_enabled = True
+        hv.video_url = "https://youtu.be/dQw4w9WgXcQ"
+        hv.save()
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertIn('id="video"', body)
+        self.assertIn("youtube.com/embed/dQw4w9WgXcQ", body)
 
 
 # ---------------------------------------------------------------------------

@@ -92,3 +92,25 @@ class GalleryAdminTests(TestCase):
     def test_galleryalbum_add(self):
         url = reverse("admin:gallery_galleryalbum_add")
         self.assertEqual(self._get(url).status_code, 200)
+
+
+# ---------------------------------------------------------------------------
+# Phase E — gallery video
+# ---------------------------------------------------------------------------
+@override_settings(STORAGES=_STATIC_STORAGE)
+class GalleryVideoTests(TestCase):
+    def test_video_renders_on_list(self):
+        from apps.gallery.models import GalleryVideo
+        GalleryVideo.objects.create(
+            title="Tadbir", video_url="https://youtu.be/dQw4w9WgXcQ", is_active=True)
+        body = self.client.get(reverse("gallery:list"), follow=True).content.decode(
+            "utf-8", "replace")
+        self.assertIn("youtube.com/embed/dQw4w9WgXcQ", body)
+
+    def test_galleryvideo_admin_changelist(self):
+        from django.contrib.auth import get_user_model
+        admin = get_user_model().objects.create_superuser(
+            username="admin_gv", password="pw12345678", email="gv@test.com")
+        self.client.force_login(admin)
+        url = reverse("admin:gallery_galleryvideo_changelist")
+        self.assertEqual(self.client.get(url, follow=True).status_code, 200)

@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django_ckeditor_5.fields import CKEditor5Field
 
 from apps.common.constants import ICON_CHOICES
-from apps.common.models import OrderedActiveModel
+from apps.common.models import OrderedActiveModel, VideoMixin
 from apps.common.validators import image_validators
 
 
@@ -20,7 +20,7 @@ class CourseCategory(OrderedActiveModel):
         return self.name
 
 
-class Course(OrderedActiveModel):
+class Course(VideoMixin, OrderedActiveModel):
     category = models.ForeignKey(
         CourseCategory, on_delete=models.SET_NULL, null=True, blank=True,
         related_name="courses", verbose_name=_("Turkum"),
@@ -55,3 +55,22 @@ class Course(OrderedActiveModel):
 
     def get_absolute_url(self):
         return reverse("courses:detail", kwargs={"slug": self.slug})
+
+
+class CourseImage(OrderedActiveModel):
+    """Extra images shown in a gallery on the course detail page."""
+
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name="images",
+        verbose_name=_("Kurs"),
+    )
+    image = models.ImageField(_("Rasm"), upload_to="courses/gallery/",
+                              validators=image_validators)
+    caption = models.CharField(_("Izoh"), max_length=200, blank=True)
+
+    class Meta(OrderedActiveModel.Meta):
+        verbose_name = _("Kurs rasmi")
+        verbose_name_plural = _("Kurs rasmlari")
+
+    def __str__(self):
+        return self.caption or f"Rasm #{self.pk}"

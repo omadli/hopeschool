@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from apps.common.models import OrderedActiveModel
+from apps.common.models import OrderedActiveModel, VideoMixin
 from apps.common.validators import image_validators
 
 
@@ -35,3 +35,25 @@ class GalleryImage(OrderedActiveModel):
 
     def __str__(self):
         return self.caption or f"Rasm #{self.pk}"
+
+
+class GalleryVideo(VideoMixin, OrderedActiveModel):
+    """A video (YouTube/embed or uploaded) shown in the gallery."""
+
+    album = models.ForeignKey(
+        GalleryAlbum, on_delete=models.CASCADE, related_name="videos",
+        verbose_name=_("Albom"), null=True, blank=True,
+    )
+    title = models.CharField(_("Sarlavha"), max_length=200, blank=True)
+    thumbnail = models.ImageField(
+        _("Muqova rasmi"), upload_to="gallery/video_covers/", blank=True,
+        validators=image_validators,
+        help_text=_("Ixtiyoriy — yuklangan video uchun muqova."),
+    )
+
+    class Meta(OrderedActiveModel.Meta):
+        verbose_name = _("Galereya videosi")
+        verbose_name_plural = _("Galereya videolari")
+
+    def __str__(self):
+        return self.title or f"Video #{self.pk}"

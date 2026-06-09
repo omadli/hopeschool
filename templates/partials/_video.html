@@ -1,0 +1,23 @@
+{% comment %}
+  Reusable video player. Pass an object carrying the common VideoMixin:
+      {% include "partials/_video.html" with video=course %}
+  Optional: title (for the iframe a11y title), css (extra wrapper classes).
+  Renders a YouTube/Vimeo/embed iframe, else an uploaded-file <video>, else
+  nothing.
+{% endcomment %}
+{% if video.video_embed %}
+<div class="relative w-full overflow-hidden rounded-card border bd aspect-video {{ css }}">
+  <iframe class="absolute inset-0 h-full w-full"
+          src="{{ video.video_embed }}"
+          title="{{ title|default:'Video' }}"
+          loading="lazy" frameborder="0" referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+</div>
+{% elif video.video_file %}
+<div class="relative w-full overflow-hidden rounded-card border bd {{ css }}">
+  <video class="w-full block" controls preload="metadata">
+    <source src="{{ video.video_file.url }}">
+  </video>
+</div>
+{% endif %}

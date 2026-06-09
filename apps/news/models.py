@@ -4,11 +4,11 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_ckeditor_5.fields import CKEditor5Field
 
-from apps.common.models import TimeStampedModel
+from apps.common.models import TimeStampedModel, VideoMixin
 from apps.common.validators import image_validators
 
 
-class NewsPost(TimeStampedModel):
+class NewsPost(VideoMixin, TimeStampedModel):
     title = models.CharField(_("Sarlavha"), max_length=200)
     slug = models.SlugField(_("Slug"), max_length=220, unique=True)
     excerpt = models.CharField(_("Qisqa matn"), max_length=300, blank=True)

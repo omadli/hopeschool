@@ -5,11 +5,12 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 
-from apps.common.utils import normalize_phone
+from apps.common.utils import normalize_phone, video_embed_url
 from apps.common.validators import (
     MaxFileSizeValidator,
     image_validators,
     pdf_validators,
+    video_validators,
 )
 
 
@@ -105,6 +106,70 @@ class ImageValidatorsExtensionTests(SimpleTestCase):
         ext_validator = pdf_validators[0]
         # Should not raise
         ext_validator(f)
+
+
+# ---------------------------------------------------------------------------
+# Phase E — video embed helper + validators + VideoMixin
+# ---------------------------------------------------------------------------
+class VideoEmbedUrlTests(SimpleTestCase):
+    """apps.common.utils.video_embed_url"""
+
+    def test_youtube_watch(self):
+        self.assertEqual(
+            video_embed_url("https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+            "https://www.youtube.com/embed/dQw4w9WgXcQ")
+
+    def test_youtu_be(self):
+        self.assertEqual(
+            video_embed_url("https://youtu.be/dQw4w9WgXcQ"),
+            "https://www.youtube.com/embed/dQw4w9WgXcQ")
+
+    def test_youtube_shorts(self):
+        self.assertEqual(
+            video_embed_url("https://youtube.com/shorts/dQw4w9WgXcQ"),
+            "https://www.youtube.com/embed/dQw4w9WgXcQ")
+
+    def test_already_embed_unchanged(self):
+        url = "https://www.youtube.com/embed/dQw4w9WgXcQ"
+        self.assertEqual(video_embed_url(url), url)
+
+    def test_vimeo(self):
+        self.assertEqual(
+            video_embed_url("https://vimeo.com/123456789"),
+            "https://player.vimeo.com/video/123456789")
+
+    def test_unknown_passthrough(self):
+        self.assertEqual(video_embed_url("https://example.com/x.mp4"),
+                         "https://example.com/x.mp4")
+
+    def test_empty(self):
+        self.assertEqual(video_embed_url(""), "")
+        self.assertEqual(video_embed_url(None), "")
+
+
+class VideoValidatorsTests(SimpleTestCase):
+    def test_accepts_mp4(self):
+        f = SimpleUploadedFile("clip.mp4", b"fake", content_type="video/mp4")
+        video_validators[0](f)  # extension check, should not raise
+
+    def test_rejects_exe(self):
+        from django.core.validators import FileExtensionValidator
+        f = SimpleUploadedFile("bad.exe", b"fake")
+        self.assertIsInstance(video_validators[0], FileExtensionValidator)
+        with self.assertRaises(ValidationError):
+            video_validators[0](f)
+
+
+class VideoMixinTests(SimpleTestCase):
+    """VideoMixin.has_video / video_embed via a concrete model instance."""
+
+    def test_properties(self):
+        from apps.news.models import NewsPost
+        post = NewsPost(title="x", slug="x")
+        self.assertFalse(post.has_video)
+        post.video_url = "https://youtu.be/dQw4w9WgXcQ"
+        self.assertTrue(post.has_video)
+        self.assertEqual(post.video_embed, "https://www.youtube.com/embed/dQw4w9WgXcQ")
 
 
 # ---------------------------------------------------------------------------

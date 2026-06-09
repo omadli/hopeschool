@@ -17,6 +17,7 @@ class NewsPostAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin)
     prepopulated_fields = {"slug": ("title",)}
     fieldsets = (
         (None, {"fields": ("title", "slug", "excerpt", "body", "cover_image")}),
+        ("Video", {"fields": ("video_url", "video_file")}),
         ("Belgi", {"fields": ("badge", "badge_accent")}),
         ("Holat", {"fields": ("published_at", "is_published", "is_featured")}),
         ("SEO", {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),

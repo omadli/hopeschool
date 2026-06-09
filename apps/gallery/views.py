@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 
-from .models import GalleryAlbum, GalleryImage
+from .models import GalleryAlbum, GalleryImage, GalleryVideo
 
 
 class GalleryListView(TemplateView):
@@ -13,4 +13,5 @@ class GalleryListView(TemplateView):
             .prefetch_related("images")
         )
         ctx["images"] = GalleryImage.objects.filter(is_active=True).select_related("album")
+        ctx["videos"] = GalleryVideo.objects.filter(is_active=True).select_related("album")
         return ctx

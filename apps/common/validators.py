@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 MAX_IMAGE_MB = 5
 MAX_DOC_MB = 10
+MAX_VIDEO_MB = 50
 
 
 @deconstructible
@@ -33,4 +34,9 @@ image_validators = [
 pdf_validators = [
     FileExtensionValidator(allowed_extensions=["pdf"]),
     MaxFileSizeValidator(MAX_DOC_MB),
+]
+
+video_validators = [
+    FileExtensionValidator(allowed_extensions=["mp4", "webm", "ogg", "mov"]),
+    MaxFileSizeValidator(MAX_VIDEO_MB),
 ]

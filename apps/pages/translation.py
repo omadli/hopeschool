@@ -1,6 +1,13 @@
 from modeltranslation.translator import TranslationOptions, register
 
-from .models import AboutSection, HeroSection, SiteCopy, StatItem, WhyUsItem
+from .models import (
+    AboutSection,
+    HeroSection,
+    HomeVideo,
+    SiteCopy,
+    StatItem,
+    WhyUsItem,
+)
 
 
 @register(AboutSection)
@@ -37,3 +44,8 @@ class SiteCopyTR(TranslationOptions):
               "contact_intro", "lead_submit_label", "modal_title",
               "modal_subtitle", "modal_submit_label", "footer_note")
     fallback_undefined = ""
+
+
+@register(HomeVideo)
+class HomeVideoTR(TranslationOptions):
+    fields = ("title", "subtitle")

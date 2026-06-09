@@ -266,6 +266,7 @@ UNFOLD = {
                     {"title": _("Oʻqituvchilar"), "icon": "groups", "link": reverse_lazy("admin:teachers_teacher_changelist")},
                     {"title": _("Yangiliklar"), "icon": "campaign", "link": reverse_lazy("admin:news_newspost_changelist")},
                     {"title": _("Galereya"), "icon": "photo_library", "link": reverse_lazy("admin:gallery_galleryalbum_changelist")},
+                    {"title": _("Galereya videolari"), "icon": "smart_display", "link": reverse_lazy("admin:gallery_galleryvideo_changelist")},
                     {"title": _("Sertifikatlar"), "icon": "workspace_premium", "link": reverse_lazy("admin:certificates_certificate_changelist")},
                     {"title": _("Fikrlar"), "icon": "reviews", "link": reverse_lazy("admin:testimonials_testimonial_changelist")},
                 ],
@@ -274,6 +275,7 @@ UNFOLD = {
                 "title": _("Bosh sahifa bloklari"),
                 "items": [
                     {"title": _("Hero bo'limi"), "icon": "wallpaper", "link": reverse_lazy("admin:pages_herosection_changelist")},
+                    {"title": _("Bosh sahifa videosi"), "icon": "smart_display", "link": reverse_lazy("admin:pages_homevideo_changelist")},
                     {"title": _("Biz haqimizda"), "icon": "article", "link": reverse_lazy("admin:pages_aboutsection_changelist")},
                     {"title": _("Statistika"), "icon": "bar_chart", "link": reverse_lazy("admin:pages_statitem_changelist")},
                     {"title": _("Nega biz"), "icon": "verified", "link": reverse_lazy("admin:pages_whyusitem_changelist")},

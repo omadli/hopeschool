@@ -6,7 +6,14 @@ from unfold.admin import ModelAdmin
 
 from apps.common.admin import AutoTranslateAdminMixin
 
-from .models import AboutSection, HeroSection, SiteCopy, StatItem, WhyUsItem
+from .models import (
+    AboutSection,
+    HeroSection,
+    HomeVideo,
+    SiteCopy,
+    StatItem,
+    WhyUsItem,
+)
 
 
 @admin.register(AboutSection)
@@ -36,6 +43,18 @@ class HeroSectionAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdm
         }),
         (_("Tugmalar"), {
             "fields": ("primary_cta", "secondary_cta"),
+        }),
+    )
+
+
+@admin.register(HomeVideo)
+class HomeVideoAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin, SingletonModelAdmin):
+    fieldsets = (
+        (_("Holat"), {"fields": ("is_enabled",)}),
+        (_("Matn"), {"fields": ("title", "subtitle")}),
+        (_("Video"), {
+            "fields": ("video_url", "video_file"),
+            "description": _("YouTube/Vimeo havola yoki video fayl yuklang."),
         }),
     )
 

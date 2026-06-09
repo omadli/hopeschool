@@ -17,3 +17,24 @@ def normalize_phone(value):
     if len(digits) == 12 and digits.startswith("998"):
         return "+" + digits
     return value  # leave as-is if unexpected format
+
+
+def video_embed_url(url):
+    """Convert a YouTube/Vimeo watch URL to an embeddable iframe ``src``.
+
+    Returns an already-embeddable URL unchanged, recognises the common YouTube
+    (watch / youtu.be / shorts) and Vimeo forms, and falls back to the original
+    URL for anything else (best effort — admins can paste a raw embed link).
+    """
+    if not url:
+        return ""
+    url = url.strip()
+    if "/embed/" in url or "player.vimeo.com" in url:
+        return url
+    m = re.search(r"(?:youtube\.com/(?:watch\?v=|shorts/)|youtu\.be/)([\w-]{11})", url)
+    if m:
+        return f"https://www.youtube.com/embed/{m.group(1)}"
+    m = re.search(r"vimeo\.com/(?:video/)?(\d+)", url)
+    if m:
+        return f"https://player.vimeo.com/video/{m.group(1)}"
+    return url

@@ -1,6 +1,36 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from apps.common.validators import video_validators
+
+
+class VideoMixin(models.Model):
+    """Optional video on any content model: a YouTube/Vimeo/embed URL OR an
+    uploaded file. The URL takes precedence when both are set."""
+
+    video_url = models.URLField(
+        _("Video havola"), blank=True,
+        help_text=_("YouTube, Vimeo yoki embed havola."),
+    )
+    video_file = models.FileField(
+        _("Video fayl"), upload_to="videos/", blank=True,
+        validators=video_validators,
+        help_text=_("MP4/WebM. Havola berilsa, shart emas."),
+    )
+
+    class Meta:
+        abstract = True
+
+    @property
+    def has_video(self):
+        return bool(self.video_url or self.video_file)
+
+    @property
+    def video_embed(self):
+        """Embeddable iframe src for ``video_url`` (empty if only a file)."""
+        from apps.common.utils import video_embed_url
+        return video_embed_url(self.video_url)
+
 
 class TimeStampedModel(models.Model):
     """Abstract base: created/updated timestamps."""

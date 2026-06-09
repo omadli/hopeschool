@@ -4,7 +4,7 @@ from django_ckeditor_5.fields import CKEditor5Field
 from solo.models import SingletonModel
 
 from apps.common.constants import ICON_CHOICES
-from apps.common.models import OrderedActiveModel
+from apps.common.models import OrderedActiveModel, VideoMixin
 from apps.common.validators import image_validators
 
 
@@ -143,3 +143,18 @@ class SiteCopy(SingletonModel):
 
     def __str__(self):
         return "Sayt matnlari"
+
+
+class HomeVideo(VideoMixin, SingletonModel):
+    """Optional video showcase block on the home page (yagona yozuv)."""
+
+    is_enabled = models.BooleanField(_("Yoqilgan"), default=False)
+    title = models.CharField(_("Sarlavha"), max_length=160, blank=True)
+    subtitle = models.CharField(_("Kichik matn"), max_length=255, blank=True)
+
+    class Meta:
+        verbose_name = _("Bosh sahifa videosi")
+        verbose_name_plural = _("Bosh sahifa videosi")
+
+    def __str__(self):
+        return "Bosh sahifa videosi"

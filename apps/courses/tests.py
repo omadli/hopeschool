@@ -111,3 +111,25 @@ class CourseAdminTests(TestCase):
     def test_course_add(self):
         url = reverse("admin:courses_course_add")
         self.assertEqual(self._get(url).status_code, 200)
+
+
+# ---------------------------------------------------------------------------
+# Phase E — course video + image gallery
+# ---------------------------------------------------------------------------
+@override_settings(STORAGES=_STATIC_STORAGE)
+class CourseVideoTests(TestCase):
+    def test_video_embed_renders_on_detail(self):
+        course = Course.objects.create(
+            name="Vid kurs", slug="vid-kurs", is_active=True,
+            video_url="https://youtu.be/dQw4w9WgXcQ")
+        body = self.client.get(course.get_absolute_url(), follow=True).content.decode(
+            "utf-8", "replace")
+        self.assertIn("youtube.com/embed/dQw4w9WgXcQ", body)
+
+    def test_detail_with_images_renders(self):
+        from apps.courses.models import CourseImage
+        course = Course.objects.create(name="Galereyali kurs", slug="gal-kurs", is_active=True)
+        CourseImage.objects.create(course=course, image="courses/gallery/a.jpg", is_active=True)
+        resp = self.client.get(course.get_absolute_url(), follow=True)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("Galereyali kurs", resp.content.decode("utf-8", "replace"))

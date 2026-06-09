@@ -8,4 +8,8 @@ class CourseDetailView(DetailView):
     context_object_name = "course"
 
     def get_queryset(self):
-        return Course.objects.filter(is_active=True).select_related("category")
+        return (
+            Course.objects.filter(is_active=True)
+            .select_related("category")
+            .prefetch_related("images")
+        )

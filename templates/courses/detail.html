@@ -53,7 +53,15 @@
 
         {% if course.image %}{% responsive_img course.image alt=course.name css="mt-6 w-full rounded-card border bd object-cover" width=760 width_2x=1280 eager=True fetchpriority="high" sizes="(min-width:1024px) 66vw, 100vw" %}{% endif %}
 
+        {% if course.has_video %}<div class="mt-6">{% include "partials/_video.html" with video=course title=course.name %}</div>{% endif %}
+
         {% if course.description %}<div class="rich mt-6 text-[16px] leading-relaxed">{{ course.description|safe }}</div>{% endif %}
+
+        {% with imgs=course.images.all %}{% if imgs %}
+        <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {% for im in imgs %}{% if im.is_active %}{% responsive_img im.image alt=im.caption|default:course.name css="w-full rounded-card border bd object-cover aspect-[4/3]" width=420 width_2x=720 sizes="(min-width:640px) 33vw, 50vw" %}{% endif %}{% endfor %}
+        </div>
+        {% endif %}{% endwith %}
       </div>
 
       <aside class="lg:col-span-1">

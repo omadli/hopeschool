@@ -93,3 +93,17 @@ class NewsAdminTests(TestCase):
     def test_newspost_add(self):
         url = reverse("admin:news_newspost_add")
         self.assertEqual(self._get(url).status_code, 200)
+
+
+# ---------------------------------------------------------------------------
+# Phase E — news video
+# ---------------------------------------------------------------------------
+@override_settings(STORAGES=_STATIC_STORAGE)
+class NewsVideoTests(TestCase):
+    def test_video_embed_renders_on_detail(self):
+        post = NewsPost.objects.create(
+            title="Vid yangilik", slug="vid-yangilik", is_published=True,
+            video_url="https://vimeo.com/123456789")
+        body = self.client.get(post.get_absolute_url(), follow=True).content.decode(
+            "utf-8", "replace")
+        self.assertIn("player.vimeo.com/video/123456789", body)

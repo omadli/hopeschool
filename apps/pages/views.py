@@ -7,7 +7,7 @@ from apps.news.models import NewsPost
 from apps.teachers.models import Teacher
 from apps.testimonials.models import Testimonial
 
-from .models import AboutSection, StatItem, WhyUsItem
+from .models import AboutSection, HomeVideo, StatItem, WhyUsItem
 
 
 class LandingView(TemplateView):
@@ -16,6 +16,7 @@ class LandingView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["about"] = AboutSection.objects.filter(is_active=True).first()
+        ctx["home_video"] = HomeVideo.get_solo()
         ctx["stats"] = StatItem.objects.filter(is_active=True)
         ctx["why_us"] = WhyUsItem.objects.filter(is_active=True)
         ctx["courses"] = Course.objects.filter(is_active=True).select_related("category")[:9]
