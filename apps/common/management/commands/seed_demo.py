@@ -74,8 +74,8 @@ class Command(BaseCommand):
         s.address = ("Buxoro viloyati, Romitan tumani, Bogʻiturkon qishlogʻi "
                      "(kollej yonida, apteka roʻparasida)")
         s.working_hours = "Dush–Yak, 09:00–20:00"
-        s.latitude = "40.001100"
-        s.longitude = "64.379700"
+        s.latitude = "39.954262"
+        s.longitude = "64.255692"
         s.seo_title = ("Hope School — Bogʻiturkon, Romitan | Ingliz tili, matematika, "
                        "kimyo, biologiya, tarix")
         s.seo_description = ("Bogʻiturkon va Romitandagi Hope School oʻquv markazi. Ingliz tilidan "
