@@ -22,17 +22,36 @@ Run (gettext binaries not required — uses polib):
     venv\\Scripts\\python.exe locale\\_build_uz_admin.py
 """
 import os
+import re
 
 import polib
+import unfold
+
+from _extra_translations import UNFOLD_UZ
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DJANGO_UZ = os.path.join(
     BASE, "venv", "Lib", "site-packages", "django", "contrib", "admin",
     "locale", "uz", "LC_MESSAGES", "django.po",
 )
+UNFOLD_TPL = os.path.join(os.path.dirname(unfold.__file__), "templates")
+_TRANS_RE = re.compile(r"{%\s*trans(?:late)?\s+(\"[^\"]*\"|'[^']*')\s*%}")
 
 # Normalize curly quotes/apostrophes so our ASCII map keys match Django msgids.
 _NORM = {"’": "'", "‘": "'", "“": '"', "”": '"', "—": "—"}
+
+
+def unfold_msgids():
+    """Exact {% trans %} msgids used across Unfold's templates (Unfold ships no
+    catalog, so we translate its UI strings ourselves)."""
+    ids = set()
+    for dirpath, _dirs, files in os.walk(UNFOLD_TPL):
+        for fn in files:
+            if fn.endswith(".html"):
+                with open(os.path.join(dirpath, fn), encoding="utf-8") as fh:
+                    for m in _TRANS_RE.finditer(fh.read()):
+                        ids.add(m.group(1)[1:-1])
+    return ids
 
 
 def norm(s: str) -> str:
@@ -209,6 +228,19 @@ def main():
             out.append(polib.POEntry(msgid=entry.msgid, msgstr=uz))
             used.add(norm(entry.msgid))
 
+    # ---- Unfold UI strings (Unfold ships no uz catalog) -------------------
+    uf_map = {norm(k): v for k, v in UNFOLD_UZ.items()}
+    seen = {e.msgid for e in out}
+    unfold_count = 0
+    for mid in sorted(unfold_msgids()):
+        if mid in seen:
+            continue
+        val = uf_map.get(norm(mid))
+        if val:
+            out.append(polib.POEntry(msgid=mid, msgstr=val))
+            seen.add(mid)
+            unfold_count += 1
+
     lc_dir = os.path.join(BASE, "locale", "uz", "LC_MESSAGES")
     os.makedirs(lc_dir, exist_ok=True)
     po_path = os.path.join(lc_dir, "django.po")
@@ -224,7 +256,8 @@ def main():
         if key not in used_plural:
             missing.append(key + " (plural)")
 
-    print("Wrote %d singular + %d plural uz admin overrides." % (len(used), len(used_plural)))
+    print("Wrote %d singular + %d plural Django + %d Unfold uz overrides."
+          % (len(used), len(used_plural), unfold_count))
     print("  po=%s" % po_path)
     print("  mo=%s" % mo_path)
     if missing:

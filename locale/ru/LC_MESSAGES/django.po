@@ -13,6 +13,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
+msgid " va boshqalar"
+msgstr "и другие"
+
+msgid ""
+"%(o)d ta yozuv, %(f)d ta maydon avto-tarjima qilindi. Iltimos, tekshiring."
+msgstr ""
+"%(o)d записей, %(f)d полей были переведены автоматически. Пожалуйста, "
+"проверьте."
+
 msgid "ALT matn (SEO)"
 msgstr "ALT-текст (SEO)"
 
@@ -28,6 +37,9 @@ msgstr "Аналитика"
 msgid "Ariza"
 msgstr "Заявка"
 
+msgid "Ariza oynasi (modal)"
+msgstr "Окно приложения (модальное)"
+
 msgid "Ariza qoldirish"
 msgstr "Оставить заявку"
 
@@ -37,33 +49,32 @@ msgstr "Заявки"
 msgid "Arizalar (30 kun)"
 msgstr "Заявки (30 дней)"
 
+msgid "Arizalar (soʻnggi 14 kun)"
+msgstr "Заявки (за последние 14 дней)"
+
+msgid "Arizalar holati boʻyicha"
+msgstr "По статусу заявок"
+
 msgid "Arizangiz qabul qilindi!"
 msgstr "Ваша заявка принята!"
 
-msgid ""
-"Arizangizni qoldiring — mutaxassisimiz qaytib qoʻngʻiroq qiladi va sizga mos"
-" kursni tanlashda yordam beradi."
-msgstr ""
-"Оставьте заявку — наш специалист перезвонит и поможет подобрать подходящий "
-"курс."
-
-msgid "Arizani yuborish"
-msgstr "Отправить заявку"
-
 msgid "Asosiy kontentga oʻtish"
-msgstr "Перейти к основному содержимому"
+msgstr "Перейти к основному содержанию"
 
 msgid "Asosiy telefon"
 msgstr "Основной телефон"
+
+msgid "Asosiy tugma"
+msgstr "Основная кнопка"
+
+msgid "Avto-tarjima: %(n)d ta maydon toʻldirildi. Tekshirib, saqlang."
+msgstr "Автоперевод: заполнено %(n)d полей. Проверьте и сохраните."
 
 msgid "Baho (1–5)"
 msgstr "Оценка (1–5)"
 
 msgid "Barcha huquqlar himoyalangan."
 msgstr "Все права защищены."
-
-msgid "Barcha sertifikatlar"
-msgstr "Все сертификаты"
 
 msgid "Barchasi"
 msgstr "Все"
@@ -77,11 +88,8 @@ msgstr "Метка"
 msgid "Belgi (tag)"
 msgstr "Метка (тег)"
 
-msgid "Bepul darsga yoziling"
-msgstr "Записаться на бесплатный урок"
-
-msgid "Bepul sinov darsiga yoziling"
-msgstr "Запишитесь на бесплатный пробный урок"
+msgid "Bilimga ishonchni mustahkamlaymiz"
+msgstr "Укрепляем доверие к знаниям"
 
 msgid "Bing verification"
 msgstr "Подтверждение Bing"
@@ -119,6 +127,9 @@ msgstr "Главная"
 msgid "Bosh sahifa bloklari"
 msgstr "Блоки главной страницы"
 
+msgid "Bosh sahifa videosi"
+msgstr "Видео на главной странице"
+
 msgid "Boshqa"
 msgstr "Прочее"
 
@@ -133,6 +144,12 @@ msgstr "Панель управления"
 
 msgid "Bot"
 msgstr "Бот"
+
+msgid "Boʻlim"
+msgstr "Раздел"
+
+msgid "Boʻsh qoldirilsa, platforma nomi ishlatiladi."
+msgstr "Если оставить пустым, будет использоваться имя платформы."
 
 msgid "Brauzer"
 msgstr "Браузер"
@@ -158,8 +175,20 @@ msgstr "Дата публикации"
 msgid "Darsga yoziling"
 msgstr "Записаться на урок"
 
+msgid "Davlat"
+msgstr "Страна"
+
+msgid "Davlat kodi"
+msgstr "Код страны"
+
+msgid "Davlatlar boʻyicha tashriflar"
+msgstr "Посещения по странам"
+
 msgid "Davomiyligi"
 msgstr "Длительность"
+
+msgid "Django site admin"
+msgstr "Администратор сайта Джанго"
 
 msgid "Domen"
 msgstr "Домен"
@@ -170,18 +199,16 @@ msgstr "Эл. почта"
 msgid "F.I.Sh."
 msgstr "Ф.И.О."
 
-msgid "Facebook"
-msgstr "Facebook"
-
 msgid "Fanlar"
 msgstr "Предметы"
 
+msgid "Faol / chop etilgan"
+msgstr "Активный/опубликованный"
+
 msgid "Faqat maxsus embed kerak bo‘lsa to‘ldiring. Bo‘sh qoldirilsa, "
 msgstr ""
-"Заполняйте только при необходимости особого embed. Если оставить пустым, "
-
-msgid "Farzandingiz kelajagi"
-msgstr "Будущее вашего ребёнка"
+"Заполняйте только в том случае, если вам нужна индивидуальная вставка. Если "
+"оставить пустым,"
 
 msgid "Favicon"
 msgstr "Favicon"
@@ -200,6 +227,15 @@ msgstr "Отзывы"
 
 msgid "Fikrlar (ota-onalar)"
 msgstr "Отзывы (родители)"
+
+msgid "Fikrlar — sarlavha"
+msgstr "Отзывы — заголовок"
+
+msgid "Footer"
+msgstr "Подвал"
+
+msgid "Footer — pastki matn"
+msgstr "Подвал — нижний текст"
 
 msgid "Foydalanuvchi"
 msgstr "Пользователь"
@@ -222,6 +258,12 @@ msgstr "Изображение галереи"
 msgid "Galereya rasmlari"
 msgstr "Изображения галереи"
 
+msgid "Galereya videolari"
+msgstr "Галерея видео"
+
+msgid "Galereya videosi"
+msgstr "Галерея видео"
+
 msgid "Google Analytics 4 ID"
 msgstr "ID Google Analytics 4"
 
@@ -239,6 +281,15 @@ msgstr "Группа"
 
 msgid "Guruh hajmi"
 msgstr "Размер группы"
+
+msgid "Havola"
+msgstr "Ссылка"
+
+msgid "Hero bo'limi"
+msgstr "Раздел героев"
+
+msgid "Hero tepasidagi kichik yorliq (masalan, shahar)."
+msgstr "Небольшая вкладка над Героем (например, городом)."
 
 msgid "Hisob / matematika"
 msgstr "Счёт / математика"
@@ -258,8 +309,14 @@ msgstr "Пока нет новостей."
 msgid "IP manzil"
 msgstr "IP-адрес"
 
+msgid "Ijtimoiy tarmoq"
+msgstr "Социальная сеть"
+
 msgid "Ijtimoiy tarmoqlar"
 msgstr "Социальные сети"
+
+msgid "Ikkilamchi tugma"
+msgstr "Дополнительная кнопка"
 
 msgid "Ikonka"
 msgstr "Иконка"
@@ -276,8 +333,14 @@ msgstr "Имя и фамилия"
 msgid "Ismingiz"
 msgstr "Ваше имя"
 
+msgid "Ixtiyoriy — yuklangan video uchun muqova."
+msgstr "Необязательно — обложка для загруженного видео."
+
 msgid "Izoh"
 msgstr "Комментарий"
+
+msgid "Jami"
+msgstr "Итого"
 
 msgid "Jami tashriflar"
 msgstr "Всего визитов"
@@ -295,16 +358,16 @@ msgid "Joylashuv admin paneldan belgilanadi"
 msgstr "Местоположение задаётся в админ-панели"
 
 msgid "Juda koʻp soʻrov. Birozdan soʻng urinib koʻring."
-msgstr "Слишком много запросов. Повторите попытку чуть позже."
-
-msgid "Kanal"
-msgstr "Канал"
+msgstr "Слишком много запросов. Пожалуйста, повторите попытку позже."
 
 msgid "Kenglik (lat)"
 msgstr "Широта (lat)"
 
 msgid "Keyingi"
 msgstr "Далее"
+
+msgid "Kichik matn"
+msgstr "Мелкий текст"
 
 msgid "Kichik raqam yuqorida ko'rinadi."
 msgstr "Меньший номер отображается выше."
@@ -321,11 +384,32 @@ msgstr "Код / IT"
 msgid "Kompyuter"
 msgstr "Компьютер"
 
+msgid "Kontakt bo'limi"
+msgstr "Раздел контактов"
+
+msgid "Kontakt — matn"
+msgstr "Контакт — текст"
+
+msgid "Kontakt — sarlavha"
+msgstr "Контакт — заголовок"
+
+msgid "Kontakt — yorliq"
+msgstr "Контакт — это ярлык"
+
+msgid "Kontakt — yuborish tugmasi"
+msgstr "Контакт - кнопка отправить"
+
 msgid "Kontaktlar"
 msgstr "Контакты"
 
 msgid "Kurs"
 msgstr "Курс"
+
+msgid "Kurs rasmi"
+msgstr "Изображение курса"
+
+msgid "Kurs rasmlari"
+msgstr "Фотографии курса"
 
 msgid "Kurs turkumi"
 msgstr "Категория курса"
@@ -339,9 +423,6 @@ msgstr "Курсы"
 msgid "Kurslar / oʻqituvchilar"
 msgstr "Курсы / преподаватели"
 
-msgid "Kurslarni koʻrish"
-msgstr "Посмотреть курсы"
-
 msgid "Kursni tanlang (ixtiyoriy)"
 msgstr "Выберите курс (необязательно)"
 
@@ -350,6 +431,9 @@ msgstr "Должность / направление"
 
 msgid "Logo"
 msgstr "Логотип"
+
+msgid "MP4/WebM. Havola berilsa, shart emas."
+msgstr "MP4/ВебМ. Это не обязательно, если есть ссылка."
 
 msgid "Manba"
 msgstr "Источник"
@@ -368,9 +452,6 @@ msgstr "Например: hopeschool.uz (без протокола). Для site
 
 msgid "Matn"
 msgstr "Текст"
-
-msgid "Maʻlumotlaringizni qoldiring, tez orada bogʻlanamiz."
-msgstr "Оставьте свои данные, мы скоро свяжемся с вами."
 
 msgid "Menyu"
 msgstr "Меню"
@@ -405,6 +486,18 @@ msgstr "Цена — по запросу"
 msgid "Natijalar"
 msgstr "Результаты"
 
+msgid "Natijalar bo'limi"
+msgstr "Раздел результатов"
+
+msgid "Natijalar — havola matni"
+msgstr "Результаты — текст ссылки"
+
+msgid "Natijalar — sarlavha"
+msgstr "Результаты — название"
+
+msgid "Natijalar — yorliq"
+msgstr "Результаты – вкладка"
+
 msgid "Nega biz"
 msgstr "Почему мы"
 
@@ -416,6 +509,9 @@ msgstr "Почему мы — карточки"
 
 msgid "Nomi"
 msgstr "Название"
+
+msgid "Nomi (ixtiyoriy)"
+msgstr "Имя (необязательно)"
 
 msgid "O'qituvchi"
 msgstr "Преподаватель"
@@ -438,14 +534,20 @@ msgstr "Назад"
 msgid "Operatsion tizim"
 msgstr "Операционная система"
 
-msgid "Ota-onalar fikri"
-msgstr "Отзывы родителей"
+msgid "Oyna — matn"
+msgstr "Окно - текст"
+
+msgid "Oyna — sarlavha"
+msgstr "Окно — заголовок"
+
+msgid "Oyna — yuborish tugmasi"
+msgstr "Окно – кнопка отправки"
 
 msgid "Oʻqituvchilar"
 msgstr "Преподаватели"
 
 msgid "Oʻquv jarayonimizdan lavhalar"
-msgstr "Моменты учебного процесса"
+msgstr "Фрагменты нашего тренировочного процесса"
 
 msgid "Oʻquvchi boʻldi"
 msgstr "Стал учеником"
@@ -453,14 +555,14 @@ msgstr "Стал учеником"
 msgid "Oʻquvchilarimiz sertifikatlari"
 msgstr "Сертификаты наших учеников"
 
-msgid "Oʻquvchilarimiz yutuqlari"
-msgstr "Достижения наших учеников"
-
 msgid "PDF fayl"
 msgstr "PDF-файл"
 
 msgid "Planshet"
 msgstr "Планшет"
+
+msgid "Platforma"
+msgstr "Платформа"
 
 msgid "Qalqon (kafolat)"
 msgstr "Щит (гарантия)"
@@ -540,14 +642,32 @@ msgstr "Страницы"
 msgid "Sarlavha"
 msgstr "Заголовок"
 
+msgid "Sarlavha — boshi"
+msgstr "Заголовок — начало"
+
+msgid "Sarlavha — oxiri"
+msgstr "Заголовок — конец"
+
 msgid "Savolingiz yoki qoʻshimcha maʼlumot…"
-msgstr "Ваш вопрос или дополнительная информация…"
+msgstr "Есть вопрос или дополнительная информация…"
+
+msgid "Sayt kontenti"
+msgstr "Содержимое сайта"
+
+msgid "Sayt matnlari"
+msgstr "Тексты сайта"
 
 msgid "Sayt mazmuni"
 msgstr "Содержимое сайта"
 
 msgid "Sayt nomi"
 msgstr "Название сайта"
+
+msgid "Sayt nomidan keyingi qism."
+msgstr "Часть после названия сайта."
+
+msgid "Sayt nomidan oldingi qism."
+msgstr "Часть перед названием сайта."
 
 msgid "Sayt sozlamalari"
 msgstr "Настройки сайта"
@@ -573,6 +693,9 @@ msgstr "Слаг"
 msgid "Soat"
 msgstr "Часы"
 
+msgid "Soni"
+msgstr "Количество"
+
 msgid "Sozlamalar"
 msgstr "Настройки"
 
@@ -591,8 +714,24 @@ msgstr "Опыт (лет)"
 msgid "Tajribali oʻqituvchilar"
 msgstr "Опытные преподаватели"
 
+msgid ""
+"Tajribali oʻqituvchilar, zamonaviy metodika va natijaga yoʻnaltirilgan "
+"kichik guruhlar — bir joyda."
+msgstr ""
+"Опытные преподаватели, современная методика и ориентированные на результат "
+"малые группы – в одном месте."
+
 msgid "Tanlangan"
 msgstr "Избранное"
+
+msgid "Tanlangan yozuvlarda boʻsh tarjima maydoni topilmadi."
+msgstr "В выбранных записях не найдено пустое поле перевода."
+
+msgid "Tarjima qilinadigan boʻsh maydon topilmadi."
+msgstr "Пустое поле для перевода не найдено."
+
+msgid "Tarjima toʻliq emas — boʻsh: %(fields)s%(more)s. "
+msgstr "Перевод неполный – пусто: %(fields)s%(more)s."
 
 msgid "Tartib raqami"
 msgstr "Порядковый номер"
@@ -609,6 +748,9 @@ msgstr "Визиты"
 msgid "Tashriflar (30 kun)"
 msgstr "Визиты (30 дней)"
 
+msgid "Tashriflar (soʻnggi 14 kun)"
+msgstr "Посещения (последние 14 дней)"
+
 msgid "Tavsif"
 msgstr "Описание"
 
@@ -619,7 +761,7 @@ msgid "Telefon raqam"
 msgstr "Номер телефона"
 
 msgid "Telefon raqamni +998XXXXXXXXX koʻrinishida kiriting."
-msgstr "Введите номер телефона в формате +998XXXXXXXXX."
+msgstr "Введите номер телефона в виде +998XXXXXXXXX."
 
 msgid "Telegram"
 msgstr "Telegram"
@@ -630,14 +772,8 @@ msgstr "Уведомления Telegram включены"
 msgid "Telegram guruh"
 msgstr "Telegram-группа"
 
-msgid "Telegram kanal"
-msgstr "Telegram-канал"
-
 msgid "Telegramga yuborildi"
 msgstr "Отправлено в Telegram"
-
-msgid "TikTok"
-msgstr "TikTok"
 
 msgid "Til"
 msgstr "Язык"
@@ -651,11 +787,24 @@ msgstr "Выбрать язык"
 msgid "To'liq matn"
 msgstr "Полный текст"
 
+msgid "To'liq sarlavha: «Sarlavha boshi» + sayt nomi + «Sarlavha oxiri»."
+msgstr ""
+"Полное название: «Начало заголовка» + название сайта + «Конец заголовка»."
+
 msgid "To'liq tavsif"
 msgstr "Полное описание"
 
 msgid "Top kurs (qizil belgi)"
 msgstr "Топ-курс (красная метка)"
+
+msgid "Top manbalar"
+msgstr "Топ источников"
+
+msgid "Top sahifalar"
+msgstr "Топ страниц"
+
+msgid "Tugmalar"
+msgstr "Кнопки"
 
 msgid "Turkum"
 msgstr "Категория"
@@ -663,21 +812,39 @@ msgstr "Категория"
 msgid "UTM yoki referrer (avtomatik toʻldiriladi)."
 msgstr "UTM или реферер (заполняется автоматически)."
 
+msgid "UZ → RU/EN avto-tarjima"
+msgstr "УЗ → RU/EN автоперевод"
+
+msgid "UZ → RU/EN avto-tarjima (boʻsh maydonlarni toʻldirish)"
+msgstr "УЗ → RU/EN автоперевод (заполните поля)"
+
 msgid "Uzunlik (lng)"
 msgstr "Долгота (lng)"
 
 msgid "Vaqti"
 msgstr "Время"
 
+msgid "Veb-sayt"
+msgstr "Веб-сайт"
+
+msgid "Video"
+msgstr "Видео"
+
+msgid "Video fayl"
+msgstr "Видео файл"
+
+msgid "Video havola"
+msgstr "Ссылка на видео"
+
 msgid "Xarita — qo‘lda override (ixtiyoriy)"
-msgstr "Карта — ручное переопределение (необязательно)"
+msgstr "Карта – ручное управление (опционально)"
 
 msgid "Xaritani bosib yoki qidirib joylashuvni tanlang. "
 msgstr "Выберите местоположение, кликнув по карте или через поиск. "
 
 msgid "Xaritani bosing yoki belgini suring — koordinatalar avtomatik to‘ladi."
 msgstr ""
-"Кликните по карте или перетащите метку — координаты заполнятся "
+"Нажмите на карту или перетащите иконку — координаты заполнятся "
 "автоматически."
 
 msgid "Yandex Maps embed"
@@ -716,8 +883,23 @@ msgstr "Создано"
 msgid "Yopish"
 msgstr "Закрыть"
 
+msgid "Yoqilgan"
+msgstr "Включено"
+
+msgid "Yorliq matni"
+msgstr "Текст метки"
+
+msgid "Yorliq va sarlavha"
+msgstr "Этикетка и заголовок"
+
 msgid "YouTube"
 msgstr "YouTube"
+
+msgid "YouTube, Vimeo yoki embed havola."
+msgstr "YouTube, Vimeo или вставьте ссылку."
+
+msgid "YouTube/Vimeo havola yoki video fayl yuklang."
+msgstr "Загрузите ссылку на YouTube/Vimeo или видеофайл."
 
 msgid "Yoʻnalishlar"
 msgstr "Направления"
@@ -725,17 +907,15 @@ msgstr "Направления"
 msgid "Yoʻnaltiruvchi"
 msgstr "Источник перехода"
 
-msgid "Yuborish"
-msgstr "Отправить"
-
 msgid "Yulduz"
 msgstr "Звезда"
 
-msgid "Zamonaviy taʻlim markazi · Toshkent"
-msgstr "Современный образовательный центр · Ташкент"
-
-msgid "dan boshlanadi"
-msgstr " начинается с"
+msgid ""
+"Zamonaviy taʻlim markazi. Biz bilan farzandingiz kelajagiga ishonchli qadam "
+"qoʻying."
+msgstr ""
+"Современный образовательный центр. Сделайте уверенный шаг в будущее своего "
+"ребенка вместе с нами."
 
 msgid "oʻrtacha"
 msgstr "в среднем"
@@ -748,3 +928,162 @@ msgid_plural "%(years)s yil tajriba"
 msgstr[0] "%(years)s год опыта"
 msgstr[1] "%(years)s года опыта"
 msgstr[2] "%(years)s лет опыта"
+
+msgid "Add row"
+msgstr "Добавить строку"
+
+msgid "All applications"
+msgstr "Все приложения"
+
+msgid "Apply Filters"
+msgstr "Применить фильтры"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Change"
+msgstr "Изменить"
+
+msgid "Change password"
+msgstr "Изменить пароль"
+
+msgid "Clear"
+msgstr "Очистить"
+
+msgid "Clear all filters"
+msgstr "Очистить все фильтры"
+
+msgid "Click to cancel"
+msgstr "Нажмите, чтобы отменить"
+
+msgid "Click to download"
+msgstr "Нажмите, чтобы скачать"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Dark"
+msgstr "Тёмная"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Expand row"
+msgstr "Развернуть строку"
+
+msgid "False"
+msgstr "Ложь"
+
+msgid "Filters"
+msgstr "Фильтры"
+
+msgid "General"
+msgstr "Общее"
+
+msgid "Go back"
+msgstr "Вернуться назад"
+
+msgid "Hide counts"
+msgstr "Скрыть количество"
+
+msgid "Light"
+msgstr "Светлая"
+
+msgid "Log in again"
+msgstr "Войдите снова"
+
+msgid "Log out"
+msgstr "Выйти"
+
+msgid "More actions"
+msgstr "Дополнительные действия"
+
+msgid "Navigate"
+msgstr "Навигация"
+
+msgid "Next"
+msgstr "Далее"
+
+msgid "No data"
+msgstr "Нет данных"
+
+msgid "No results found"
+msgstr "Результаты не найдены"
+
+msgid "Previous"
+msgstr "Предыдущий"
+
+msgid "Recent searches"
+msgstr "Недавние поиски"
+
+msgid "Record picture"
+msgstr "Изображение записи"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Reset filters"
+msgstr "Сбросить фильтры"
+
+msgid "Run"
+msgstr "Выполнить"
+
+msgid "Run the selected action"
+msgstr "Запустить выбранное действие"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Save and add another"
+msgstr "Сохранить и добавить еще"
+
+msgid "Save and continue editing"
+msgstr "Сохранить и продолжить редактирование"
+
+msgid "Save and view"
+msgstr "Сохранить и просмотреть"
+
+msgid "Save as new"
+msgstr "Сохранить как новый"
+
+msgid "Search apps and models..."
+msgstr "Поиск приложений и моделей..."
+
+msgid "Select"
+msgstr "Выбрать"
+
+msgid "Select all rows"
+msgstr "Выбрать все строки"
+
+msgid "Show counts"
+msgstr "Показать количество"
+
+msgid "System"
+msgstr "Системная"
+
+msgid "This item will be deleted."
+msgstr "Этот элемент будет удален."
+
+msgid ""
+"This page yielded into no results. Create a new item or reset your filters."
+msgstr ""
+"Эта страница не дала результатов. Создайте новый элемент или сбросьте "
+"фильтры."
+
+msgid "Toggle password visibility"
+msgstr "Переключить видимость пароля"
+
+msgid "True"
+msgstr "Правда"
+
+msgid "Type to search"
+msgstr "Введите для поиска"
+
+msgid "Unknown"
+msgstr "Неизвестно"
+
+msgid "View"
+msgstr "Посмотреть"
+
+msgid "View site"
+msgstr "Посмотреть сайт"

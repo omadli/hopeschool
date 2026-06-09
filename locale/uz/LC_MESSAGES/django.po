@@ -314,3 +314,138 @@ msgstr "Tanlangan %(model)s ni ko'rish"
 
 msgid "Thanks for spending some quality time with the web site today."
 msgstr "Bugun saytda vaqt ajratganingiz uchun rahmat."
+
+msgid "Add row"
+msgstr "Qator qo'shing"
+
+msgid "All applications"
+msgstr "Barcha ilovalar"
+
+msgid "Apply Filters"
+msgstr "Filtrlarni qo'llash"
+
+msgid "Cancel"
+msgstr "Bekor qilish"
+
+msgid "Change"
+msgstr "O'zgartirish"
+
+msgid "Change password"
+msgstr "Parolni o'zgartirish"
+
+msgid "Clear"
+msgstr "Tozalash"
+
+msgid "Click to cancel"
+msgstr "Bekor qilish uchun bosing"
+
+msgid "Click to download"
+msgstr "Yuklab olish uchun bosing"
+
+msgid "Dark"
+msgstr "Qorong'i"
+
+msgid "Delete"
+msgstr "Oʻchirish"
+
+msgid "Expand row"
+msgstr "Qatorni kengaytirish"
+
+msgid "False"
+msgstr "Notoʻgʻri"
+
+msgid "Filters"
+msgstr "Filtrlar"
+
+msgid "General"
+msgstr "Umumiy"
+
+msgid "Go back"
+msgstr "Orqaga qayt"
+
+msgid "Light"
+msgstr "Yorugʻ"
+
+msgid "Log in again"
+msgstr "Qaytadan kiring"
+
+msgid "Log out"
+msgstr "Chiqish"
+
+msgid "More actions"
+msgstr "Ko'proq harakatlar"
+
+msgid "Navigate"
+msgstr "Oʻtish"
+
+msgid "Next"
+msgstr "Keyingi"
+
+msgid "No data"
+msgstr "Maʼlumot yoʻq"
+
+msgid "No results found"
+msgstr "Hech qanday natija topilmadi"
+
+msgid "Previous"
+msgstr "Oldingi"
+
+msgid "Recent searches"
+msgstr "Oxirgi qidiruvlar"
+
+msgid "Record picture"
+msgstr "Rasmni yozib oling"
+
+msgid "Remove"
+msgstr "O'chirish"
+
+msgid "Reset filters"
+msgstr "Filtrlarni tiklash"
+
+msgid "Run"
+msgstr "Bajarish"
+
+msgid "Run the selected action"
+msgstr "Tanlangan amalni bajaring"
+
+msgid "Save"
+msgstr "Saqlash"
+
+msgid "Search apps and models..."
+msgstr "Ilova va modellarni qidirish..."
+
+msgid "Select"
+msgstr "Tanlang"
+
+msgid "Select all rows"
+msgstr "Barcha qatorlarni tanlang"
+
+msgid "System"
+msgstr "Tizim"
+
+msgid "This item will be deleted."
+msgstr "Bu element oʻchirib tashlanadi."
+
+msgid ""
+"This page yielded into no results. Create a new item or reset your filters."
+msgstr ""
+"Bu sahifa hech qanday natija bermadi. Yangi element yarating yoki "
+"filtrlaringizni qayta o'rnating."
+
+msgid "Toggle password visibility"
+msgstr "Parolning koʻrinishini oʻzgartirish"
+
+msgid "True"
+msgstr "Toʻgʻri"
+
+msgid "Type to search"
+msgstr "Qidirish uchun yozing"
+
+msgid "Unknown"
+msgstr "Noma'lum"
+
+msgid "View"
+msgstr "Koʻrish"
+
+msgid "View site"
+msgstr "Saytni ko'rish"

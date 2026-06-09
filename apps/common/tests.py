@@ -245,6 +245,26 @@ class IconTagTests(SimpleTestCase):
         self.assertIn('class="my-class"', result)
 
 
+class AdminI18nTests(SimpleTestCase):
+    """The built ru/en/uz catalogs translate key admin/dashboard/Unfold strings."""
+
+    def _g(self, lang, text):
+        from django.utils import translation
+        from django.utils.translation import gettext
+        with translation.override(lang):
+            return gettext(text)
+
+    def test_project_dashboard_strings(self):
+        self.assertEqual(self._g("ru", "Davlat"), "Страна")
+        self.assertEqual(self._g("ru", "Sayt kontenti"), "Содержимое сайта")
+        self.assertEqual(self._g("en", "Jami"), "Total")
+        self.assertEqual(self._g("en", "Boʻlim"), "Section")
+
+    def test_unfold_ui_strings(self):
+        self.assertEqual(self._g("uz", "Reset filters"), "Filtrlarni tiklash")
+        self.assertEqual(self._g("ru", "No results found"), "Результаты не найдены")
+
+
 class SocialIconTagTests(SimpleTestCase):
     """apps.common.templatetags.ui — social_icon brand SVG tag."""
 

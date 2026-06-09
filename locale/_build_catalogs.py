@@ -18,8 +18,10 @@ import os
 import re
 
 import polib
+import unfold
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UNFOLD_TPL = os.path.join(os.path.dirname(unfold.__file__), "templates")
 
 # ---------------------------------------------------------------------------
 # Apostrophe normalization (for translation-map lookup only; msgid keeps bytes)
@@ -74,6 +76,19 @@ def blocktext_to_msgid(t):
     return t
 
 
+def unfold_msgids():
+    """Exact {% trans %} msgids across Unfold's templates (Unfold ships no
+    catalog, so we supply ru translations for its UI strings)."""
+    ids = set()
+    for dirpath, _dirs, files in os.walk(UNFOLD_TPL):
+        for fn in files:
+            if fn.endswith(".html"):
+                with open(os.path.join(dirpath, fn), encoding="utf-8") as fh:
+                    for m in TPL_RE.finditer(fh.read()):
+                        ids.add(unquote(m.group(1)))
+    return ids
+
+
 singular = set()       # exact msgid bytes
 plural_pairs = set()   # (msgid, msgid_plural) bytes
 
@@ -82,6 +97,10 @@ for path in walk(os.path.join(BASE, "templates"), {".html"}):
     with open(path, encoding="utf-8") as f:
         src = f.read()
     for m in TPL_RE.finditer(src):
+        singular.add(unquote(m.group(1)))
+    # Also catch _("...") used inside template tags, e.g. Unfold components:
+    #   {% component "..." with title=_('Sayt kontenti') %}
+    for m in PY_RE.finditer(src):
         singular.add(unquote(m.group(1)))
     for m in BLOCK_RE.finditer(src):
         sing = blocktext_to_msgid(m.group(1))
@@ -653,6 +672,12 @@ EN = {
     "Sahifa": "Page",
 }
 
+# Merge auto-drafted + hand-corrected project translations (Phases B–F).
+from _extra_translations import PROJECT_EN, PROJECT_RU, UNFOLD_RU  # noqa: E402
+
+RU.update(PROJECT_RU)
+EN.update(PROJECT_EN)
+
 PLURAL_RU = {
     "%(years)s yil tajriba": {
         0: "%(years)s год опыта",
@@ -711,6 +736,18 @@ def build(lang, tmap, pmap):
             missing.append(sing + " (plural)")
             forms = {i: "" for i in range(3)}
         po.append(polib.POEntry(msgid=sing, msgid_plural=plur, msgstr_plural=forms))
+
+    # Unfold UI strings — ru only (en keeps Unfold's own English msgids).
+    if lang == "ru":
+        uf = {norm(k): v for k, v in UNFOLD_RU.items()}
+        existing = {e.msgid for e in po}
+        for mid in sorted(unfold_msgids()):
+            if mid in existing:
+                continue
+            val = uf.get(norm(mid))
+            if val:
+                po.append(polib.POEntry(msgid=mid, msgstr=val))
+                existing.add(mid)
 
     lc_dir = os.path.join(BASE, "locale", lang, "LC_MESSAGES")
     os.makedirs(lc_dir, exist_ok=True)
