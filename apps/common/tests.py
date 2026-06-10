@@ -833,6 +833,46 @@ class AutoTranslateAdminActionTests(TestCase):
         self.assertEqual(course.name_en, "[en]Fizika")
 
 
+@override_settings(STORAGES=_STATIC_STORAGE)
+@patch("apps.common.translation._engine_translate", _fake_engine)
+class AutoTranslateSubmitLineTests(TestCase):
+    """The change-form submit-line button (auto_translate_object) must not crash.
+
+    Regression for `_, filled = ...` shadowing the gettext alias `_`: rebinding
+    `_` to the model instance made the next _() call raise
+    "'<Model>' object is not callable". Solo singletons (SiteConfig) only expose
+    this button — there is no changelist — so the bug surfaced there first.
+    """
+
+    def _request_with_messages(self):
+        from django.contrib.messages.storage.fallback import FallbackStorage
+        from django.contrib.sessions.middleware import SessionMiddleware
+        req = RequestFactory().post("/")
+        SessionMiddleware(lambda r: None).process_request(req)
+        req.session.save()
+        req._messages = FallbackStorage(req)
+        return req
+
+    def test_submit_line_action_on_solo_singleton_does_not_crash(self):
+        from django.contrib import admin as dj_admin
+
+        from apps.siteconfig.admin import SiteConfigAdmin
+        from apps.siteconfig.models import SiteConfig
+
+        config = SiteConfig.get_solo()
+        with dj_translation.override("uz"):
+            config.seo_title = "Bosh sahifa"
+            config.save()
+
+        model_admin = SiteConfigAdmin(SiteConfig, dj_admin.site)
+        # Before the fix this raised TypeError: 'SiteConfig' object is not callable.
+        model_admin.auto_translate_object(self._request_with_messages(), config)
+
+        config.refresh_from_db()
+        self.assertEqual(config.seo_title_ru, "[ru]Bosh sahifa")
+        self.assertEqual(config.seo_title_en, "[en]Bosh sahifa")
+
+
 # ---------------------------------------------------------------------------
 # Bulk auto-translate is parallel + deduped (engine mocked, no network)
 # ---------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 # Hope School — Oʻquv Markazi Sayti
 
 [![CI/CD](https://github.com/omadli/hopeschool/actions/workflows/deploy.yml/badge.svg)](https://github.com/omadli/hopeschool/actions/workflows/deploy.yml)
-[![Tests](https://img.shields.io/badge/tests-285%20passing-brightgreen)](https://github.com/omadli/hopeschool/actions/workflows/deploy.yml)
+[![Tests](https://img.shields.io/badge/tests-286%20passing-brightgreen)](https://github.com/omadli/hopeschool/actions/workflows/deploy.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
@@ -49,7 +49,7 @@ Asosiy xususiyatlar:
 - **Toʻliq CMS-boshqaruv** — Django Unfold admin paneli orqali texnik bilimisiz barcha kontent, sozlamalar va arizalar boshqariladi.
 - **Production-ga tayyor** — GitHub Actions CI/CD (test + avtomatik deploy), gunicorn + nginx + systemd + Certbot konfiguratsiyasi va uch qatlamli DDoS/rate-limit himoyasi tayyor holatda keladi.
 
-> **Holat:** barcha asosiy bosqichlar tugallangan — **285 ta avtomatlashtirilgan test** yashil (`python manage.py test`).
+> **Holat:** barcha asosiy bosqichlar tugallangan — **286 ta avtomatlashtirilgan test** yashil (`python manage.py test`).
 
 ---
 
@@ -750,7 +750,7 @@ push / pull_request (main)
    └─────────┘                                           └──────────┘
    • python check         • SSH orqali serverga ulanadi
    • makemigrations --check  (ForceCommand → hopeschool-deploy ishga tushadi)
-   • test (285 ta test)
+   • test (286 ta test)
 ```
 
 **`test` ishi** (har push va har PR da):

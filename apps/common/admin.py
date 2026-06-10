@@ -131,7 +131,10 @@ class AutoTranslateAdminMixin:
 
     @action(description=_("UZ → RU/EN avto-tarjima"), icon="translate")
     def auto_translate_object(self, request, obj):
-        _, filled = fill_translations_bulk([obj])[0]
+        # NB: don't write `_, filled = ...` — `_` is the gettext alias above and
+        # rebinding it to the model instance breaks every _() call below
+        # ("'<Model>' object is not callable"). Index instead.
+        filled = fill_translations_bulk([obj])[0][1]
         if filled:
             obj.save()
             messages.success(
