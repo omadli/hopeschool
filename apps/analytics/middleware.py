@@ -1,10 +1,13 @@
 import user_agents
+from django.conf import settings
 
 from .models import VisitLog
 
-# Path prefixes that should never be logged as a public page visit.
+# Path prefixes that should never be logged as a public page visit. The admin
+# prefix is NOT listed here — it is configurable (settings.ADMIN_URL) and is
+# derived per request in _log(), otherwise a custom ADMIN_URL (e.g.
+# "kirma-bu-yerga/") would be counted as a public visit.
 SKIP_PREFIXES = (
-    "/admin",
     "/static",
     "/media",
     "/favicon",
@@ -57,6 +60,11 @@ class VisitLogMiddleware:
     def _log(self, request, response):
         path = request.path
 
+        # settings.ADMIN_URL is normalised to "<prefix>/"; strip the trailing
+        # slash and prepend "/" to get the path prefix ("/kirma-bu-yerga").
+        admin_prefix = "/" + settings.ADMIN_URL.rstrip("/")
+        if path.startswith(admin_prefix):
+            return
         if any(path.startswith(prefix) for prefix in SKIP_PREFIXES):
             return
         if request.method != "GET":

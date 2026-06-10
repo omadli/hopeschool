@@ -42,6 +42,41 @@ class StaffExclusionTests(TestCase):
         self.assertEqual(VisitLog.objects.filter(path="/uz/").count(), 0)
 
 
+@override_settings(STORAGES=_STATIC_STORAGE)
+class AdminUrlExclusionTests(TestCase):
+    """The (configurable) admin URL must never be counted as a public visit.
+
+    The admin prefix is derived from settings.ADMIN_URL per request, so a custom
+    ADMIN_URL is excluded too. Tested at the middleware level because the URLconf
+    binds ADMIN_URL at import time — override_settings can't re-route the admin,
+    but the middleware reads settings.ADMIN_URL live.
+    """
+
+    def _visit(self, path):
+        from django.contrib.auth.models import AnonymousUser
+        from django.http import HttpResponse
+
+        from apps.analytics.middleware import VisitLogMiddleware
+        request = RequestFactory().get(path)
+        request.user = AnonymousUser()
+        VisitLogMiddleware(lambda r: HttpResponse(status=200))(request)
+
+    @override_settings(ADMIN_URL="kirma-bu-yerga/")
+    def test_custom_admin_url_not_logged(self):
+        self._visit("/kirma-bu-yerga/login/")
+        self.assertEqual(VisitLog.objects.count(), 0)
+
+    @override_settings(ADMIN_URL="admin/")
+    def test_default_admin_url_not_logged(self):
+        self._visit("/admin/login/")
+        self.assertEqual(VisitLog.objects.count(), 0)
+
+    @override_settings(ADMIN_URL="kirma-bu-yerga/")
+    def test_public_path_still_logged(self):
+        self._visit("/uz/")
+        self.assertEqual(VisitLog.objects.filter(path="/uz/").count(), 1)
+
+
 class GeoIpResolverTests(TestCase):
     def test_is_public_ip(self):
         self.assertTrue(geoip.is_public_ip("8.8.8.8"))
