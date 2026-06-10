@@ -38,7 +38,7 @@ Oʻrnatishdan avval quyidagi dasturlar mavjudligini tekshiring:
 ## Repozitoriyani olish
 
 ```bash
-git clone https://github.com/your-org/hopeschool.git
+git clone https://github.com/omadli/hopeschool.git
 cd hopeschool
 ```
 

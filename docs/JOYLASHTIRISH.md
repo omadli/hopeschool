@@ -84,7 +84,7 @@ sudo chown hopeschool:www-data /home/hopeschool/app
 ```bash
 sudo -u hopeschool -H bash
 cd /home/hopeschool/app
-git clone https://github.com/your-org/hopeschool.git .
+git clone https://github.com/omadli/hopeschool.git .
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt

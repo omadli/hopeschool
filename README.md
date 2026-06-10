@@ -1,7 +1,16 @@
 # Hope School — Oʻquv Markazi Sayti
 
+[![CI/CD](https://github.com/omadli/hopeschool/actions/workflows/deploy.yml/badge.svg)](https://github.com/omadli/hopeschool/actions/workflows/deploy.yml)
+[![Tests](https://img.shields.io/badge/tests-285%20passing-brightgreen)](https://github.com/omadli/hopeschool/actions/workflows/deploy.yml)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![SQLite](https://img.shields.io/badge/SQLite-WAL-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+![i18n](https://img.shields.io/badge/i18n-uz%20%7C%20ru%20%7C%20en-1E88E5)
+![Node.js](https://img.shields.io/badge/Node.js-talab%20qilinmaydi-success)
+
 > **Bogʻiturkon qishlogʻi (Romitan, Buxoro) uchun zamonaviy taʼlim markazi landing sayti.**
-> Toʻliq admin-boshqaruv, 3 til (oʻzbek / rus / ingliz), Node.js talab qilinmaydi.
+> Toʻliq admin-boshqaruv, 3 til (oʻzbek / rus / ingliz), avtomatik tarjima, analitika va bir tugmali deploy — **Node.js talab qilinmaydi**.
 
 ---
 
@@ -16,12 +25,16 @@
 7. [Management buyruqlari](#management-buyruqlari)
 8. [Loyiha tuzilishi](#loyiha-tuzilishi)
 9. [Arizalar va Telegram](#arizalar-va-telegram)
-10. [Tashriflar va Analitika](#tashriflar-va-analitika)
-11. [SEO](#seo)
-12. [i18n / Tarjima](#i18n--tarjima)
-13. [Media xavfsizligi va CKEditor](#media-xavfsizligi-va-ckeditor)
-14. [Tezlik, rasm optimizatsiyasi va accessibility](#tezlik-rasm-optimizatsiyasi-va-accessibility)
-15. [Deployment](#deployment)
+10. [Auto-tarjima (mashina tarjimasi)](#auto-tarjima-mashina-tarjimasi)
+11. [Sertifikatlar va CEFR import](#sertifikatlar-va-cefr-import)
+12. [Tashriflar va Analitika](#tashriflar-va-analitika)
+13. [SEO](#seo)
+14. [i18n / Tarjima](#i18n--tarjima)
+15. [Media xavfsizligi va CKEditor](#media-xavfsizligi-va-ckeditor)
+16. [Tezlik, rasm optimizatsiyasi va accessibility](#tezlik-rasm-optimizatsiyasi-va-accessibility)
+17. [CI/CD](#cicd)
+18. [Deployment](#deployment)
+19. [Hujjatlar](#hujjatlar)
 
 ---
 
@@ -32,8 +45,11 @@
 Asosiy xususiyatlar:
 
 - **Reklama maqsadida** — kurslar, oʻqituvchilar, muvaffaqiyatlar, sertifikatlar va ota-onalar fikrlari orqali markazni taqdim etadi.
-- **3 til** — oʻzbek (standart), rus va ingliz tillari qoʻllab-quvvatlanadi; har bir kontent admin paneldan alohida kiritiladi.
+- **3 til** — oʻzbek (standart), rus va ingliz tillari qoʻllab-quvvatlanadi; har bir kontent admin paneldan alohida kiritiladi yoki bir tugma bilan avtomatik tarjima qilinadi.
 - **Toʻliq CMS-boshqaruv** — Django Unfold admin paneli orqali texnik bilimisiz barcha kontent, sozlamalar va arizalar boshqariladi.
+- **Production-ga tayyor** — GitHub Actions CI/CD (test + avtomatik deploy), gunicorn + nginx + systemd + Certbot konfiguratsiyasi va uch qatlamli DDoS/rate-limit himoyasi tayyor holatda keladi.
+
+> **Holat:** barcha asosiy bosqichlar tugallangan — **285 ta avtomatlashtirilgan test** yashil (`python manage.py test`).
 
 ---
 
@@ -45,20 +61,23 @@ Asosiy xususiyatlar:
 | 2 | **Oʻqituvchilar** | ✓ Tayyor | Profil sahifasi, tajriba yillari, fanlar, ijtimoiy tarmoq havolalari |
 | 3 | **Galereya** | ✓ Tayyor | Albomlar tizimi, har bir albomda cheksiz rasm; ALT matn (SEO) |
 | 4 | **Yangiliklar va eʼlonlar** | ✓ Tayyor | Maqolalar, badge/tag, muqova rasm, chop etish sanasi, SEO meta |
-| 5 | **Sertifikatlar** | ✓ Tayyor | Oʻquvchi yutuqlari — rasm, PDF yoki tashqi havola bilan |
+| 5 | **Sertifikatlar (CEFR)** | ✓ Tayyor | Oʻquvchi yutuqlari — rasm, PDF yoki tashqi havola; CEFR sertifikatlarini PDFdan ommaviy import qilish |
 | 6 | **Ota-ona fikrlari** | ✓ Tayyor | Sharh matn, rasm, reyting (1–5), tanlangan belgi |
 | 7 | **Statistika bloklari** | ✓ Tayyor | Admin paneldan boshqariladigan raqamlar (oʻquvchilar soni, yoʻnalishlar va h.k.) |
 | 8 | **"Nega biz" bloklari** | ✓ Tayyor | Ikonkali afzallik kartalari, admin orqali tartiblanadi |
 | 9 | **Ariza formasi + Telegram** | ✓ Tayyor | `/ariza/` → DB → admin "Murojaatlar → Arizalar" + sidebar badge; Telegram bot bildirishnoma; honeypot + IP rate-limit spam himoyasi |
-| 10 | **Tashriflar hisobi (Analitika)** | ⟳ Qoʻshilmoqda | VisitLog middleware, KPI dashboard, `prune_visitlogs` buyruq |
-| 11 | **SEO** | ✓ Tayyor | `sitemap.xml` (3 til, hreflang); `robots.txt`; har bir sahifada canonical + hreflang (uz/ru/en + x-default); meta sarlavha/tavsif (sahifadan → obyekt meta → SiteConfig → standart); Open Graph + Twitter Card; JSON-LD (EducationalOrganization+LocalBusiness, Course, NewsArticle, BreadcrumbList); GA4 + Yandex Metrica (admin ID kiritilganda avtomatik yoqiladi); Google/Yandex/Bing webmaster tasdiqlash meta-teglari (SiteConfigʼdan) |
-| 12 | **Xaritadan joylashuv tanlash** | ✓ Tayyor | Admin panelda interaktiv Leaflet xarita — belgi bosish yoki manzil qidirish orqali koordinatalar avtomatik toʻladi; Google va Yandex xaritalar shu koordinatalardan quriladi |
-| 13 | **Kunduzgi/tungi rejim** | ✓ Tayyor | LocalStorage + `prefers-color-scheme` orqali temir-flash yoʻq mavzu almashish |
-| 14 | **CKEditor 5 rich-text** | ✓ Tayyor | Admin kontent maydonlarida formatlash, rasm yuklash |
-| 15 | **Media xavfsizligi** | ✓ Tayyor | Rasm: jpg/jpeg/png/webp/gif, maks 5 MB; PDF: 10 MB; CKEditor yuklash faqat `staff` |
-| 16 | **Telegram integratsiya** | ✓ Tayyor | Bot token + admin chat ID orqali yangi arizalar real vaqtda adminlarga yetkaziladi; daemon-thread orqali soʻrov bloklanmaydi |
-| 17 | **Tezlik va optimizatsiya** | ✓ Tayyor | WebP responsive rasmlar (`easy_thumbnails`, `<picture>`), `loading="lazy"`, `width`/`height` (CLS oldini olish), shrift preconnect + `font-display: swap`, JS defer, Core Web Vitals (LCP/CLS/INP) maqsadlari |
-| 18 | **Accessibility (a11y)** | ✓ Tayyor | Skip-to-content havolasi + `id="main"`, `:focus-visible` uslublari, `prefers-reduced-motion` qoʻllab-quvvatlash |
+| 10 | **Auto-tarjima (uz → ru/en)** | ✓ Tayyor | Admindan bir tugma bilan boʻsh ru/en maydonlarini avtomatik toʻldirish; HTML (CKEditor) teglari saqlanadi; inson tekshirib saqlaydi |
+| 11 | **Tashriflar hisobi (Analitika)** | ✓ Tayyor | VisitLog middleware, KPI dashboard, Geo-IP (davlat boʻyicha), `prune_visitlogs` va `resolve_geoip` buyruqlari |
+| 12 | **SEO** | ✓ Tayyor | `sitemap.xml` (3 til, hreflang); `robots.txt`; canonical + hreflang (uz/ru/en + x-default); meta fallback zanjiri; Open Graph + Twitter Card; JSON-LD; GA4 + Yandex Metrica; webmaster tasdiqlash teglari |
+| 13 | **Xaritadan joylashuv tanlash** | ✓ Tayyor | Admin panelda interaktiv Leaflet xarita — belgi bosish yoki manzil qidirish orqali koordinatalar avtomatik toʻladi; Google va Yandex xaritalar shu koordinatalardan quriladi |
+| 14 | **Kunduzgi/tungi rejim** | ✓ Tayyor | LocalStorage + `prefers-color-scheme` orqali flash-siz mavzu almashish |
+| 15 | **CKEditor 5 rich-text** | ✓ Tayyor | Admin kontent maydonlarida formatlash, rasm yuklash (faqat `staff`) |
+| 16 | **Media xavfsizligi** | ✓ Tayyor | Rasm: jpg/jpeg/png/webp/gif, maks 5 MB; PDF: 10 MB; serverda validatsiya |
+| 17 | **Tezlik va optimizatsiya** | ✓ Tayyor | WebP responsive rasmlar (`easy_thumbnails`, `<picture>`), `loading="lazy"`, `width`/`height` (CLS), shrift preconnect + `font-display: swap`, JS defer, Core Web Vitals maqsadlari |
+| 18 | **Accessibility (a11y)** | ✓ Tayyor | Skip-to-content havolasi + `id="main"`, `:focus-visible`, `prefers-reduced-motion` |
+| 19 | **Admin URL yashirish** | ✓ Tayyor | `ADMIN_URL` orqali login sahifasini oddiy `/admin/` yoʻlidan chetlatish; ushbu URL analitikada ham hisobga olinmaydi |
+| 20 | **DDoS / rate-limit himoyasi** | ✓ Tayyor | Uch qatlam: ilova (honeypot + IP rate-limit), nginx (`limit_req`/`limit_conn`), fail2ban (IP bloklash); tayyor configlar `deploy/` da |
+| 21 | **CI/CD** | ✓ Tayyor | GitHub Actions — har push/PR da test; `main` ga push da testlar oʻtsa SSH orqali avtomatik deploy |
 
 ---
 
@@ -71,24 +90,29 @@ Asosiy xususiyatlar:
 | `django-unfold` | `>=0.40` | Zamonaviy Django admin paneli |
 | `django-import-export` | `>=4.0` | Admindan CSV/Excel import-export |
 | `django-modeltranslation` | `>=0.19` | Model maydonlarini 3 tilda saqlash |
+| `polib` | `>=1.2` | `.po` → `.mo` (GNU gettext talab qilinmaydi) |
+| `deep-translator` | `>=1.11` | Auto-tarjima backend (bepul Google, API kalit shart emas) |
+| `beautifulsoup4` | `>=4.12` | HTML (CKEditor) ni teg-xavfsiz tarjima qilish |
 | `django-ckeditor-5` | `>=0.2.18` | Rich-text muharrir (admin) |
 | `django-solo` | `>=2.4` | Yagona qator modellar (SiteConfig) |
 | `Pillow` | `>=10.4` | Rasm qayta ishlash |
-| `easy-thumbnails` | `>=2.10` | Miniatyuralar yaratish |
-| `requests` | `>=2.32` | Telegram API va tashqi soʻrovlar |
+| `easy-thumbnails` | `>=2.10` | Responsive WebP miniatyuralar |
+| `pypdfium2` | `>=4.30` | CEFR PDFni rasmga render qilish (Apache/BSD — AGPL emas) |
+| `pypdf` | `>=4.3` | CEFR PDFdan matn (ism) ajratib olish |
+| `requests` | `>=2.32` | Telegram API, Geo-IP va tashqi soʻrovlar |
 | `user-agents` | `>=2.2.0` | Foydalanuvchi agentini tahlil qilish (Analitika) |
 | `django-tailwind-cli` | `>=2.20` | Tailwind CSS v4 (Node.js talab qilinmaydi) |
 | `whitenoise` | `>=6.7` | Statik fayllarni samarali xizmat qilish |
 | `gunicorn` | `>=23.0` | Production WSGI server |
 | `tzdata` | — | Windows uchun vaqt zonalari |
 
-**Baza:** SQLite (WAL rejimi — parallel yozuvlarga bardoshli)
+**Baza:** SQLite (WAL rejimi — parallel yozuvlarga bardoshli; kichik/oʻrta trafik uchun yetarli, Redis talab qilinmaydi).
 
 ---
 
 ## Talablar
 
-- **Python 3.13** (yoki 3.11+)
+- **Python 3.11+** (CI quvuri **3.14** da test qiladi)
 - **Git**
 - **Node.js talab qilinmaydi** — Tailwind CSS v4 standalone CLI avtomatik yuklab olinadi
 
@@ -96,10 +120,12 @@ Asosiy xususiyatlar:
 
 ## Oʻrnatish
 
+> Quyidagi qadamlar **lokal / development** muhiti uchun. Production serverga joylashtirish uchun [`docs/JOYLASHTIRISH.md`](docs/JOYLASHTIRISH.md) ga qarang.
+
 ### 1. Repozitoriyani klonlash
 
 ```bash
-git clone https://github.com/your-org/hopeschool.git
+git clone https://github.com/omadli/hopeschool.git
 cd hopeschool
 ```
 
@@ -133,10 +159,11 @@ cp .env.example .env        # Linux / macOS
 
 Keyin `.env` faylini oching va qiymatlarni toʻldiring (quyidagi [jadvalga](#muhit-ozgaruvchilari) qarang).
 
-### 5. Migratsiyalar
+### 5. Migratsiyalar va cache jadvali
 
 ```bash
 python manage.py migrate
+python manage.py createcachetable   # ariza rate-limiti uchun umumiy cache jadvali
 ```
 
 ### 6. Superuser yaratish
@@ -174,7 +201,7 @@ Bu buyruq kurslar, oʻqituvchilar, yangiliklar, galereya, sertifikatlar va boshq
 
 ## Muhit oʻzgaruvchilari
 
-`.env` faylida quyidagi oʻzgaruvchilar ishlatiladi:
+`.env` faylida quyidagi oʻzgaruvchilar ishlatiladi (toʻliq roʻyxat va izohlar `.env.example` da):
 
 | Oʻzgaruvchi | Majburiy | Standart | Tavsif |
 |-------------|----------|----------|--------|
@@ -182,18 +209,27 @@ Bu buyruq kurslar, oʻqituvchilar, yangiliklar, galereya, sertifikatlar va boshq
 | `SECRET_KEY` | **Ha** | — | Django maxfiy kaliti; `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` bilan generatsiya qiling |
 | `ALLOWED_HOSTS` | **Ha** | `*` | Vergul bilan ajratilgan domenlar, masalan: `hopeschool.uz,www.hopeschool.uz` |
 | `CSRF_TRUSTED_ORIGINS` | Production | — | HTTPS manzillar, masalan: `https://hopeschool.uz` |
+| `ADMIN_URL` | Yoʻq | `admin` | Admin panel URL prefiksi — productionda topish qiyin qiymat qoʻying (masalan, `boshqaruv-7x3k`) |
+| `TRUSTED_PROXY_COUNT` | Yoʻq | `1` | Oldindagi proksi soni: nginx=`1`, Cloudflare bilan `2` (rate-limit haqiqiy mijoz IP sini oladi) |
 | `TELEGRAM_BOT_TOKEN` | Yoʻq | — | Arizalarni yuboruvchi Telegram bot tokeni — toʻldirilmasa bildirishnoma oʻchiriladi |
 | `TELEGRAM_ADMIN_CHAT_ID` | Yoʻq | — | Arizalar yuboriladigan chat/guruh ID si (manfiy raqam guruh uchun) |
+| `SECURE_SSL_REDIRECT` | Yoʻq | `True` (`DEBUG=False`) | Barcha HTTPni HTTPS ga yoʻnaltirish |
+| `SECURE_HSTS_SECONDS` | Yoʻq | `31536000` | HSTS muddati; birinchi HTTPS deployda `3600` qoʻying, barqarorlashgach 1 yilga koʻtaring |
+| `DJANGO_LOG_LEVEL` | Yoʻq | `INFO` | Log darajasi (DEBUG/INFO/WARNING/ERROR) |
+| `GUNICORN_WORKERS` | Yoʻq | `3` | gunicorn worker soni (SQLite uchun 2–3 yetarli) |
 
 > **Telegram:** `TELEGRAM_BOT_TOKEN` va `TELEGRAM_ADMIN_CHAT_ID` ikkalasi boʻlishi kerak. Shuningdek, admin panelda **Sayt sozlamalari → "Telegram bildirishnomalari yoniq"** katagini belgilang.
 
-**Namuna `.env`:**
+> **Xavfsizlik bloki:** `DEBUG=False` boʻlganda `settings.py` agar `SECRET_KEY` hali ham dev qiymatida boʻlsa yoki `ALLOWED_HOSTS=*` boʻlsa, ataylab **ishga tushishdan bosh tortadi** — xavfli sozlama bilan deploy boʻlib qolmaslik uchun.
+
+**Namuna `.env` (production):**
 
 ```env
 DEBUG=False
 SECRET_KEY=your-very-secret-key-here
 ALLOWED_HOSTS=hopeschool.uz,www.hopeschool.uz
 CSRF_TRUSTED_ORIGINS=https://hopeschool.uz,https://www.hopeschool.uz
+ADMIN_URL=boshqaruv-7x3k
 TELEGRAM_BOT_TOKEN=1234567890:AAFxxxxxxxxxxxxxx
 TELEGRAM_ADMIN_CHAT_ID=-1001234567890
 ```
@@ -209,13 +245,16 @@ TELEGRAM_ADMIN_CHAT_ID=-1001234567890
 | `python manage.py tailwind runserver` | `watch` + `runserver` birgalikda ishga tushiradi |
 | `python manage.py seed_demo` | Namunaviy maʼlumotlarni bazaga yuklaydi |
 | `python manage.py migrate` | Migratsiyalarni qoʻllaydi |
+| `python manage.py createcachetable` | Rate-limit uchun umumiy cache jadvalini yaratadi |
 | `python manage.py createsuperuser` | Admin foydalanuvchi yaratadi |
 | `python manage.py collectstatic` | Statik fayllarni `staticfiles/` ga yigʻadi (production) |
 | `python manage.py makemessages -l ru -l en` | `ru` va `en` uchun `.po` fayllarini yaratadi/yangilaydi |
 | `python manage.py compilemo` | `.po` → `.mo` fayllarini `polib` bilan kompilatsiya qiladi (GNU `gettext` talab qilinmaydi) |
-| `python manage.py prune_visitlogs` | Eski tashrif yozuvlarini oʻchiradi — `--days N` parametri bilan (Analitika; qoʻshilmoqda) |
+| `python manage.py prune_visitlogs` | Eski tashrif yozuvlarini oʻchiradi — `--days N` parametri bilan |
+| `python manage.py resolve_geoip` | VisitLog IP larini davlatga aylantiradi (dashboarddagi "Davlatlar" paneli uchun) |
+| `python manage.py import_cefr` | CEFR sertifikatlarini PDF/URL roʻyxatidan import qiladi (`--file` parametri) |
 
-> **`.mo` kompilatsiyasi:** GNU `msgfmt` (gettext) Windows va bu serverda mavjud emas, shuning uchun standart `compilemessages` ishlamaydi. Buning oʻrniga `manage.py compilemo` ishlating — u `polib` (requirements.txt'da) yordamida barcha `locale/**/*.po` fayllarini `.mo` ga aylantiradi.
+> **`.mo` kompilatsiyasi:** GNU `msgfmt` (gettext) Windows va serverda mavjud emas, shuning uchun standart `compilemessages` ishlamaydi. Buning oʻrniga `manage.py compilemo` ishlating — u `polib` (requirements.txt'da) yordamida barcha `locale/**/*.po` fayllarini `.mo` ga aylantiradi.
 
 ---
 
@@ -224,12 +263,12 @@ TELEGRAM_ADMIN_CHAT_ID=-1001234567890
 ```
 hopeschool/
 ├── config/                  # Django konfiguratsiyasi
-│   ├── settings.py          #   Asosiy sozlamalar (i18n, DB, Tailwind, Unfold, TELEGRAM)
-│   ├── urls.py              #   URL marshrutlar (i18n_patterns + /ariza/ + /i18n/)
+│   ├── settings.py          #   Asosiy sozlamalar (i18n, DB, Tailwind, Unfold, xavfsizlik, TELEGRAM)
+│   ├── urls.py              #   URL marshrutlar (i18n_patterns + /ariza/ + /i18n/ + ADMIN_URL)
 │   └── wsgi.py              #   WSGI entry point
 │
 ├── apps/                    # Django ilovalar
-│   ├── common/              #   Umumiy abstract modellar, validators, context_processors
+│   ├── common/              #   Abstract modellar, validators, context_processors, auto-tarjima
 │   ├── siteconfig/          #   Sayt sozlamalari (singleton): logo, kontakt, xarita, SEO, analitika
 │   ├── pages/               #   Bosh sahifa bloklari: "Biz haqimizda", statistika, "Nega biz"
 │   ├── courses/             #   Kurslar va toifalar, kurs detail sahifasi
@@ -237,23 +276,29 @@ hopeschool/
 │   ├── gallery/             #   Galereya albomlari va rasmlari
 │   ├── testimonials/        #   Ota-ona fikrlari
 │   ├── news/                #   Yangiliklar va eʼlonlar
-│   ├── certificates/        #   Sertifikatlar (rasm/PDF/tashqi havola)
+│   ├── certificates/        #   Sertifikatlar (rasm/PDF/tashqi havola) + CEFR import
 │   ├── leads/               #   Ariza formasi, Lead modeli, Telegram signal, sidebar badge
-│   └── analytics/           #   VisitLog, middleware, dashboard, prune_visitlogs (qoʻshilmoqda)
+│   └── analytics/           #   VisitLog, middleware, Geo-IP, dashboard, prune/resolve buyruqlari
 │
 ├── templates/               # Django shablonlar
 │   ├── base.html            #   Asosiy shablon (dark mode, toast, modal)
 │   └── partials/            #   Header, footer, modal, mobile bar
 │
-├── static/                  # Statik fayllar (JS, rasm, ikonkalar)
-├── assets/                  # Tailwind manba CSS
-│   └── css/
-│       ├── source.css       #   Tailwind v4 kirish fayli
-│       └── tailwind.css     #   Qurilgan CSS chiqish fayli
+├── deploy/                  # Production konfiguratsiya fayllari
+│   ├── hopeschool.service   #   gunicorn systemd unit
+│   ├── gunicorn.conf.py     #   gunicorn sozlamalari (unix socket, workers)
+│   ├── hopeschool.uz.conf   #   nginx sayt konfiguratsiyasi
+│   ├── nginx-ratelimit.conf #   nginx rate-limit / connection zonalari
+│   ├── resolve-geoip.*      #   Geo-IP systemd service + timer (30 daq.)
+│   └── fail2ban/            #   fail2ban filter + jail (429 spam IP bloklash)
 │
-├── locale/                  # .po/.mo tarjima fayllari (ru, en — joriy etilmoqda)
+├── static/                  # Statik fayllar (JS, rasm, ikonkalar)
+├── assets/css/              # Tailwind manba CSS (source.css → tailwind.css)
+├── locale/                  # .po/.mo tarjima fayllari (ru, en)
+├── docs/                    # Qoʻllanmalar (ORNATISH, ADMIN, JOYLASHTIRISH)
 ├── media/                   # Yuklangan media fayllar (gitignore)
 ├── staticfiles/             # collectstatic chiqishi (gitignore)
+├── .github/workflows/       # CI/CD (deploy.yml)
 ├── .env.example             # Muhit namuna fayli
 ├── requirements.txt         # Python bogʻliqliklar
 └── manage.py
@@ -263,7 +308,7 @@ hopeschool/
 
 ## Arizalar va Telegram
 
-> **Holat: tayyor (Phase 3 tugallangan)**
+> **Holat: tayyor**
 
 ### Ish tartibi
 
@@ -299,23 +344,63 @@ Saytdagi ariza formasi  →  POST /ariza/
 
 2. Admin panelda: **Sayt sozlamalari → Telegram bildirishnomalari yoniq** katagini belgilang.
 
-Agar token yoki chat ID koʻrsatilmagan boʻlsa, bildirishnoma yuborilmaydi — ariza bazaga saqlanadi.
+Agar token yoki chat ID koʻrsatilmagan boʻlsa, bildirishnoma yuborilmaydi — ariza baribir bazaga saqlanadi.
 
 ### Spam himoyasi
 
 | Usul | Tavsif |
 |------|--------|
 | **Honeypot** | Yashirin `website` maydoni — real foydalanuvchilar toʻldirmaydi, botlar toʻldiradi; so jim rad etiladi |
-| **IP rate-limit** | Bir IP manzilidan 1 soat ichida 5 tadan ortiq ariza qabul qilinmaydi (Django cache asosida) |
+| **IP rate-limit** | Bir IP manzilidan 1 soat ichida 5 tadan ortiq ariza qabul qilinmaydi (umumiy DatabaseCache asosida — barcha worker'lar boʻylab toʻgʻri ishlaydi) |
 | **Telefon validatsiyasi** | Faqat `+998XXXXXXXXX` formatidagi raqamlar qabul qilinadi |
+
+> Ilova darajasidagi bu himoya nginx (`limit_req`) va fail2ban bilan birga **uch qatlamli** DDoS himoyasini tashkil qiladi — qarang: [`docs/JOYLASHTIRISH.md → DDoS va rate-limit himoyasi`](docs/JOYLASHTIRISH.md#ddos-va-rate-limit-himoyasi).
+
+---
+
+## Auto-tarjima (mashina tarjimasi)
+
+> **Holat: tayyor**
+
+Kontentni uchta tilda qoʻlda yozish oʻrniga, oʻzbekcha (standart) maydonni toʻldirib, **admindan bir tugma bilan** boʻsh rus va ingliz maydonlarini avtomatik toʻldirish mumkin.
+
+| Xususiyat | Tavsif |
+|-----------|--------|
+| **Manba** | Har doim oʻzbekcha (`MODELTRANSLATION_DEFAULT_LANGUAGE`) → ru/en ga tarjima qilinadi |
+| **Backend** | `deep-translator` (bepul Google) — API kalit shart emas; bitta funksiyani almashtirib LLM/pulli APIga oʻtish mumkin |
+| **HTML xavfsizligi** | CKEditor maydonlari `beautifulsoup4` orqali **node-ma-node** tarjima qilinadi — teglar va atributlar buzilmaydi |
+| **Tezlik** | Tanlangan koʻp qatorlar uchun soʻrovlar thread-pool da parallel ketadi va bir xil matnlar (badge, "soʻm/oy" va h.k.) faqat bir marta tarjima qilinadi |
+| **Inson nazorati** | Tarjima faqat admin amali bilan ishlaydi, render vaqtida emas; admin **tekshirib saqlaydi** (boʻsh maydonlar ustiga yozadi, mavjudini buzmaydi) |
+| **Generiklik** | `modeltranslation` ga roʻyxatdan oʻtgan **har bir** model avtomatik qamrab olinadi — yangi modellar qoʻshilsa, alohida kod talab qilinmaydi |
+
+> Agar tarjima yarim qolsa (ba'zi maydon boʻsh), admin tahrirlash sahifasida toʻldirilmagan maydonlar haqida ogohlantirish koʻrsatiladi.
+
+---
+
+## Sertifikatlar va CEFR import
+
+> **Holat: tayyor**
+
+Oʻquvchi yutuqlari (sertifikatlar) admin paneldan rasm, PDF yoki tashqi havola koʻrinishida qoʻshiladi. CEFR (ingliz tili darajasi) sertifikatlarini esa **ommaviy import** qilish mumkin.
+
+- **PDF → rasm:** har bir CEFR PDF `pypdfium2` (Apache/BSD litsenziya — AGPL `PyMuPDF` emas) bilan rasmga render qilinadi va `media/` ga saqlanadi.
+- **Ism ajratish:** `pypdf` PDF matnidan oʻquvchi ismini ajratib oladi.
+- **Manba roʻyxati:** URL/fayllar `cefr_urls.txt` dan oʻqiladi (`--file` bilan boshqa yoʻl berish mumkin).
+
+```bash
+python manage.py import_cefr                       # cefr_urls.txt dan o'qiydi
+python manage.py import_cefr --file /path/urls.txt # boshqa fayldan
+```
+
+> **Maxfiylik:** `cefr_urls.txt` va render qilingan rasmlar **gitignore** qilingan — real oʻquvchi maʼlumotlari (ism/rasm) repozitoriyada saqlanmaydi. Faylni serverga qoʻlda koʻchiring va import buyrugʻini oʻsha yerda ishlating.
 
 ---
 
 ## Tashriflar va Analitika
 
-> **Holat: qoʻshilmoqda (Phase 4)**
+> **Holat: tayyor**
 
-`apps/analytics` ilovasi tashrif hisobini middleware darajasida olib boradi — hech qanday JavaScript tracker talab qilinmaydi.
+`apps/analytics` ilovasi tashrif hisobini **middleware** darajasida olib boradi — hech qanday JavaScript tracker talab qilinmaydi.
 
 ### VisitLog modeli
 
@@ -323,7 +408,8 @@ Har bir saytga kirishda quyidagi maʼlumotlar saqlanadi:
 
 | Maydon | Tavsif |
 |--------|--------|
-| `ip_address` | Tashrif etuvchining IP manzili (X-Forwarded-For koʻrinadigan) |
+| `ip_address` | Tashrif etuvchining IP manzili (X-Forwarded-For oxiridan, anti-spoof) |
+| `country` | IP dan aniqlangan davlat (`resolve_geoip` buyruq ishlagach toʻladi) |
 | `device_type` | Qurilma turi: desktop / mobile / tablet |
 | `browser` | Brauzer nomi (user-agents kutubxonasi orqali) |
 | `os` | Operatsion tizim |
@@ -335,9 +421,12 @@ Har bir saytga kirishda quyidagi maʼlumotlar saqlanadi:
 
 Middleware quyidagi soʻrovlarni **hisobga olmaydi**:
 
+- **`DEBUG=True` (development) rejimidagi barcha soʻrovlar** — lokal ishlab chiqish trafigi analitikani ifloslantirmaydi
+- **Localhost / ichki IP lar** (`127.0.0.1`, `::1`, private/loopback) — bular haqiqiy tashrif emas va geolokatsiya qilib boʻlmaydi
 - Botlar va krawlerlar (User-Agent asosida)
-- Admin paneli soʻrovlari (`/admin/` prefiksi)
-- Statik va media fayllar (`/static/`, `/media/`)
+- Admin paneli soʻrovlari (sozlanadigan `ADMIN_URL` prefiksi)
+- Statik va media fayllar (`/static/`, `/media/`, `/ckeditor5/`, `/i18n/`, `/favicon`)
+- Tizimga kirgan **staff** foydalanuvchilar va GET'dan boshqa metodlar / xato (≥400) javoblar
 
 ### Admin dashboard
 
@@ -347,21 +436,20 @@ Admin panelda analitika sahifasi quyidagi KPI va grafiklarni koʻrsatadi:
 - Qurilma turi boʻyicha taqsimot (desktop / mobile / tablet)
 - Eng koʻp koʻrilgan sahifalar
 - Brauzer va OS statistikasi
-- Til boʻyicha taqsimot
+- Til va davlat boʻyicha taqsimot
 
-### `prune_visitlogs` buyruq
-
-Eski VisitLog yozuvlarini oʻchirish uchun management buyruqi:
+### Buyruqlar
 
 ```bash
-# Standart: 90 kundan eski yozuvlarni oʻchiradi
+# Eski yozuvlarni o'chirish (standart: 90 kundan eski)
 python manage.py prune_visitlogs
-
-# N kun eski yozuvlarni oʻchiradi
 python manage.py prune_visitlogs --days 30
+
+# IP -> davlat (dashboarddagi "Davlatlar" paneli uchun)
+python manage.py resolve_geoip
 ```
 
-Ushbu buyruqni crontab yoki systemd timer orqali muntazam ishlatish tavsiya etiladi (masalan, haftada bir marta).
+> Productionda `resolve_geoip` 30 daqiqada bir systemd timer orqali avtomatik ishlaydi (`deploy/resolve-geoip.timer`); `prune_visitlogs` ni esa haftalik crontab/timer bilan rejalashtiring.
 
 ---
 
@@ -484,11 +572,9 @@ MODELTRANSLATION_DEFAULT_LANGUAGE = "uz"
 MODELTRANSLATION_FALLBACK_LANGUAGES = ("uz", "ru", "en")
 ```
 
-Admin panelda har bir til uchun alohida tab koʻrinadi (`[uz]`, `[ru]`, `[en]`). Biror til uchun maydon boʻsh qolsa, standart — oʻzbekcha — koʻrsatiladi.
+Admin panelda har bir til uchun alohida tab koʻrinadi (`[uz]`, `[ru]`, `[en]`). Biror til uchun maydon boʻsh qolsa, standart — oʻzbekcha — koʻrsatiladi. Boʻsh ru/en maydonlarini [auto-tarjima](#auto-tarjima-mashina-tarjimasi) bilan bir tugmada toʻldirish mumkin.
 
 URL prefikslari (`i18n_patterns` orqali): `/uz/`, `/ru/`, `/en/`
-
-**Kontent tarjimasi toʻliq ishlaydi** — admindan har til uchun kiritish mumkin.
 
 ### 2. Interfeys tarjimasi (gettext / polib)
 
@@ -561,13 +647,11 @@ CKEditor 5 quyidagi kontent maydonlarida ishlatiladi:
 
 ## Tezlik, rasm optimizatsiyasi va accessibility
 
-> **Phase 6 — tayyor**
-
 Ushbu boʻlim saytning yuklanish tezligini, rasm samaradorligini va barcha foydalanuvchilar uchun qulayligini taʼminlovchi optimizatsiyalarni qamrab oladi.
 
 ### Responsive WebP rasmlar (easy_thumbnails)
 
-`easy_thumbnails` (allaqachon `requirements.txt` da mavjud) yordamida yuklangan har bir rasm uchun optimallashtrilgan versiyalar avtomatik yaratiladi.
+`easy_thumbnails` yordamida yuklangan har bir rasm uchun optimallashtrilgan versiyalar avtomatik yaratiladi.
 
 Shablonlarda `<picture>` elementi qoʻllaniladi — brauzer WebP formatini qoʻllab-quvvatlasa WebP, qoʻllab-quvvatlamasa asl rasm yuklaydi:
 
@@ -588,9 +672,7 @@ Shablonlarda `<picture>` elementi qoʻllaniladi — brauzer WebP formatini qoʻl
 | WebP format | JPEG/PNG ga nisbatan oʻrtacha 25–35% kichikroq hajm, sifat yoʻqotilmaydi |
 | Responsive oʻlchamlar | Turli ekran kengliklariga mos miniatyuralar yaratiladi |
 
-> **easy_thumbnails va media papkasi:** `easy_thumbnails` yaratilgan miniatyuralarni `media/` papkasida `cache/` quyi-papkasida saqlaydi. Production serverida `media/` papkasi **yozish huquqi bilan mavjud** boʻlishi va serverlar orasida **doimiy (persistent)** boʻlishi shart — aks holda har deployment da miniatyuralar qayta hisoblab chiqiladi. Docker yoki AWS kabi muhitlarda `media/` uchun alohida volume yoki S3 kabi tashqi xotira tavsiya etiladi.
-
----
+> **easy_thumbnails va media papkasi:** `easy_thumbnails` yaratilgan miniatyuralarni `media/` papkasidagi `cache/` quyi-papkasida saqlaydi. Production serverida `media/` papkasi **yozish huquqi bilan** va **doimiy (persistent)** boʻlishi shart — aks holda har deployment da miniatyuralar qayta hisoblanadi.
 
 ### Shrift optimizatsiyasi
 
@@ -601,21 +683,15 @@ Tashqi shrift provayderlariga (masalan, Google Fonts) ulanish vaqtini qisqartiri
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 ```
 
-Shuningdek, `font-display: swap` CSS xossasi qoʻllaniladi — shrift yuklanayotgan vaqtda tizim shrifti koʻrsatiladi, sahifa bo'shliq qolmaydi (FOUT xatti-harakati qabul qilinadi, FOIT emas).
-
----
+Shuningdek, `font-display: swap` CSS xossasi qoʻllaniladi — shrift yuklanayotgan vaqtda tizim shrifti koʻrsatiladi, sahifa bo'shliq qolmaydi (FOUT qabul qilinadi, FOIT emas).
 
 ### JavaScript defer
 
 Interaktivlik talab qilmaydigan skriptlar `defer` atributi bilan yuklangan — brauzer HTML ni to'liq tahlil qilgandan soʻng skriptlarni bajaradi, bu LCP va INP koʻrsatkichlarini yaxshilaydi.
 
----
-
 ### Accessibility (a11y)
 
-**Skip-to-content havolasi**
-
-Klaviatura va ekran oʻquvchi foydalanuvchilari uchun sahifa boshida "Asosiy mazmunga oʻtish" havolasi joylashtirilgan. Havola odatda yashirin boʻladi, lekin fokus olganda koʻrinadi:
+**Skip-to-content havolasi** — klaviatura va ekran oʻquvchi foydalanuvchilari uchun sahifa boshida "Asosiy mazmunga oʻtish" havolasi; odatda yashirin, fokus olganda koʻrinadi:
 
 ```html
 <a href="#main" class="skip-link">Asosiy mazmunga oʻtish</a>
@@ -623,9 +699,7 @@ Klaviatura va ekran oʻquvchi foydalanuvchilari uchun sahifa boshida "Asosiy maz
 <main id="main">...</main>
 ```
 
-**`:focus-visible` uslublari**
-
-Faqat klaviatura navigatsiyasida fokus ramkasi koʻrsatiladi — sichqoncha foydalanuvchilari uchun ortiqcha vizual shovqin boʻlmaydi:
+**`:focus-visible` uslublari** — faqat klaviatura navigatsiyasida fokus ramkasi koʻrsatiladi:
 
 ```css
 :focus-visible {
@@ -634,9 +708,7 @@ Faqat klaviatura navigatsiyasida fokus ramkasi koʻrsatiladi — sichqoncha foyd
 }
 ```
 
-**`prefers-reduced-motion`**
-
-Harakatga sezgir foydalanuvchilar uchun animatsiyalar minimal darajaga tushiriladi:
+**`prefers-reduced-motion`** — harakatga sezgir foydalanuvchilar uchun animatsiyalar minimal darajaga tushiriladi:
 
 ```css
 @media (prefers-reduced-motion: reduce) {
@@ -647,11 +719,7 @@ Harakatga sezgir foydalanuvchilar uchun animatsiyalar minimal darajaga tushirila
 }
 ```
 
----
-
 ### Core Web Vitals maqsadlari
-
-Google tomonidan belgilangan "yaxshi" koʻrsatkichlar:
 
 | Koʻrsatkich | Toʻliq nomi | Maqsad |
 |-------------|------------|--------|
@@ -661,46 +729,77 @@ Google tomonidan belgilangan "yaxshi" koʻrsatkichlar:
 
 > **Eslatma:** INP 2024 yildan boshlab FID (First Input Delay) oʻrnini egalladi va hozirda Google tomonidan asosiy koʻrsatkich sifatida hisoblanadi.
 
----
-
 ### Lighthouse auditi (qoʻlda)
 
-Lighthouse avtomatik CI pipeline ga kiritilmagan — uni qoʻlda tekshirish tavsiya etiladi:
+Lighthouse CI ga kiritilmagan — uni qoʻlda tekshirish tavsiya etiladi (Chrome DevTools → **Lighthouse** tabi, yoki tashqi [pagespeed.web.dev](https://pagespeed.web.dev/)).
 
-**Chrome DevTools orqali:**
+> **Development vs Production:** Lighthouse natijalarini `DEBUG=False` holatida va `collectstatic` qilingan production-ga yaqin muhitda oʻlchang — `DEBUG=True` rejimida WhiteNoise kompressiyasi va kesh sarlavhalari toʻliq ishlamaydi.
 
-1. Saytni Chrome brauzerida oching.
-2. `F12` → **Lighthouse** tabiga oʻting.
-3. "Categories": Performance, Accessibility, Best Practices, SEO ni belgilang.
-4. **"Analyze page load"** tugmasini bosing.
-5. Natijalar boʻyicha tavsiyalarni koʻring va hal qiling.
+---
 
-**PageSpeed Insights orqali (tashqi):**
+## CI/CD
 
-Brauzerda [pagespeed.web.dev](https://pagespeed.web.dev/) manzilini oching → sayt URLini kiriting → natijalarni koʻring. Bu asbob haqiqiy foydalanuvchi maʼlumotlari (CrUX) bilan laboratoriya natijalarini birga koʻrsatadi.
+Loyiha **GitHub Actions** orqali avtomatlashtirilgan: `.github/workflows/deploy.yml`.
 
-> **Development vs Production:** Lighthouse natijalarini `DEBUG=False` holatida va statik fayllar `collectstatic` qilingan production-ga yaqin muhitda oʻlchash aniqroq natija beradi. `DEBUG=True` rejimida WhiteNoise kompressiyasi va kesh sarlavhalari toʻliq ishlamaydi.
+```
+push / pull_request (main)
+        │
+        ▼
+   ┌─────────┐   testlar oʻtsa va main ga push boʻlsa   ┌──────────┐
+   │  test   │ ───────────────────────────────────────▶ │  deploy  │
+   └─────────┘                                           └──────────┘
+   • python check         • SSH orqali serverga ulanadi
+   • makemigrations --check  (ForceCommand → hopeschool-deploy ishga tushadi)
+   • test (285 ta test)
+```
+
+**`test` ishi** (har push va har PR da):
+
+| Qadam | Buyruq |
+|-------|--------|
+| Python | 3.14 (`actions/setup-python@v6`) + pip kesh |
+| Django tekshiruvi | `python manage.py check` |
+| Migratsiya butunligi | `python manage.py makemigrations --check --dry-run` |
+| Test to'plami | `python manage.py test --verbosity 2` |
+
+CI da `.env` yoʻq (gitignore) — sozlamalar dev standartlariga qaytadi va xavfsizlik bloki oʻchiq qolishi uchun `DEBUG=True` majburlanadi.
+
+**`deploy` ishi** faqat `main` ga **push** boʻlganda va **testlar oʻtgach** ishlaydi:
+
+- `appleboy/ssh-action` orqali serverga SSH ulanadi.
+- Serverdagi `deploy` foydalanuvchisi sshd **ForceCommand** bilan `/usr/local/bin/hopeschool-deploy` ga bogʻlangan — ulanishning oʻzi deployni ishga tushiradi (`script: "true"` eʼtiborga olinmaydi).
+- `concurrency` bilan ikki deploy bir vaqtda ketmasligi kafolatlanadi.
+
+> Kerakli GitHub Secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_PASSWORD`.
 
 ---
 
 ## Deployment
 
-Toʻliq AWS Ubuntu (gunicorn + nginx + systemd) deployment qoʻllanmasi **Phase 7** da qoʻshiladi.
+Toʻliq production joylashtirish qoʻllanmasi — **gunicorn + nginx + systemd + Certbot (HTTPS)** va uch qatlamli DDoS/rate-limit himoyasi: **[`docs/JOYLASHTIRISH.md`](docs/JOYLASHTIRISH.md)**. Tayyor konfiguratsiya fayllari `deploy/` papkasida.
 
-Qisqa eslatma:
+Qisqacha (server allaqachon sozlangan boʻlsa, redeploy):
 
 ```bash
-# Production sozlamalari
-DEBUG=False
-python manage.py collectstatic --noinput
+git pull
+pip install -r requirements.txt
 python manage.py migrate
-
-# gunicorn bilan ishga tushirish
-gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
+python manage.py tailwind build            # collectstatic'dan OLDIN — aks holda CSS yig'ilmaydi
+python manage.py collectstatic --noinput
+python manage.py compilemo                 # .po → .mo (polib; serverda msgfmt yo'q)
+sudo systemctl restart hopeschool
 ```
 
-> **easy_thumbnails (media keshi):** `easy_thumbnails` yaratgan miniatyuralar `media/cache/` papkasida saqlanadi. Deployment vaqtida bu papka avtomatik tozalanmaydi — miniatyuralar talab boʻyicha qayta yaratiladi. `media/` papkasi serverda **doimiy va yozish huquqi bilan** mavjud boʻlishi shart.
+> **Xavfsizlik tekshiruvi:** deploydan oldin `python manage.py check --deploy` "no issues" berishi kerak — bu tekshiruv `apps/common/test_deploy.py` testida ham ushlab turiladi.
 
-Qoʻshimcha:
-- [`docs/ORNATISH.md`](docs/ORNATISH.md) — batafsil oʻrnatish qoʻllanmasi
-- [`docs/ADMIN.md`](docs/ADMIN.md) — kontent boshqaruv qoʻllanmasi
+> **easy_thumbnails (media keshi):** miniatyuralar `media/cache/` da saqlanadi va talab boʻyicha qayta yaratiladi. `media/` papkasi serverda **doimiy va yozish huquqi bilan** mavjud boʻlishi shart.
+
+---
+
+## Hujjatlar
+
+| Fayl | Mazmun |
+|------|--------|
+| [`docs/ORNATISH.md`](docs/ORNATISH.md) | Batafsil lokal (dev) oʻrnatish qoʻllanmasi |
+| [`docs/ADMIN.md`](docs/ADMIN.md) | Admin panelda kontent boshqaruvi |
+| [`docs/JOYLASHTIRISH.md`](docs/JOYLASHTIRISH.md) | Production serverga joylashtirish (deploy) |
