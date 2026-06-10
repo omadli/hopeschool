@@ -1,7 +1,12 @@
 from django.contrib import admin, messages
-from django.contrib.auth.models import Group
+from django.contrib.admin.utils import unquote
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import Group, User
+from django.core.exceptions import PermissionDenied
 from django.utils.translation import gettext_lazy as _
+from unfold.admin import ModelAdmin
 from unfold.decorators import action
+from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
 from apps.common.translation import fill_translations_bulk, missing_translation_fields
 
@@ -10,6 +15,76 @@ try:
     admin.site.unregister(Group)
 except admin.sites.NotRegistered:
     pass
+
+
+# ---------------------------------------------------------------------------
+# Foydalanuvchilar (xodimlar) — admindan qoʻshish/oʻchirish
+# ---------------------------------------------------------------------------
+# Standart Django UserAdmin'i Unfold uslubisiz koʻrinadi, shuningdek admin
+# orqali superuser yaratish/berish imkonini ochiq qoldiradi. Quyidagi versiya:
+#   * Unfold uslubi (form/add_form/change_password_form unfold.forms'dan);
+#   * `is_superuser` har doim faqat-oʻqish — admin orqali yangi superuser
+#     yaratib yoki mavjud hisobga superuser huquqini berib boʻlmaydi
+#     (birinchi superuser CLI `createsuperuser` orqali yaratiladi);
+#   * superuserlar bir-birini himoyalangan: boshqa superuserning parolini
+#     oʻzgartirib, oʻchirib yoki huquqlarini (faollik/xodimlik) oʻzgartirib
+#     boʻlmaydi;
+#   * oddiy (superuser boʻlmagan) adminlar huquq maydonlariga tegolmaydi —
+#     imtiyozni oshirib boʻlmaydi.
+# Group bu loyihada ishlatilmaydi (yuqorida unregister qilingan), shuning uchun
+# huquqlar to'plamiga `groups` ham kiritilgan (himoya uchun, zarar qilmaydi).
+_PERMISSION_FIELDS = ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")
+
+try:
+    admin.site.unregister(User)
+except admin.sites.NotRegistered:
+    pass
+
+
+@admin.register(User)
+class UserAdmin(BaseUserAdmin, ModelAdmin):
+    # Unfold-styled auth forms.
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
+
+    list_display = ("username", "email", "first_name", "last_name",
+                    "is_staff", "is_superuser", "is_active")
+    list_filter = ("is_staff", "is_superuser", "is_active")
+
+    def _is_other_superuser(self, request, obj):
+        """obj — request.user'dan boshqa superuser'mi?"""
+        return obj is not None and obj.is_superuser and obj.pk != request.user.pk
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly = list(super().get_readonly_fields(request, obj))
+        # `is_superuser` admin orqali HECH QACHON oʻzgartirilmaydi → yangi
+        # superuser yaratib/berib boʻlmaydi. (readonly maydon formadan butunlay
+        # chiqarib tashlanadi, shuning uchun soxta POST ham huquq berolmaydi.)
+        # Superuser boʻlmagan admin yoki boshqa superuserni tahrirlash holatida
+        # butun huquqlar bloki qulflanadi.
+        if not request.user.is_superuser or self._is_other_superuser(request, obj):
+            for field in _PERMISSION_FIELDS:
+                if field not in readonly:
+                    readonly.append(field)
+        elif "is_superuser" not in readonly:
+            readonly.append("is_superuser")
+        return tuple(readonly)
+
+    def has_delete_permission(self, request, obj=None):
+        # Boshqa superuserni oʻchirib boʻlmaydi (yakka, change-form va bulk
+        # `delete_selected` — barchasi shu nuqtadan oʻtadi: bulk yoʻli
+        # get_deleted_objects() ichida har bir obyekt uchun shuni chaqiradi).
+        if self._is_other_superuser(request, obj):
+            return False
+        return super().has_delete_permission(request, obj)
+
+    def user_change_password(self, request, id, form_url=""):
+        # Boshqa superuserning parolini oʻzgartirib boʻlmaydi.
+        user = self.get_object(request, unquote(id))
+        if self._is_other_superuser(request, user):
+            raise PermissionDenied
+        return super().user_change_password(request, id, form_url)
 
 
 @admin.action(description=_("UZ → RU/EN avto-tarjima (boʻsh maydonlarni toʻldirish)"))

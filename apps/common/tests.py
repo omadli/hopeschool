@@ -884,3 +884,136 @@ class FillTranslationsBulkCacheTests(TestCase):
         self.assertEqual(engine.call_count, 2)
         self.assertEqual(c1.name_ru, "[ru]Bir")
         self.assertEqual(c2.name_en, "[en]Bir")
+
+
+# ---------------------------------------------------------------------------
+# Custom UserAdmin — add/delete xodimlar + superuserlarni himoyalash
+# ---------------------------------------------------------------------------
+from django.contrib import admin as dj_admin  # noqa: E402
+
+from apps.common.admin import UserAdmin  # noqa: E402
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class UserAdminSecurityTests(TestCase):
+    """apps.common.admin.UserAdmin — xodim qoʻshish/oʻchirish va superuser himoyasi."""
+
+    def setUp(self):
+        self.super1 = User.objects.create_superuser(
+            username="super1", password="pw12345678", email="s1@test.com")
+        self.super2 = User.objects.create_superuser(
+            username="super2", password="pw12345678", email="s2@test.com")
+        self.staff = User.objects.create_user(
+            username="staff1", password="pw12345678", email="st@test.com",
+            is_staff=True)
+        self.admin = UserAdmin(User, dj_admin.site)
+        self.client.force_login(self.super1)
+
+    def _req(self, user):
+        req = RequestFactory().get("/")
+        req.user = user
+        return req
+
+    # --- get_readonly_fields (no new superusers, peer protection) -----------
+    def test_is_superuser_readonly_when_superuser_edits_plain_staff(self):
+        ro = self.admin.get_readonly_fields(self._req(self.super1), obj=self.staff)
+        self.assertIn("is_superuser", ro)        # can't promote to superuser
+        self.assertNotIn("is_staff", ro)          # but staff/active stay editable
+        self.assertNotIn("is_active", ro)
+
+    def test_is_superuser_readonly_on_add(self):
+        ro = self.admin.get_readonly_fields(self._req(self.super1), obj=None)
+        self.assertIn("is_superuser", ro)
+
+    def test_peer_superuser_permission_block_locked(self):
+        ro = self.admin.get_readonly_fields(self._req(self.super1), obj=self.super2)
+        for field in ("is_active", "is_staff", "is_superuser", "user_permissions"):
+            self.assertIn(field, ro)
+
+    def test_superuser_editing_self_keeps_flags_editable(self):
+        ro = self.admin.get_readonly_fields(self._req(self.super1), obj=self.super1)
+        self.assertIn("is_superuser", ro)         # never grant/revoke superuser via UI
+        self.assertNotIn("is_staff", ro)
+        self.assertNotIn("is_active", ro)
+
+    def test_non_superuser_cannot_edit_permission_fields(self):
+        ro = self.admin.get_readonly_fields(self._req(self.staff), obj=self.staff)
+        for field in ("is_active", "is_staff", "is_superuser", "user_permissions"):
+            self.assertIn(field, ro)
+
+    # --- delete protection ---------------------------------------------------
+    def test_has_delete_permission_blocks_other_superuser(self):
+        self.assertFalse(
+            self.admin.has_delete_permission(self._req(self.super1), obj=self.super2))
+
+    def test_has_delete_permission_allows_staff(self):
+        self.assertTrue(
+            self.admin.has_delete_permission(self._req(self.super1), obj=self.staff))
+
+    def test_has_delete_permission_allows_self(self):
+        self.assertTrue(
+            self.admin.has_delete_permission(self._req(self.super1), obj=self.super1))
+
+    def test_superuser_can_delete_staff_via_http(self):
+        url = reverse("admin:auth_user_delete", args=[self.staff.pk])
+        resp = self.client.post(url, {"post": "yes"})
+        self.assertEqual(resp.status_code, 302)
+        self.assertFalse(User.objects.filter(pk=self.staff.pk).exists())
+
+    def test_superuser_cannot_delete_other_superuser_via_http(self):
+        url = reverse("admin:auth_user_delete", args=[self.super2.pk])
+        resp = self.client.post(url, {"post": "yes"})
+        self.assertEqual(resp.status_code, 403)
+        self.assertTrue(User.objects.filter(pk=self.super2.pk).exists())
+
+    def test_bulk_delete_including_superuser_is_blocked(self):
+        # Django checks has_delete_permission per object inside get_deleted_objects;
+        # one protected superuser makes the whole confirmed batch raise 403.
+        url = reverse("admin:auth_user_changelist")
+        resp = self.client.post(url, {
+            "action": "delete_selected",
+            "_selected_action": [str(self.super2.pk), str(self.staff.pk)],
+            "post": "yes",
+        })
+        self.assertEqual(resp.status_code, 403)
+        self.assertTrue(User.objects.filter(pk=self.super2.pk).exists())
+        self.assertTrue(User.objects.filter(pk=self.staff.pk).exists())
+
+    # --- password protection -------------------------------------------------
+    def test_cannot_change_other_superuser_password(self):
+        url = reverse("admin:auth_user_password_change", args=[self.super2.pk])
+        self.assertEqual(self.client.get(url).status_code, 403)
+
+    def test_can_change_own_password(self):
+        url = reverse("admin:auth_user_password_change", args=[self.super1.pk])
+        self.assertEqual(self.client.get(url).status_code, 200)
+
+    def test_can_change_staff_password(self):
+        url = reverse("admin:auth_user_password_change", args=[self.staff.pk])
+        self.assertEqual(self.client.get(url).status_code, 200)
+
+    # --- creating users (staff yes, superuser never) ------------------------
+    def test_superuser_can_create_staff_user(self):
+        url = reverse("admin:auth_user_add")
+        resp = self.client.post(url, {
+            "username": "newbie",
+            "usable_password": "true",
+            "password1": "Str0ng-pw-123",
+            "password2": "Str0ng-pw-123",
+        })
+        self.assertEqual(resp.status_code, 302)
+        newbie = User.objects.get(username="newbie")
+        self.assertFalse(newbie.is_superuser)
+
+    def test_add_view_cannot_grant_superuser(self):
+        url = reverse("admin:auth_user_add")
+        self.client.post(url, {
+            "username": "sneaky",
+            "usable_password": "true",
+            "password1": "Str0ng-pw-123",
+            "password2": "Str0ng-pw-123",
+            "is_superuser": "on",
+            "is_staff": "on",
+        })
+        sneaky = User.objects.get(username="sneaky")
+        self.assertFalse(sneaky.is_superuser)
