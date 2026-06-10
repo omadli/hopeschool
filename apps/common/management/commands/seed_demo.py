@@ -70,7 +70,7 @@ class Command(BaseCommand):
     def _siteconfig(self):
         s = SiteConfig.get_solo()
         s.site_name = "Hope School"
-        s.tagline = ("Bogʻiturkon va Romitandagi zamonaviy oʻquv markazi — ingliz tili, "
+        s.tagline = ("Bogʻiturkon qishlogʻidagi zamonaviy oʻquv markazi — ingliz tili, "
                      "matematika, kimyo, biologiya va tarix fanlaridan sertifikatga tayyorlov.")
         s.site_domain = "hopeschool.uz"
         s.phone_primary = "+998 99 979 52 39"
@@ -81,9 +81,9 @@ class Command(BaseCommand):
         s.working_hours = "Dush–Yak, 09:00–20:00"
         s.latitude = "39.954262"
         s.longitude = "64.255692"
-        s.seo_title = ("Hope School — Bogʻiturkon, Romitan | Ingliz tili, matematika, "
+        s.seo_title = ("Hope School — Bogʻiturkon, Buxoro | Ingliz tili, matematika, "
                        "kimyo, biologiya, tarix")
-        s.seo_description = ("Bogʻiturkon va Romitandagi Hope School oʻquv markazi. Ingliz tilidan "
+        s.seo_description = ("Bogʻiturkondagi Hope School oʻquv markazi. Ingliz tilidan "
                              "CEFR, Multi-level (B2/C1) va IELTS sertifikatlariga tayyorlov; "
                              "matematika, kimyo, biologiya va tarix fanlari. 38+ oʻquvchimiz til "
                              "sertifikatiga erishgan. Birinchi 3 dars bepul.")
@@ -110,8 +110,7 @@ class Command(BaseCommand):
             title="Bilim — ishonch — natija",
             body=(
                 "<p>Hope School (avvalgi nomi — Hope Academy) Buxoro viloyati, Romitan tumani "
-                "Bogʻiturkon qishlogʻida 2023-yildan faoliyat yuritadi. Markazning Bogʻiturkon va "
-                "Romitanda ikki filiali bor.</p>"
+                "Bogʻiturkon qishlogʻida 2023-yildan faoliyat yuritadi.</p>"
                 "<p>Asosiy yoʻnalishimiz — ingliz tili. Darslarni 2×C1 darajali oʻqituvchi "
                 "Umid Abdurahmonov olib boradi va oʻquvchilarni 0 dan boshlab CEFR, Multi-level "
                 "(B2/C1) hamda IELTS sertifikatlariga tayyorlaydi. Shuningdek matematika, kimyo, "
@@ -133,7 +132,7 @@ class Command(BaseCommand):
         data = [
             (38, "+", "Sertifikat sohibi oʻquvchi", True),
             (5, "", "Fan yoʻnalishi", False),
-            (2, "", "Filial: Bogʻiturkon, Romitan", False),
+            (200, "+", "Oʻquvchilar", False),
             (3, "+", "Yillik tajriba (2023-yildan)", False),
         ]
         for i, (n, suf, label, accent) in enumerate(data):
