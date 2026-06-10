@@ -1,6 +1,7 @@
 import user_agents
 from django.conf import settings
 
+from . import geoip
 from .models import VisitLog
 
 # Path prefixes that should never be logged as a public page visit. The admin
@@ -58,6 +59,11 @@ class VisitLogMiddleware:
         return response
 
     def _log(self, request, response):
+        # Don't pollute analytics with local development traffic: in DEBUG the
+        # only visitor is the developer's own browser hitting 127.0.0.1.
+        if settings.DEBUG:
+            return
+
         path = request.path
 
         # settings.ADMIN_URL is normalised to "<prefix>/"; strip the trailing
@@ -77,6 +83,14 @@ class VisitLogMiddleware:
         if user is not None and user.is_authenticated and user.is_staff:
             return
 
+        # Only log real, routable visitors. Loopback/private IPs (the dev server
+        # on 127.0.0.1, the host pinging itself, health checks) aren't genuine
+        # traffic and can't be geolocated — drop them so they don't flood the
+        # logs and so the country panel stays meaningful.
+        ip = _client_ip(request)
+        if not ip or not geoip.is_public_ip(ip):
+            return
+
         ua_string = request.META.get("HTTP_USER_AGENT", "")
         ua = user_agents.parse(ua_string)
         # Drop known crawlers/bots — note: an empty UA is NOT a bot, so the
@@ -90,7 +104,7 @@ class VisitLogMiddleware:
             path=path[:512],
             method=request.method,
             referrer=referrer[:512],
-            ip_address=_client_ip(request),
+            ip_address=ip,
             user_agent=ua_string,
             device_type=_device_type(ua),
             browser=(ua.browser.family or "")[:80],

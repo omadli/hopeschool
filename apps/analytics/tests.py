@@ -31,14 +31,26 @@ class StaffExclusionTests(TestCase):
 
     def test_anonymous_visit_is_logged(self):
         self.assertEqual(VisitLog.objects.count(), 0)
-        self.client.get("/uz/", follow=True)
+        # A real, routable client IP — the middleware drops loopback/private IPs.
+        self.client.get("/uz/", follow=True, REMOTE_ADDR="8.8.8.8")
         self.assertEqual(VisitLog.objects.filter(path="/uz/").count(), 1)
 
     def test_staff_visit_is_not_logged(self):
         staff = User.objects.create_user(
             username="staffer", password="pw12345678", is_staff=True)
         self.client.force_login(staff)
-        self.client.get("/uz/", follow=True)
+        self.client.get("/uz/", follow=True, REMOTE_ADDR="8.8.8.8")
+        self.assertEqual(VisitLog.objects.filter(path="/uz/").count(), 0)
+
+    def test_loopback_visit_is_not_logged(self):
+        # Local dev traffic (127.0.0.1) must never reach the analytics table.
+        self.client.get("/uz/", follow=True, REMOTE_ADDR="127.0.0.1")
+        self.assertEqual(VisitLog.objects.filter(path="/uz/").count(), 0)
+
+    @override_settings(DEBUG=True)
+    def test_debug_mode_visit_is_not_logged(self):
+        # In development (DEBUG=True) nothing is logged, even from a public IP.
+        self.client.get("/uz/", follow=True, REMOTE_ADDR="8.8.8.8")
         self.assertEqual(VisitLog.objects.filter(path="/uz/").count(), 0)
 
 
@@ -57,7 +69,8 @@ class AdminUrlExclusionTests(TestCase):
         from django.http import HttpResponse
 
         from apps.analytics.middleware import VisitLogMiddleware
-        request = RequestFactory().get(path)
+        # A public client IP — loopback/private IPs are dropped by the middleware.
+        request = RequestFactory().get(path, REMOTE_ADDR="8.8.8.8")
         request.user = AnonymousUser()
         VisitLogMiddleware(lambda r: HttpResponse(status=200))(request)
 
