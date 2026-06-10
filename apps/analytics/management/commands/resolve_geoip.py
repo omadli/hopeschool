@@ -18,12 +18,12 @@ _BATCH = 100
 
 
 class Command(BaseCommand):
-    help = "VisitLog yozuvlariga IP orqali davlat maʼlumotini toʻldiradi (ip-api.com)."
+    help = "VisitLog yozuvlariga IP orqali davlat ma'lumotini to'ldiradi (ip-api.com)."
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--limit", type=int, default=1000,
-            help="Bir martada nechta distinct IP koʻrib chiqilsin (standart 1000).",
+            help="Bir martada nechta distinct IP ko'rib chiqilsin (standart 1000).",
         )
         parser.add_argument(
             "--sleep", type=float, default=4.0,
@@ -56,5 +56,5 @@ class Command(BaseCommand):
                 time.sleep(options["sleep"])
 
         self.stdout.write(self.style.SUCCESS(
-            f"{resolved} ta IP uchun davlat aniqlandi ({len(ips)} dan koʻrib chiqildi)."
+            f"{resolved} ta IP uchun davlat aniqlandi ({len(ips)} dan ko'rib chiqildi)."
         ))
