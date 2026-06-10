@@ -108,9 +108,14 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
   background: linear-gradient(160deg, rgba(61,127,230,.34), rgba(8,13,26,.30));
 }
 
-/* Hero staggered load */
+/* Hero staggered load — transform-only (NOT opacity:0). An LCP element that
+   starts at opacity:0 isn't counted as painted until the fade ends, which pushed
+   the hero <h1> LCP well past FCP. Sliding up (visible the whole time, `both`
+   fill applies the offset during the stagger delay) keeps the motion without the
+   LCP penalty. fadeUp stays — the modal still uses it. */
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-.rl { opacity: 0; animation: fadeUp .75s cubic-bezier(.2,.7,.2,1) forwards; }
+@keyframes slideUp { from { transform: translateY(16px); } to { transform: none; } }
+.rl { animation: slideUp .75s cubic-bezier(.2,.7,.2,1) both; }
 .d1 { animation-delay: .05s } .d2 { animation-delay: .13s } .d3 { animation-delay: .24s }
 .d4 { animation-delay: .36s } .d5 { animation-delay: .48s }
 @keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
