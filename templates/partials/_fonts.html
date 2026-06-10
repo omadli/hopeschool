@@ -1,6 +1,5 @@
 {% load static %}
-{# Self-hosted fonts (Manrope display + Onest body). Inlined @font-face
-   avoids a render-blocking external Google Fonts CSS request. #}
+{# Self-hosted fonts: inlined @font-face avoids a render-blocking Google Fonts request. #}
 <link rel="preload" as="font" type="font/woff2" href="{% static 'fonts/manrope-800-latin.woff2' %}" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="{% static 'fonts/onest-400-latin.woff2' %}" crossorigin>
 <style>

@@ -49,8 +49,7 @@ for subset, block in blocks:
 PRELOAD = [("manrope", "800", "latin"), ("onest", "400", "latin")]
 
 lines = ["{% load static %}",
-         "{# Self-hosted fonts (Manrope display + Onest body). Inlined @font-face",
-         "   avoids a render-blocking external Google Fonts CSS request. #}"]
+         "{# Self-hosted fonts: inlined @font-face avoids a render-blocking Google Fonts request. #}"]
 for fam, w, sub in PRELOAD:
     href = "{%% static 'fonts/%s-%s-%s.woff2' %%}" % (fam, w, sub)
     lines.append(f'<link rel="preload" as="font" type="font/woff2" '
