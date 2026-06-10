@@ -18,7 +18,7 @@
       <div class="flex items-center gap-2">
         {# language dropdown #}
         <div class="relative" data-langwrap>
-          <button data-langbtn aria-label="{% translate 'Tilni tanlash' %}" aria-haspopup="true" class="flex items-center gap-1.5 rounded-pill border bd surface-card px-2.5 sm:px-3 py-2 text-[13px] font-semibold">
+          <button data-langbtn aria-label="{% translate 'Tilni tanlash' %}: {{ LANGUAGE_CODE|upper }}" aria-haspopup="true" class="flex items-center gap-1.5 rounded-pill border bd surface-card px-2.5 sm:px-3 py-2 text-[13px] font-semibold">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>
             <span>{{ LANGUAGE_CODE|upper }}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg>

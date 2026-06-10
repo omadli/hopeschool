@@ -8,7 +8,7 @@
         <p class="mt-4 text-[14px] leading-relaxed txt-soft max-w-sm">{{ site_config.tagline|default:_("Zamonaviy taʻlim markazi. Biz bilan farzandingiz kelajagiga ishonchli qadam qoʻying.") }}</p>
       </div>
       <div class="md:col-span-3">
-        <h4 class="font-display font-bold text-[15px] mb-3">{% translate "Sahifalar" %}</h4>
+        <h3 class="font-display font-bold text-[15px] mb-3">{% translate "Sahifalar" %}</h3>
         <ul class="space-y-2 text-[14px] txt-soft">
           <li><a href="{% url 'home' %}#about" class="hover:text-brand-blue-600">{% translate "Biz haqimizda" %}</a></li>
           <li><a href="{% url 'home' %}#courses" class="hover:text-brand-blue-600">{% translate "Kurslar" %}</a></li>
@@ -17,7 +17,7 @@
         </ul>
       </div>
       <div class="md:col-span-4">
-        <h4 class="font-display font-bold text-[15px] mb-3">{% translate "Bogʻlanish" %}</h4>
+        <h3 class="font-display font-bold text-[15px] mb-3">{% translate "Bogʻlanish" %}</h3>
         <ul class="space-y-2 text-[14px] txt-soft">
           {% if site_config.address %}<li>{{ site_config.address }}</li>{% endif %}
           {% if site_config.phone_primary %}<li><a href="tel:{{ site_config.phone_primary }}" class="hover:text-brand-blue-600">{{ site_config.phone_primary|phone_display }}</a></li>{% endif %}

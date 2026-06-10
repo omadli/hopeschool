@@ -10,7 +10,7 @@
       {% for t in teachers %}
       <article class="snap-start shrink-0 w-[68%] sm:w-[42%] lg:w-[23.4%]">
         <div class="card-hover group rounded-card surface-card border bd shadow-soft overflow-hidden h-full">
-          <a href="{{ t.get_absolute_url }}" class="duotone block aspect-[4/5] overflow-hidden grad-cap">
+          <a href="{{ t.get_absolute_url }}" aria-label="{{ t.full_name }}" class="duotone block aspect-[4/5] overflow-hidden grad-cap">
             {% if t.photo %}{% responsive_img t.photo alt=t.full_name css="h-full w-full object-cover transition duration-500 group-hover:scale-105" width=420 width_2x=720 sizes="(min-width:1024px) 23vw, (min-width:640px) 42vw, 68vw" %}{% endif %}
           </a>
           <div class="p-4">
