@@ -23,6 +23,12 @@ DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
+# Admin panel URL prefix. Default "admin/". Set a hard-to-guess value in .env
+# (e.g. ADMIN_URL=boshqaruv-7x3k) to keep the login page off the obvious path.
+# Normalised to "<prefix>/" (no leading slash, single trailing slash) so the
+# value works in config/urls.py regardless of how it is written in .env.
+ADMIN_URL = env("ADMIN_URL", default="admin/").strip().strip("/") + "/"
+
 # Number of trusted reverse proxies in front of the app (nginx = 1; add 1 if a
 # CDN/WAF such as Cloudflare also proxies). The real client IP is read this many
 # hops from the END of X-Forwarded-For — client-supplied prefixes are untrusted,
