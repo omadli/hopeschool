@@ -6,7 +6,13 @@ real teachers, real courses/prices/schedules, real student results (name +
 level + score, each linking to the original channel post for proof) and real
 classroom photos. No fabricated names, testimonials, or statistics.
 
-Re-running clears the demo content tables (NOT leads) and recreates them.
+Certificates/results are NOT seeded here: they are owned entirely by the CEFR
+import (`manage.py import_cefr`, deduped on the verification URL) plus manual
+admin entry. The seed deliberately never touches that table, otherwise the two
+sources would fight and produce duplicate result cards.
+
+Re-running clears the demo content tables (NOT leads, NOT certificates) and
+recreates them.
 """
 from datetime import datetime
 from pathlib import Path
@@ -15,7 +21,6 @@ from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from django.utils import timezone, translation
 
-from apps.certificates.models import Certificate
 from apps.courses.models import Course, CourseCategory
 from apps.gallery.models import GalleryAlbum, GalleryImage, GalleryVideo
 from apps.news.models import NewsPost
@@ -51,13 +56,13 @@ class Command(BaseCommand):
         self._teachers()
         self._testimonials()
         self._news()
-        self._certificates()
         self._gallery()
         self.stdout.write(self.style.SUCCESS("Haqiqiy ma'lumotlar yuklandi."))
 
     def _clear(self):
+        # NOTE: Certificate is intentionally absent — see module docstring.
         for model in (GalleryImage, GalleryVideo, GalleryAlbum, Course, CourseCategory,
-                      Teacher, NewsPost, Certificate, Testimonial, WhyUsItem, StatItem,
+                      Teacher, NewsPost, Testimonial, WhyUsItem, StatItem,
                       AboutSection, SocialLink):
             model.objects.all().delete()
 
@@ -342,47 +347,6 @@ class Command(BaseCommand):
                 title=title, slug=slug, badge=badge, badge_accent=accent,
                 excerpt=excerpt, body=body, published_at=dt,
                 is_featured=accent,
-            )
-
-    # ------------------------------------------------------------ certificates
-    def _certificates(self):
-        # (student, badge, accent, score/description, channel post id)
-        # NOTE: badge "B2"/"IELTS"/"C1" is used ONLY where the channel post (or the
-        # Dec-2025 master list #134/#65) explicitly states the level. The most recent
-        # Apr-2026 result posts give only Listening/Reading scores ("Ingliz tili blok
-        # yopildi") without naming a level, so they carry the neutral badge "Natija" —
-        # the owner can upgrade them to B2/C1 in admin once confirmed.
-        data = [
-            ("Axtamov Jahongir", "Natija", True, "Listening 63 · Reading 75 — eng yuqori natija", 173),
-            ("Mansurova Mashhura", "IELTS", True, "IELTS 6.5 — Reading 6.5 · Listening 6.5", 28),
-            ("Baxshillayev Ulugʻbek", "B2 · 2x", True, "Reading 75 — C1 ga bir qadam", 182),
-            ("Saidov Samadbek", "Olimpiada", True, "Viloyat ingliz tili olimpiadasi — 1-oʻrin (5-sinf)", 122),
-            ("Rayimov Sunnatbek", "Litsey", True, "IIV Buxoro akademik litseyiga qabul — faqat ingliz tili bilan", 73),
-            ("Jahongirov Samirbek", "Maktab", True, "al-Xorazmiy, Kogon, Galaosiyo — 3 ta ixtisoslashtirilgan maktab (6-sinf)", 80),
-            ("Samadova Sabrina", "B2", True, "Markazning birinchi sertifikati — CEFR 55 (2023)", 26),
-            ("Shuxratova Zahrobegim", "B2 · 2x", False, "Listening 54 · Reading 65", 153),
-            ("Ergasheva Nigora", "B2", False, "Listening 56 · Reading 64", 155),
-            ("Nusratova Madinabonu", "Natija", False, "Listening 55 · Reading 63 — ingliz tili bloki yakunlandi", 172),
-            ("Obloqulov Artur", "B2", False, "Listening 54 · Reading 62", 156),
-            ("Umid Abdurahmonov", "C1", True, "Ustoz natijasi — 2×C1 · Reading 75 · overall 65", 50),
-            ("Joʻrayeva Charos", "Natija", False, "Listening 54 · Reading 61 — ingliz tili bloki yakunlandi", 171),
-            ("Akramov Abdulatif", "Natija", False, "Reading 61 — ingliz tili bloki yakunlandi", 170),
-            ("Shuxratova Shahruza", "B2", False, "Listening 53 · Reading 64", 151),
-            ("Axmetova Leyla", "B2", False, "Listening 54 · Reading 59", 152),
-            ("Baxshilloyeva Mushtariybonu", "B2", False, "Listening 54 · Reading 57", 154),
-            ("Mirmurotova Tabassum", "B2 · 2x", False, "11-sinf — Aprel va Mayda 2 marta B2", 59),
-            ("Sattorov Abdusattor", "B2 · 2x", False, "8-sinf oʻquvchisi", 109),
-            ("Hakimova Parvina", "B2", False, "9-sinf oʻquvchisi", 105),
-            ("Azimov Amin", "B2 · 2x", False, "Overall 54", 45),
-            ("Mahmudova Ruhshona", "B2", False, "53 ball", 58),
-            ("Nasriddinov Mahmudjon", "Maktab", False, "al-Xorazmiy (45.7), Kogon — 6-sinf", 82),
-            ("Abduqodirov Bekzod", "Maktab", False, "Qorakoʻl xalqaro ixtisoslashtirilgan maktab — 5-sinf", 83),
-        ]
-        for i, (name, badge, accent, desc, post_id) in enumerate(data):
-            Certificate.objects.create(
-                title=f"{name} — {badge}", student_name=name, description=desc,
-                badge=badge, badge_accent=accent,
-                external_url=f"{CHANNEL}/{post_id}", order=i,
             )
 
     # ------------------------------------------------------------- gallery
