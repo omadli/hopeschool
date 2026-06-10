@@ -16,9 +16,8 @@
 
   {% if site_config.favicon %}<link rel="icon" href="{{ site_config.favicon.url }}">{% else %}<link rel="icon" href="{% static 'img/logo.png' %}">{% endif %}
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+  {# Self-hosted fonts — no render-blocking external Google Fonts request #}
+  {% include "partials/_fonts.html" %}
 
   {# set theme before paint to avoid flash #}
   <script>(function(){try{var s=localStorage.getItem('theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
