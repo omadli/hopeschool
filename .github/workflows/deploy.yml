@@ -1,0 +1,74 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # CI — run the Django test suite + checks on every push and pull request.
+  # ---------------------------------------------------------------------------
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    env:
+      # No .env in CI (it is gitignored), so settings fall back to their dev
+      # defaults. Force DEBUG=True so the security/SSL-redirect block stays off
+      # and the suite runs as in local development.
+      DEBUG: "True"
+      SECRET_KEY: "ci-test-secret-key-not-for-production"
+      ALLOWED_HOSTS: "*"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: pip-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Django system check
+        run: python manage.py check
+
+      - name: Check for missing migrations
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Run test suite
+        run: python manage.py test --verbosity 2
+
+  # ---------------------------------------------------------------------------
+  # CD — deploy to the server, but ONLY on push to main and ONLY if tests pass.
+  # The server's 'deploy' user is pinned to /usr/local/bin/hopeschool-deploy via
+  # an sshd ForceCommand, so `script` is ignored — connecting triggers deploy.
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false   # never interrupt an in-flight deploy
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          port: 22
+          command_timeout: 15m
+          script: "true"
