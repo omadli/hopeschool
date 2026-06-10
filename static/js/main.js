@@ -28,7 +28,9 @@
     }
   }
   window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
+  // Defer the first run a frame: calling it synchronously during load reads
+  // layout (scrollTop/scrollHeight) and forces a reflow on the fresh DOM.
+  requestAnimationFrame(onScroll);
 
   // ---- dark/light theme ----
   var themeBtn = document.getElementById("theme-btn");
