@@ -1,6 +1,7 @@
 """Tests for apps.pages — i18n URL redirects, landing view, admin pages, SEO."""
 import re
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -29,6 +30,27 @@ class I18nRedirectTests(TestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 302)
         self.assertIn("/uz/", response["Location"])
+
+    def test_root_ignores_accept_language(self):
+        """A non-uz browser must still land on /uz/ (default is always uz)."""
+        response = self.client.get("/", HTTP_ACCEPT_LANGUAGE="ru-RU,ru;q=0.9,en;q=0.8")
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/uz/", response["Location"])
+
+    def test_root_ignores_language_cookie_on_public(self):
+        """A stale django_language cookie must not override the uz default on
+        the public site (the switcher uses /uz//ru//en/ URLs, not the cookie)."""
+        self.client.cookies[settings.LANGUAGE_COOKIE_NAME] = "en"
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/uz/", response["Location"])
+
+    def test_prefixed_url_still_wins(self):
+        """An explicit /ru/ URL is served in ru even with an en cookie set."""
+        self.client.cookies[settings.LANGUAGE_COOKIE_NAME] = "en"
+        response = self.client.get("/ru/", follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('lang="ru"', response.content.decode("utf-8", "replace"))
 
     def test_uz_home_ok(self):
         response = self.client.get("/uz/", follow=True)
