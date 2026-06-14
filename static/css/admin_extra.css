@@ -89,3 +89,44 @@ html.dark .ck-content code {
   background-color: rgba(255, 255, 255, .08);
   color: rgb(var(--color-base-100, 243 244 246));
 }
+
+[x-cloak] { display: none !important; }
+
+@media (max-width: 1279px) {
+  .hs-sidebar-toggle {
+    padding: 10px;
+    margin: -10px -4px;
+    border-radius: 10px;
+    line-height: 0;
+  }
+  .hs-sidebar-toggle:active {
+    background-color: rgba(0, 0, 0, .06);
+  }
+  html.dark .hs-sidebar-toggle:active {
+    background-color: rgba(255, 255, 255, .08);
+  }
+  .hs-sidebar-toggle .material-symbols-outlined {
+    font-size: 26px;
+  }
+
+  .hs-sidebar-close {
+    padding: 8px;
+    margin: -8px;
+    border-radius: 10px;
+    font-size: 24px;
+  }
+  .hs-sidebar-close:active {
+    background-color: rgba(0, 0, 0, .06);
+  }
+  html.dark .hs-sidebar-close:active {
+    background-color: rgba(255, 255, 255, .08);
+  }
+
+  #nav-sidebar {
+    box-shadow: 0 0 40px -8px rgba(0, 0, 0, .45);
+  }
+
+  #nav-sidebar .resize {
+    display: none !important;
+  }
+}

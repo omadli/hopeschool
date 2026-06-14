@@ -133,7 +133,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.locale.LocaleMiddleware",   # after Session, before Common (i18n_patterns)
+    "apps.common.middleware.DefaultUzLocaleMiddleware",  # after Session, before Common
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -188,6 +188,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
+
+# Auth is admin-only; keep redirects on the admin instead of Django's /accounts/* defaults.
+LOGIN_URL = "admin:login"
+LOGIN_REDIRECT_URL = "admin:index"
 
 # ---------------------------------------------------------------------------
 # Cache — DatabaseCache: shared across gunicorn workers (no Redis needed)
@@ -377,6 +381,9 @@ UNFOLD = {
     # Qo'shimcha admin CSS (CKEditor tungi rejim tuzatmasi + UI tweaks)
     "STYLES": [
         lambda request: static("css/admin_extra.css"),
+    ],
+    "SCRIPTS": [
+        lambda request: static("js/admin_sidebar.js"),
     ],
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": True,
