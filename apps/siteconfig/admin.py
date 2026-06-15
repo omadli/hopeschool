@@ -7,7 +7,7 @@ from unfold.admin import ModelAdmin
 
 from apps.common.admin import AutoTranslateAdminMixin
 
-from .models import SiteConfig, SocialLink
+from .models import SiteConfig, SocialLink, TelegramRecipient
 from .widgets import LeafletLocationWidget
 
 
@@ -16,6 +16,14 @@ class SocialLinkAdmin(ModelAdmin):
     list_display = ("__str__", "platform", "url", "is_active", "order")
     list_editable = ("is_active", "order")
     list_filter = ("platform", "is_active")
+
+
+@admin.register(TelegramRecipient)
+class TelegramRecipientAdmin(ModelAdmin):
+    list_display = ("__str__", "chat_id", "is_active")
+    list_editable = ("is_active",)
+    list_filter = ("is_active",)
+    search_fields = ("name", "chat_id")
 
 
 class SiteConfigForm(forms.ModelForm):
@@ -58,7 +66,8 @@ class SiteConfigAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmi
             "classes": ("collapse",),
         }),
         (_("Telegram"), {
-            "fields": ("telegram_notifications_enabled",),
+            "fields": ("telegram_notifications_enabled", "telegram_bot_token"),
             "classes": ("collapse",),
+            "description": _("Bot tokenini kiriting, soʻng «Telegram qabul qiluvchilar» boʻlimida arizalarni qabul qiladigan adminlarni qoʻshing — bir nechta admin qoʻshish mumkin."),
         }),
     )

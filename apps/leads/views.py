@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from .forms import LeadForm
@@ -39,9 +40,21 @@ def _capture_source(request):
     return referer[:255]
 
 
+@csrf_exempt
 @require_POST
 def lead_create(request):
-    """Public lead-submission endpoint (POST /ariza/). Returns JSON."""
+    """Public lead-submission endpoint (POST /ariza/). Returns JSON.
+
+    CSRF-exempt on purpose. This is an *anonymous* public form: there is no
+    logged-in session and no per-user state for a CSRF token to protect — anyone
+    may submit a lead (that is the point). Keeping CSRF on only created a
+    reliability bug: a page left open long enough for its token to go stale got
+    a 403 (HTML, not JSON), which the front-end surfaced as the generic
+    "Ariza yuborishda xatolik" and silently dropped the submission. Abuse is
+    already handled below by the honeypot and the per-IP rate-limit, so dropping
+    CSRF here costs no real protection and makes the form work no matter how long
+    the visitor lingered before sending.
+    """
     # 1) Honeypot: silently swallow spam without saving and without leaking.
     if request.POST.get("website"):
         return JsonResponse({"ok": True})

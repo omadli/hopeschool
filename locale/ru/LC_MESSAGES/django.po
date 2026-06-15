@@ -22,6 +22,13 @@ msgstr ""
 "%(o)d записей, %(f)d полей были переведены автоматически. Пожалуйста, "
 "проверьте."
 
+msgid ""
+"@BotFather bergan token. Boʻsh qoldirilsa, serverdagi .env qiymati "
+"ishlatiladi."
+msgstr ""
+"Токен от @BotFather. Если оставить пустым, используется значение .env на "
+"сервере."
+
 msgid "ALT matn (SEO)"
 msgstr "ALT-текст (SEO)"
 
@@ -91,6 +98,9 @@ msgstr "Метка"
 msgid "Belgi (tag)"
 msgstr "Метка (тег)"
 
+msgid "Belgilanmasa, bu adminga arizalar yuborilmaydi."
+msgstr "Если снять отметку, заявки этому администратору не отправляются."
+
 msgid "Bilimga ishonchni mustahkamlaymiz"
 msgstr "Укрепляем доверие к знаниям"
 
@@ -148,6 +158,14 @@ msgstr "Панель управления"
 msgid "Bot"
 msgstr "Бот"
 
+msgid ""
+"Bot tokenini kiriting, soʻng «Telegram qabul qiluvchilar» boʻlimida "
+"arizalarni qabul qiladigan adminlarni qoʻshing — bir nechta admin qoʻshish "
+"mumkin."
+msgstr ""
+"Введите токен бота, затем в разделе «Получатели Telegram» добавьте "
+"администраторов, принимающих заявки — можно добавить несколько."
+
 msgid "Boʻlim"
 msgstr "Раздел"
 
@@ -178,6 +196,16 @@ msgid ""
 msgstr ""
 "Введите ссылку на сертификат CEFR или отсканируйте QR-код — при сохранении "
 "PDF преобразуется в изображение и определяется имя ученика."
+
+msgid "Chat ID"
+msgstr "Chat ID"
+
+msgid ""
+"Chat ID raqam (masalan: 123456789 yoki -1001234567890) yoki @username "
+"koʻrinishida boʻlishi kerak."
+msgstr ""
+"Chat ID должен быть числом (например: 123456789 или -1001234567890) либо в "
+"виде @username."
 
 msgid "Chop etilgan"
 msgstr "Опубликовано"
@@ -214,6 +242,9 @@ msgstr "Ф.И.О."
 
 msgid "Fanlar"
 msgstr "Предметы"
+
+msgid "Faol"
+msgstr "Активен"
 
 msgid "Faol / chop etilgan"
 msgstr "Активный/опубликованный"
@@ -399,6 +430,9 @@ msgstr "Меньший номер отображается выше."
 msgid "Kichik sarlavha"
 msgstr "Подзаголовок"
 
+msgid "Kimligini eslatuvchi nom (masalan: Direktor). Ixtiyoriy."
+msgstr "Напоминающее имя (например: Директор). Необязательно."
+
 msgid "Kitob / til"
 msgstr "Книга / язык"
 
@@ -479,6 +513,12 @@ msgstr "Текст"
 
 msgid "Menyu"
 msgstr "Меню"
+
+msgid "Menyuni ochish yoki yopish"
+msgstr ""
+
+msgid "Menyuni yopish"
+msgstr ""
 
 msgid "Metod"
 msgstr "Метод"
@@ -636,6 +676,13 @@ msgstr "Отклонена"
 msgid "Raqam"
 msgstr "Число"
 
+msgid ""
+"Raqamli chat ID (masalan: 123456789). Foydalanuvchi botga /start yozgach, "
+"@userinfobot orqali bilib olish mumkin."
+msgstr ""
+"Числовой chat ID (например: 123456789). Узнать можно через @userinfobot "
+"после того, как пользователь напишет боту /start."
+
 msgid "Rasm"
 msgstr "Изображение"
 
@@ -710,6 +757,9 @@ msgstr "Сертификаты"
 
 msgid "Shior"
 msgstr "Слоган"
+
+msgid "Show all"
+msgstr ""
 
 msgid "Slug"
 msgstr "Слаг"
@@ -793,8 +843,17 @@ msgstr "Telegram"
 msgid "Telegram bildirishnomalari yoniq"
 msgstr "Уведомления Telegram включены"
 
+msgid "Telegram bot tokeni"
+msgstr "Токен Telegram-бота"
+
 msgid "Telegram guruh"
 msgstr "Telegram-группа"
+
+msgid "Telegram qabul qiluvchi"
+msgstr "Получатель Telegram"
+
+msgid "Telegram qabul qiluvchilar"
+msgstr "Получатели Telegram"
 
 msgid "Telegramga yuborildi"
 msgstr "Отправлено в Telegram"
@@ -946,6 +1005,12 @@ msgstr "в среднем"
 
 msgid "yangi oʻquvchi"
 msgstr "новых учеников"
+
+msgid "%(counter)s result"
+msgid_plural "%(counter)s results"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 msgid "%(years)s yil tajriba"
 msgid_plural "%(years)s yil tajriba"

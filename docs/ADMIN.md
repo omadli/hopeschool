@@ -128,9 +128,17 @@ Instagram, Telegram kanal, Telegram guruh, YouTube, Facebook va TikTok havolalar
 
 ### Telegram bildirishnomalari
 
-"**Telegram bildirishnomalari yoniq**" katagini belgilash yoki olib tashlash orqali yangi arizalarning Telegram ga yuborilishini boshqarish mumkin.
+Yangi arizalar Telegram bot orqali bir nechta adminga yuborilishi mumkin. Hammasi **admin paneldan** sozlanadi:
 
-> **Shartlar:** `.env` da `TELEGRAM_BOT_TOKEN` va `TELEGRAM_ADMIN_CHAT_ID` toʻldirilgan boʻlishi **ham** shart. Faqat ushbu katagni belgilash yetarli emas.
+1. **Bot tokeni** — *Sozlamalar → Sayt sozlamalari → Telegram* boʻlimida "**Telegram bot tokeni**" maydoniga `@BotFather` bergan tokenni kiriting.
+2. **Qabul qiluvchi adminlar** — *Sozlamalar → Telegram qabul qiluvchilar* boʻlimida har bir admin uchun yangi yozuv qoʻshing:
+   - **Nomi** — kimligini eslatuvchi ixtiyoriy nom (masalan: *Direktor*).
+   - **Chat ID** — adminning raqamli chat ID si (masalan: `123456789`). Buni bilish uchun: admin botga `/start` yozadi, soʻng [@userinfobot](https://t.me/userinfobot) ga oʻz raqamini koʻradi.
+   - **Faol** — vaqtincha oʻchirib qoʻyish uchun belgini olib tashlang (yozuvni oʻchirmasdan).
+   - Nechta admin kerak boʻlsa, shuncha yozuv qoʻshish mumkin — ariza har biriga yuboriladi.
+3. **Yoqish/oʻchirish** — "**Telegram bildirishnomalari yoniq**" katagi butun tizimni bir marta yoqib/oʻchiradi.
+
+> **Eslatma:** Bot tokeni yoki qabul qiluvchilar admin panelda boʻsh boʻlsa, server `.env` dagi `TELEGRAM_BOT_TOKEN` / `TELEGRAM_ADMIN_CHAT_ID` qiymatlaridan zaxira sifatida foydalanadi. Odatda esa hammasini admin paneldan kiritish yetarli.
 
 ---
 
@@ -647,4 +655,4 @@ Admin paneli → Sozlamalar → Foydalanuvchilar → Qoʻshish. "Xodim maqomi" v
 Har bir elementning "Tarix" sahifasida oldingi versiyalarni koʻrish mumkin, lekin avtomatik tiklash funksiyasi hozircha yoʻq. Muhim oʻzgarishlardan oldin bazani zahiralang.
 
 **Telegram bildirishnomalar kelmayapti?**
-`.env` da ikkala — `TELEGRAM_BOT_TOKEN` va `TELEGRAM_ADMIN_CHAT_ID` — toʻldirilganligini tekshiring. Keyin admin panelda **Sayt sozlamalari → "Telegram bildirishnomalari yoniq"** katagini belgilang. Xato hollarda server loglarini koʻring.
+Quyidagilarni tekshiring: (1) **Sayt sozlamalari → Telegram** da bot tokeni kiritilganmi va "**Telegram bildirishnomalari yoniq**" katagi belgilanganmi; (2) **Telegram qabul qiluvchilar** da kamida bitta **Faol** yozuv borligi va uning **Chat ID** si toʻgʻriligi; (3) har bir admin avval botga `/start` yozgan boʻlishi shart — aks holda Telegram botga oʻsha foydalanuvchiga yozishga ruxsat bermaydi. Xato hollarda server loglarini koʻring.

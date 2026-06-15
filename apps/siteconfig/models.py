@@ -1,10 +1,17 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel
 
-from apps.common.models import OrderedActiveModel
+from apps.common.models import OrderedActiveModel, TimeStampedModel
 from apps.common.utils import normalize_phone
 from apps.common.validators import image_validators
+
+# A Telegram chat id is numeric (negative for groups/channels) or an @username.
+telegram_chat_id_validator = RegexValidator(
+    regex=r"^(-?\d+|@[A-Za-z0-9_]{4,})$",
+    message=_("Chat ID raqam (masalan: 123456789 yoki -1001234567890) yoki @username koʻrinishida boʻlishi kerak."),
+)
 
 
 class SiteConfig(SingletonModel):
@@ -59,6 +66,10 @@ class SiteConfig(SingletonModel):
     # --- Telegram ---
     telegram_notifications_enabled = models.BooleanField(
         _("Telegram bildirishnomalari yoniq"), default=True,
+    )
+    telegram_bot_token = models.CharField(
+        _("Telegram bot tokeni"), max_length=128, blank=True,
+        help_text=_("@BotFather bergan token. Boʻsh qoldirilsa, serverdagi .env qiymati ishlatiladi."),
     )
 
     class Meta:
@@ -144,3 +155,32 @@ class SocialLink(OrderedActiveModel):
     def icon_key(self):
         # telegram_group shares the telegram brand icon
         return "telegram" if self.platform == self.Platform.TELEGRAM_GROUP else self.platform
+
+
+class TelegramRecipient(TimeStampedModel):
+    """A Telegram chat that receives new-application (ariza) notifications.
+
+    Repeatable so several admins can be notified at once; toggle ``is_active``
+    to stop notifying someone without deleting their entry. The bot token lives
+    on ``SiteConfig`` — here we only keep *who* receives the messages."""
+
+    name = models.CharField(
+        _("Nomi"), max_length=120, blank=True,
+        help_text=_("Kimligini eslatuvchi nom (masalan: Direktor). Ixtiyoriy."),
+    )
+    chat_id = models.CharField(
+        _("Chat ID"), max_length=64, validators=[telegram_chat_id_validator],
+        help_text=_("Raqamli chat ID (masalan: 123456789). Foydalanuvchi botga /start yozgach, @userinfobot orqali bilib olish mumkin."),
+    )
+    is_active = models.BooleanField(
+        _("Faol"), default=True, db_index=True,
+        help_text=_("Belgilanmasa, bu adminga arizalar yuborilmaydi."),
+    )
+
+    class Meta:
+        ordering = ["name", "chat_id"]
+        verbose_name = _("Telegram qabul qiluvchi")
+        verbose_name_plural = _("Telegram qabul qiluvchilar")
+
+    def __str__(self):
+        return self.name or self.chat_id

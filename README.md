@@ -211,14 +211,14 @@ Bu buyruq kurslar, oʻqituvchilar, yangiliklar, galereya, sertifikatlar va boshq
 | `CSRF_TRUSTED_ORIGINS` | Production | — | HTTPS manzillar, masalan: `https://hopeschool.uz` |
 | `ADMIN_URL` | Yoʻq | `admin` | Admin panel URL prefiksi — productionda topish qiyin qiymat qoʻying (masalan, `boshqaruv-7x3k`) |
 | `TRUSTED_PROXY_COUNT` | Yoʻq | `1` | Oldindagi proksi soni: nginx=`1`, Cloudflare bilan `2` (rate-limit haqiqiy mijoz IP sini oladi) |
-| `TELEGRAM_BOT_TOKEN` | Yoʻq | — | Arizalarni yuboruvchi Telegram bot tokeni — toʻldirilmasa bildirishnoma oʻchiriladi |
-| `TELEGRAM_ADMIN_CHAT_ID` | Yoʻq | — | Arizalar yuboriladigan chat/guruh ID si (manfiy raqam guruh uchun) |
+| `TELEGRAM_BOT_TOKEN` | Yoʻq | — | **Zaxira** Telegram bot tokeni (asosiysi admin paneldan kiritiladi). Panel boʻsh boʻlsa ishlatiladi |
+| `TELEGRAM_ADMIN_CHAT_ID` | Yoʻq | — | **Zaxira** chat/guruh ID si (asosiysi *Telegram qabul qiluvchilar* boʻlimidan boshqariladi) |
 | `SECURE_SSL_REDIRECT` | Yoʻq | `True` (`DEBUG=False`) | Barcha HTTPni HTTPS ga yoʻnaltirish |
 | `SECURE_HSTS_SECONDS` | Yoʻq | `31536000` | HSTS muddati; birinchi HTTPS deployda `3600` qoʻying, barqarorlashgach 1 yilga koʻtaring |
 | `DJANGO_LOG_LEVEL` | Yoʻq | `INFO` | Log darajasi (DEBUG/INFO/WARNING/ERROR) |
 | `GUNICORN_WORKERS` | Yoʻq | `3` | gunicorn worker soni (SQLite uchun 2–3 yetarli) |
 
-> **Telegram:** `TELEGRAM_BOT_TOKEN` va `TELEGRAM_ADMIN_CHAT_ID` ikkalasi boʻlishi kerak. Shuningdek, admin panelda **Sayt sozlamalari → "Telegram bildirishnomalari yoniq"** katagini belgilang.
+> **Telegram:** Bot tokeni va qabul qiluvchi adminlar endi **admin paneldan** boshqariladi (*Sayt sozlamalari → Telegram* va *Telegram qabul qiluvchilar*). Yuqoridagi `.env` qiymatlari faqat panel boʻsh boʻlsa zaxira sifatida ishlatiladi.
 
 > **Xavfsizlik bloki:** `DEBUG=False` boʻlganda `settings.py` agar `SECRET_KEY` hali ham dev qiymatida boʻlsa yoki `ALLOWED_HOSTS=*` boʻlsa, ataylab **ishga tushishdan bosh tortadi** — xavfli sozlama bilan deploy boʻlib qolmaslik uchun.
 
@@ -335,16 +335,14 @@ Saytdagi ariza formasi  →  POST /ariza/
 
 ### Telegram bildirishnoma sozlash
 
-1. `.env` da toʻldiring:
+Hammasi **admin paneldan** sozlanadi (`.env` shart emas):
 
-   ```env
-   TELEGRAM_BOT_TOKEN=1234567890:AAFxxxxxxxxxxxxxx
-   TELEGRAM_ADMIN_CHAT_ID=-1001234567890
-   ```
+1. **Sayt sozlamalari → Telegram** — "**Telegram bot tokeni**" maydoniga `@BotFather` tokenini kiriting va "**Telegram bildirishnomalari yoniq**" katagini belgilang.
+2. **Telegram qabul qiluvchilar** — arizalarni qabul qiladigan har bir admin uchun yozuv qoʻshing (**Nomi** + **Chat ID**). Bir nechta admin qoʻshish mumkin — ariza har bir **Faol** qabul qiluvchiga yuboriladi. Chat ID ni bilish uchun admin botga `/start` yozadi, soʻng [@userinfobot](https://t.me/userinfobot) orqali koʻradi.
 
-2. Admin panelda: **Sayt sozlamalari → Telegram bildirishnomalari yoniq** katagini belgilang.
+> **Zaxira:** Panel boʻsh boʻlsa, server `.env` dagi `TELEGRAM_BOT_TOKEN` / `TELEGRAM_ADMIN_CHAT_ID` qiymatlaridan foydalanadi (eski deploylar bilan moslik uchun).
 
-Agar token yoki chat ID koʻrsatilmagan boʻlsa, bildirishnoma yuborilmaydi — ariza baribir bazaga saqlanadi.
+Agar na panelda, na `.env` da token/chat ID koʻrsatilgan boʻlsa, bildirishnoma yuborilmaydi — ariza baribir bazaga saqlanadi.
 
 ### Spam himoyasi
 

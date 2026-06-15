@@ -1,9 +1,10 @@
 """Tests for apps.siteconfig."""
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from apps.siteconfig.models import SiteConfig, SocialLink
+from apps.siteconfig.models import SiteConfig, SocialLink, TelegramRecipient
 
 User = get_user_model()
 
@@ -142,4 +143,51 @@ class SocialLinkAdminTests(TestCase):
 
     def test_add(self):
         url = reverse("admin:siteconfig_sociallink_add")
+        self.assertEqual(self.client.get(url, follow=True).status_code, 200)
+
+
+# ---------------------------------------------------------------------------
+# TelegramRecipient — multiple admins receive ariza notifications
+# ---------------------------------------------------------------------------
+class TelegramRecipientModelTests(TestCase):
+    def test_str_prefers_name(self):
+        r = TelegramRecipient(name="Direktor", chat_id="123456789")
+        self.assertEqual(str(r), "Direktor")
+
+    def test_str_falls_back_to_chat_id(self):
+        r = TelegramRecipient(chat_id="123456789")
+        self.assertEqual(str(r), "123456789")
+
+    def test_numeric_chat_id_is_valid(self):
+        r = TelegramRecipient(name="A", chat_id="123456789")
+        r.full_clean()  # should not raise
+
+    def test_negative_group_chat_id_is_valid(self):
+        r = TelegramRecipient(name="Guruh", chat_id="-1001234567890")
+        r.full_clean()
+
+    def test_username_chat_id_is_valid(self):
+        r = TelegramRecipient(name="Kanal", chat_id="@hope_admin")
+        r.full_clean()
+
+    def test_invalid_chat_id_rejected(self):
+        r = TelegramRecipient(name="Bad", chat_id="not a chat id")
+        with self.assertRaises(ValidationError):
+            r.full_clean()
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class TelegramRecipientAdminTests(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username="admin_tg", password="adminpass123", email="tg@test.com")
+        self.client.force_login(self.superuser)
+
+    def test_changelist(self):
+        TelegramRecipient.objects.create(name="A", chat_id="111")
+        url = reverse("admin:siteconfig_telegramrecipient_changelist")
+        self.assertEqual(self.client.get(url, follow=True).status_code, 200)
+
+    def test_add(self):
+        url = reverse("admin:siteconfig_telegramrecipient_add")
         self.assertEqual(self.client.get(url, follow=True).status_code, 200)

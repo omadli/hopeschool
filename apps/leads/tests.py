@@ -1,15 +1,24 @@
-"""Tests for apps.leads — model, form, view, badges, admin."""
+"""Tests for apps.leads — model, form, view, badges, admin, notifications."""
 import json
+from unittest import mock
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
+from django.test import (
+    Client,
+    RequestFactory,
+    SimpleTestCase,
+    TestCase,
+    override_settings,
+)
 from django.urls import reverse
 
 from apps.leads.badges import new_leads_count
 from apps.leads.forms import LeadForm
 from apps.leads.models import Lead
+from apps.leads.notifications import _resolve_config, notify_new_lead
 from apps.leads.views import _client_ip
+from apps.siteconfig.models import SiteConfig, TelegramRecipient
 
 User = get_user_model()
 
@@ -346,3 +355,158 @@ class LeadAdminTests(TestCase):
         url = reverse("admin:leads_lead_change", args=[lead.pk])
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
+
+
+# ---------------------------------------------------------------------------
+# CSRF — the public form must keep working on a long-idle page (stale token)
+# ---------------------------------------------------------------------------
+class LeadCsrfTests(TestCase):
+    """lead_create is csrf_exempt: a POST with no/invalid token still succeeds.
+
+    Regression guard for the bug where a page left open until its CSRF token
+    went stale got a 403 (HTML) and the front-end dropped the submission.
+    """
+
+    def setUp(self):
+        cache.clear()
+        # enforce_csrf_checks=True makes the test client behave like a real
+        # browser hitting a CSRF-protected view (default client skips the check).
+        self.client = Client(enforce_csrf_checks=True)
+
+    def tearDown(self):
+        cache.clear()
+
+    def test_post_without_csrf_token_succeeds(self):
+        response = self.client.post(
+            LEAD_URL,
+            {"full_name": "No Token", "phone": "+998901234567",
+             "message": "", "website": ""},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(json.loads(response.content)["ok"])
+        self.assertEqual(Lead.objects.count(), 1)
+
+    def test_post_with_garbage_csrf_token_succeeds(self):
+        response = self.client.post(
+            LEAD_URL,
+            {"full_name": "Stale Token", "phone": "+998901234567",
+             "message": "", "website": "",
+             "csrfmiddlewaretoken": "obviously-stale-and-invalid"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(json.loads(response.content)["ok"])
+
+
+# ---------------------------------------------------------------------------
+# Telegram notifications — admin-managed token + multiple recipients
+# ---------------------------------------------------------------------------
+@override_settings(TELEGRAM_BOT_TOKEN="", TELEGRAM_ADMIN_CHAT_ID="")
+class LeadNotificationConfigTests(TestCase):
+    """_resolve_config() resolves token + recipients from the admin panel."""
+
+    def _config(self, **kwargs):
+        config = SiteConfig.get_solo()
+        for k, v in kwargs.items():
+            setattr(config, k, v)
+        config.save()
+        return config
+
+    def test_token_from_config(self):
+        self._config(telegram_bot_token="panel-token")
+        TelegramRecipient.objects.create(chat_id="111")
+        token, chat_ids = _resolve_config()
+        self.assertEqual(token, "panel-token")
+        self.assertEqual(chat_ids, ["111"])
+
+    def test_collects_only_active_recipients(self):
+        self._config(telegram_bot_token="t")
+        TelegramRecipient.objects.create(name="A", chat_id="111", is_active=True)
+        TelegramRecipient.objects.create(name="B", chat_id="222", is_active=True)
+        TelegramRecipient.objects.create(name="C", chat_id="333", is_active=False)
+        _, chat_ids = _resolve_config()
+        self.assertCountEqual(chat_ids, ["111", "222"])
+
+    def test_config_token_overrides_env(self):
+        self._config(telegram_bot_token="panel-token")
+        TelegramRecipient.objects.create(chat_id="111")
+        with override_settings(TELEGRAM_BOT_TOKEN="env-token"):
+            token, _ = _resolve_config()
+        self.assertEqual(token, "panel-token")
+
+    def test_env_token_used_when_panel_blank(self):
+        self._config(telegram_bot_token="")
+        TelegramRecipient.objects.create(chat_id="111")
+        with override_settings(TELEGRAM_BOT_TOKEN="env-token"):
+            token, _ = _resolve_config()
+        self.assertEqual(token, "env-token")
+
+    def test_falls_back_to_env_chat_id_when_no_recipients(self):
+        self._config(telegram_bot_token="t")
+        with override_settings(TELEGRAM_ADMIN_CHAT_ID="999"):
+            _, chat_ids = _resolve_config()
+        self.assertEqual(chat_ids, ["999"])
+
+    def test_disabled_returns_nothing(self):
+        self._config(telegram_bot_token="t", telegram_notifications_enabled=False)
+        TelegramRecipient.objects.create(chat_id="111")
+        self.assertEqual(_resolve_config(), (None, []))
+
+
+@override_settings(TELEGRAM_BOT_TOKEN="", TELEGRAM_ADMIN_CHAT_ID="")
+class NotifyNewLeadTests(TestCase):
+    """notify_new_lead() fans the message out to every active recipient."""
+
+    def setUp(self):
+        config = SiteConfig.get_solo()
+        config.telegram_notifications_enabled = True
+        config.telegram_bot_token = "test-token"
+        config.save()
+        self.lead = Lead.objects.create(full_name="X", phone="+998901234567")
+
+    def test_sends_to_every_active_recipient(self):
+        TelegramRecipient.objects.create(chat_id="111", is_active=True)
+        TelegramRecipient.objects.create(chat_id="222", is_active=True)
+        TelegramRecipient.objects.create(chat_id="333", is_active=False)
+        with mock.patch("apps.leads.notifications.requests.post") as post:
+            post.return_value.status_code = 200
+            notify_new_lead(self.lead)
+        sent = {c.kwargs["json"]["chat_id"] for c in post.call_args_list}
+        self.assertEqual(sent, {"111", "222"})
+        self.lead.refresh_from_db()
+        self.assertTrue(self.lead.is_notified)
+
+    def test_marks_notified_when_at_least_one_succeeds(self):
+        TelegramRecipient.objects.create(chat_id="111")
+        TelegramRecipient.objects.create(chat_id="222")
+        with mock.patch("apps.leads.notifications.requests.post") as post:
+            # First recipient fails, second succeeds.
+            post.side_effect = [
+                mock.Mock(status_code=400, text="bad chat"),
+                mock.Mock(status_code=200),
+            ]
+            notify_new_lead(self.lead)
+        self.lead.refresh_from_db()
+        self.assertTrue(self.lead.is_notified)
+
+    def test_not_notified_when_all_fail(self):
+        TelegramRecipient.objects.create(chat_id="111")
+        with mock.patch("apps.leads.notifications.requests.post") as post:
+            post.return_value.status_code = 400
+            post.return_value.text = "bad"
+            notify_new_lead(self.lead)
+        self.lead.refresh_from_db()
+        self.assertFalse(self.lead.is_notified)
+
+    def test_no_send_without_token(self):
+        config = SiteConfig.get_solo()
+        config.telegram_bot_token = ""
+        config.save()
+        TelegramRecipient.objects.create(chat_id="111")
+        with mock.patch("apps.leads.notifications.requests.post") as post:
+            notify_new_lead(self.lead)
+        post.assert_not_called()
+
+    def test_no_send_without_recipients(self):
+        with mock.patch("apps.leads.notifications.requests.post") as post:
+            notify_new_lead(self.lead)
+        post.assert_not_called()

@@ -460,6 +460,7 @@ UNFOLD = {
                 "items": [
                     {"title": _("Sayt sozlamalari"), "icon": "settings", "link": reverse_lazy("admin:siteconfig_siteconfig_changelist")},
                     {"title": _("Ijtimoiy tarmoqlar"), "icon": "share", "link": reverse_lazy("admin:siteconfig_sociallink_changelist")},
+                    {"title": _("Telegram qabul qiluvchilar"), "icon": "notifications", "link": reverse_lazy("admin:siteconfig_telegramrecipient_changelist")},
                     {"title": _("Foydalanuvchilar"), "icon": "person", "link": reverse_lazy("admin:auth_user_changelist")},
                 ],
             },
