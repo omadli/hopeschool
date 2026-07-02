@@ -17,11 +17,23 @@
 
   {% if site_config.favicon %}<link rel="icon" href="{{ site_config.favicon.url }}">{% else %}<link rel="icon" href="{% static 'img/logo.png' %}">{% endif %}
 
+  {# PWA: installable app manifest, adaptive browser-toolbar colour, iOS meta.
+     theme-color content is fixed here then corrected pre-paint by the script
+     below (dark mode is a .dark class, not the OS pref, so <meta media> alone
+     wouldn't follow the manual toggle). #}
+  <link rel="manifest" href="{% url 'web_manifest' %}">
+  <meta name="theme-color" id="theme-color-meta" content="#ffffff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Hope School">
+  <link rel="apple-touch-icon" href="{% static 'img/pwa/apple-touch-icon.png' %}">
+
   {# Self-hosted fonts — no render-blocking external Google Fonts request #}
   {% include "partials/_fonts.html" %}
 
-  {# set theme before paint to avoid flash #}
-  <script>(function(){try{var s=localStorage.getItem('theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();</script>
+  {# set theme + toolbar colour before paint to avoid flash #}
+  <script>(function(){try{var s=localStorage.getItem('theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');var m=document.getElementById('theme-color-meta');if(m)m.setAttribute('content',d?'#080d1a':'#ffffff');}catch(e){}})();</script>
 
   {% tailwind_css %}
   {% include "partials/_head_analytics.html" %}
@@ -39,6 +51,7 @@
 
   {% include "partials/_footer.html" %}
   {% include "partials/_mobile_bar.html" %}
+  {% include "partials/_pwa_install.html" %}
   {% include "partials/_modal.html" %}
 
   {# success toast #}

@@ -1,0 +1,17 @@
+{% load static %}{
+  "id": "/",
+  "name": "{{ site_config.site_name|default:"Hope School"|escapejs }}",
+  "short_name": "Hope",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "lang": "uz",
+  "dir": "ltr",
+  "icons": [
+    { "src": "{% static 'img/pwa/icon-192.png' %}", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "{% static 'img/pwa/icon-512.png' %}", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "{% static 'img/pwa/icon-512-maskable.png' %}", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

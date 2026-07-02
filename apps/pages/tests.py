@@ -295,6 +295,49 @@ class RobotsTxtTests(TestCase):
             "robots.txt must contain a 'Sitemap:' directive",
         )
 
+    def test_robots_disallow_ariza(self):
+        response = self.client.get("/robots.txt")
+        self.assertEqual(response.status_code, 200)
+        body = response.content.decode("utf-8", errors="replace")
+        self.assertIn(
+            "Disallow: /ariza/", body,
+            "robots.txt must disallow the POST-only /ariza/ lead endpoint",
+        )
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class WebManifestTests(TestCase):
+    """GET /site.webmanifest returns a valid installable PWA manifest."""
+
+    def test_manifest_status_and_content_type(self):
+        response = self.client.get("/site.webmanifest")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            response["Content-Type"].startswith("application/manifest+json"),
+            f"manifest Content-Type should be application/manifest+json, "
+            f"got {response['Content-Type']}",
+        )
+
+    def test_manifest_is_valid_json_with_required_keys(self):
+        import json
+
+        response = self.client.get("/site.webmanifest")
+        data = json.loads(response.content)
+        for key in ("name", "short_name", "start_url", "display", "icons"):
+            self.assertIn(key, data, f"manifest missing required key '{key}'")
+        self.assertEqual(data["display"], "standalone")
+
+    def test_manifest_has_192_and_512_icons(self):
+        import json
+
+        response = self.client.get("/site.webmanifest")
+        data = json.loads(response.content)
+        sizes = {icon["sizes"] for icon in data["icons"]}
+        self.assertIn("192x192", sizes, "manifest needs a 192x192 icon")
+        self.assertIn("512x512", sizes, "manifest needs a 512x512 icon")
+        purposes = {icon.get("purpose") for icon in data["icons"]}
+        self.assertIn("maskable", purposes, "manifest needs a maskable icon")
+
 
 @override_settings(STORAGES=_STATIC_STORAGE)
 class HomePageHeadTagsTests(TestCase):
@@ -357,6 +400,23 @@ class HomePageHeadTagsTests(TestCase):
         self.assertIn(
             "EducationalOrganization", body,
             "/uz/ JSON-LD must contain EducationalOrganization type",
+        )
+
+    def test_uz_has_theme_color_and_manifest(self):
+        response = self.client.get("/uz/", follow=True)
+        self.assertEqual(response.status_code, 200)
+        body = response.content.decode("utf-8", errors="replace")
+        self.assertIn(
+            'name="theme-color"', body,
+            "/uz/ page must have a theme-color meta for the mobile browser toolbar",
+        )
+        self.assertIn(
+            'rel="manifest"', body,
+            "/uz/ page must link the PWA web manifest",
+        )
+        self.assertIn(
+            'rel="apple-touch-icon"', body,
+            "/uz/ page must link an apple-touch-icon for iOS install",
         )
 
 

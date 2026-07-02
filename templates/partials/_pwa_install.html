@@ -1,0 +1,14 @@
+{% load i18n %}
+{# Installable-app chip. Hidden until the browser fires `beforeinstallprompt`
+   (Chromium). Positioned like the toast so it clears the bottom mobile bar. #}
+<div id="pwa-install" class="hidden fixed z-[100] right-3 lg:right-6 bottom-24 lg:bottom-6">
+  <div class="flex items-center gap-2.5 rounded-pill surface-card border bd shadow-strong pl-3.5 pr-2 py-2">
+    <span class="grid place-items-center h-8 w-8 shrink-0 rounded-full bg-brand-blue-600 text-white">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
+    </span>
+    <button id="pwa-install-btn" type="button" class="text-[14px] font-semibold whitespace-nowrap">{% translate "Ilovani oʻrnatish" %}</button>
+    <button id="pwa-install-dismiss" type="button" class="grid place-items-center h-7 w-7 shrink-0 rounded-full txt-soft hover:bg-black/5 dark:hover:bg-white/10" aria-label="{% translate 'Yopish' %}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+</div>
