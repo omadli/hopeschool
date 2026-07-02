@@ -17,10 +17,6 @@
 
   {% if site_config.favicon %}<link rel="icon" href="{{ site_config.favicon.url }}">{% else %}<link rel="icon" href="{% static 'img/logo.png' %}">{% endif %}
 
-  {# PWA: installable app manifest, adaptive browser-toolbar colour, iOS meta.
-     theme-color content is fixed here then corrected pre-paint by the script
-     below (dark mode is a .dark class, not the OS pref, so <meta media> alone
-     wouldn't follow the manual toggle). #}
   <link rel="manifest" href="{% url 'web_manifest' %}">
   <meta name="theme-color" id="theme-color-meta" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
