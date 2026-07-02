@@ -130,3 +130,40 @@ html.dark .ck-content code {
     display: none !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Mobil ergonomika (<1024px).
+
+   iOS Safari matn kiritish maydoniga fokuslanganda, agar shrift 16px dan
+   kichik bo'lsa, sahifani avtomatik kattalashtiradi (zoom) — bu juda bezovta
+   qiladi. Unfold inputlari `text-sm` (14px), shuning uchun mobil ekranlarda
+   forma maydonlarini kamida 16px qilamiz. Checkbox/radio/range ta'sirlanmaydi.
+   Jadval mobil ko'rinishi (card layout) Unfold tomonidan allaqachon hal
+   qilingan — bu yerda tegilmaydi.
+   --------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="url"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="search"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"],
+  input:not([type]),
+  select,
+  textarea,
+  .ck.ck-editor__main > .ck-editor__editable {
+    font-size: 16px !important;
+  }
+
+  /* Qulay tegish uchun tugma va tanlash maydonlari balandligini oshiramiz. */
+  .submit-row button,
+  .submit-row input[type="submit"],
+  #submit-row button,
+  #submit-row [type="submit"] {
+    min-height: 44px;
+  }
+}

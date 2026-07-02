@@ -37,7 +37,10 @@
   if (themeBtn) {
     themeBtn.addEventListener("click", function () {
       de.classList.toggle("dark");
-      try { localStorage.setItem("theme", de.classList.contains("dark") ? "dark" : "light"); } catch (e) {}
+      var dark = de.classList.contains("dark");
+      try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
+      var m = document.getElementById("theme-color-meta");
+      if (m) m.setAttribute("content", dark ? "#080d1a" : "#ffffff");
     });
   }
 
@@ -188,4 +191,43 @@
 
     return false;
   };
+
+  // ---- PWA install prompt (Chromium fires beforeinstallprompt) ----
+  var pwaWrap = document.getElementById("pwa-install");
+  if (pwaWrap) {
+    var pwaBtn = document.getElementById("pwa-install-btn");
+    var pwaDismiss = document.getElementById("pwa-install-dismiss");
+    var deferredPrompt = null;
+    var PWA_KEY = "pwa-install-dismissed";
+    function pwaStandalone() {
+      return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+        window.navigator.standalone === true;
+    }
+    function pwaDismissed() {
+      try { return localStorage.getItem(PWA_KEY) === "1"; } catch (e) { return false; }
+    }
+    function hidePwa() { pwaWrap.classList.add("hidden"); }
+    window.addEventListener("beforeinstallprompt", function (e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (!pwaStandalone() && !pwaDismissed()) pwaWrap.classList.remove("hidden");
+    });
+    if (pwaBtn) {
+      pwaBtn.addEventListener("click", function () {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function () { deferredPrompt = null; hidePwa(); });
+      });
+    }
+    if (pwaDismiss) {
+      pwaDismiss.addEventListener("click", function () {
+        hidePwa();
+        try { localStorage.setItem(PWA_KEY, "1"); } catch (e) {}
+      });
+    }
+    window.addEventListener("appinstalled", function () {
+      hidePwa();
+      try { localStorage.setItem(PWA_KEY, "1"); } catch (e) {}
+    });
+  }
 })();

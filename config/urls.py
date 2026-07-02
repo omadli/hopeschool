@@ -6,7 +6,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 
 from apps.common.sitemaps import sitemaps
-from apps.common.views import robots_txt
+from apps.common.views import robots_txt, web_manifest
 from apps.leads.views import lead_create
 
 urlpatterns = [
@@ -19,6 +19,7 @@ urlpatterns = [
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},
          name="django.contrib.sitemaps.views.sitemap"),
     path("robots.txt", robots_txt, name="robots_txt"),
+    path("site.webmanifest", web_manifest, name="web_manifest"),
 ]
 
 urlpatterns += i18n_patterns(
