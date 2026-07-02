@@ -241,6 +241,15 @@ def main():
             seen.add(mid)
             unfold_count += 1
 
+    # Curated Unfold strings that live in Python (_()) rather than templates —
+    # e.g. "Select record" in unfold/admin.py — are not found by
+    # unfold_msgids() (templates only). Emit them by their exact msgid key.
+    for key, val in UNFOLD_UZ.items():
+        if val and key not in seen:
+            out.append(polib.POEntry(msgid=key, msgstr=val))
+            seen.add(key)
+            unfold_count += 1
+
     lc_dir = os.path.join(BASE, "locale", "uz", "LC_MESSAGES")
     os.makedirs(lc_dir, exist_ok=True)
     po_path = os.path.join(lc_dir, "django.po")

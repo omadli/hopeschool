@@ -424,7 +424,7 @@ UNFOLD = {
                 ],
             },
             {
-                "title": _("Sayt mazmuni"),
+                "title": _("Sayt kontenti"),
                 "collapsible": True,
                 "items": [
                     {"title": _("Kurslar"), "icon": "menu_book", "link": reverse_lazy("admin:courses_course_changelist")},

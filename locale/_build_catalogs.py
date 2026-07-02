@@ -706,11 +706,20 @@ PLURAL_RU = {
         1: "%(years)s года опыта",
         2: "%(years)s лет опыта",
     },
+    "%(counter)s result": {
+        0: "%(counter)s результат",
+        1: "%(counter)s результата",
+        2: "%(counter)s результатов",
+    },
 }
 PLURAL_EN = {
     "%(years)s yil tajriba": {
         0: "%(years)s year of experience",
         1: "%(years)s years of experience",
+    },
+    "%(counter)s result": {
+        0: "%(counter)s result",
+        1: "%(counter)s results",
     },
 }
 
@@ -770,6 +779,14 @@ def build(lang, tmap, pmap):
             if val:
                 po.append(polib.POEntry(msgid=mid, msgstr=val))
                 existing.add(mid)
+
+        # Curated Unfold strings from Python (_()) not templates — e.g.
+        # "Select record" in unfold/admin.py — aren't found by unfold_msgids();
+        # emit them by their exact msgid key.
+        for key, val in UNFOLD_RU.items():
+            if val and key not in existing:
+                po.append(polib.POEntry(msgid=key, msgstr=val))
+                existing.add(key)
 
     lc_dir = os.path.join(BASE, "locale", lang, "LC_MESSAGES")
     os.makedirs(lc_dir, exist_ok=True)

@@ -333,6 +333,9 @@ msgstr "O'zgartirish"
 msgid "Change password"
 msgstr "Parolni o'zgartirish"
 
+msgid "Choose file to upload"
+msgstr "Yuklash uchun fayl tanlang"
+
 msgid "Clear"
 msgstr "Tozalash"
 
@@ -449,3 +452,12 @@ msgstr "Koʻrish"
 
 msgid "View site"
 msgstr "Saytni ko'rish"
+
+msgid "Nothing matched your search"
+msgstr "Qidiruvingizga hech narsa mos kelmadi"
+
+msgid "Select record"
+msgstr "Yozuvni tanlash"
+
+msgid "Submit"
+msgstr "Yuborish"

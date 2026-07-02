@@ -118,6 +118,19 @@ PROJECT_RU = {
     'Zamonaviy taʻlim markazi. Biz bilan farzandingiz kelajagiga ishonchli qadam qoʻying.': 'Современный образовательный центр. Сделайте уверенный шаг в будущее своего ребенка вместе с нами.',
     'oʻrtacha': 'в среднем',
     'yangi oʻquvchi': 'новых учеников',
+    # --- CEFR QR-skaner (admin_qr_scanner.js) ---
+    '📷 QR kodni skanerlash': '📷 Сканировать QR-код',
+    'Yopish': 'Закрыть',
+    'Topildi:': 'Найдено:',
+    'Kamera ochilmoqda…': 'Открывается камера…',
+    'QR kodni kameraga toʻgʻrilang…': 'Наведите камеру на QR-код…',
+    'Kameraga ruxsat berilmadi:': 'Доступ к камере запрещён:',
+    'Bu brauzerda kamera ishlamaydi. Havolani qoʻlda kiriting.': 'В этом браузере камера не работает. Введите ссылку вручную.',
+    # --- Admin / public UI (Unfold helper overrides + PWA) ---
+    'Ilovani oʻrnatish': 'Установить приложение',
+    'Menyuni ochish yoki yopish': 'Открыть или закрыть меню',
+    'Menyuni yopish': 'Закрыть меню',
+    'Show all': 'Показать все',
 }
 
 PROJECT_EN = {
@@ -235,6 +248,19 @@ PROJECT_EN = {
     'Zamonaviy taʻlim markazi. Biz bilan farzandingiz kelajagiga ishonchli qadam qoʻying.': "Modern educational center. Take a confident step into your child's future with us.",
     'oʻrtacha': 'average',
     'yangi oʻquvchi': 'new students',
+    # --- CEFR QR-skaner (admin_qr_scanner.js) ---
+    '📷 QR kodni skanerlash': '📷 Scan QR code',
+    'Yopish': 'Close',
+    'Topildi:': 'Found:',
+    'Kamera ochilmoqda…': 'Opening camera…',
+    'QR kodni kameraga toʻgʻrilang…': 'Point the camera at the QR code…',
+    'Kameraga ruxsat berilmadi:': 'Camera access denied:',
+    'Bu brauzerda kamera ishlamaydi. Havolani qoʻlda kiriting.': "The camera doesn't work in this browser. Enter the link manually.",
+    # --- Admin / public UI (Unfold helper overrides + PWA) ---
+    'Ilovani oʻrnatish': 'Install app',
+    'Menyuni ochish yoki yopish': 'Open or close menu',
+    'Menyuni yopish': 'Close menu',
+    'Show all': 'Show all',
 }
 
 UNFOLD_UZ = {
@@ -244,6 +270,7 @@ UNFOLD_UZ = {
     'Cancel': 'Bekor qilish',
     'Change': "O'zgartirish",
     'Change password': "Parolni o'zgartirish",
+    'Choose file to upload': 'Yuklash uchun fayl tanlang',
     'Clear': 'Tozalash',
     'Clear all filters': 'Barcha filtrlarni tozalang',
     'Click to cancel': 'Bekor qilish uchun bosing',
@@ -280,6 +307,7 @@ UNFOLD_UZ = {
     'Save as new': 'Yangi sifatida saqlang',
     'Select': 'Tanlang',
     'Select all rows': 'Barcha qatorlarni tanlang',
+    'Select record': 'Yozuvni tanlash',
     'Show counts': "Hisoblarni ko'rsatish",
     'Submit': 'Yuborish',
     'System': 'Tizim',
@@ -301,6 +329,7 @@ UNFOLD_RU = {
     'Cancel': 'Отмена',
     'Change': 'Изменить',
     'Change password': 'Изменить пароль',
+    'Choose file to upload': 'Выберите файл для загрузки',
     'Clear': 'Очистить',
     'Clear all filters': 'Очистить все фильтры',
     'Click to cancel': 'Нажмите, чтобы отменить',
@@ -337,6 +366,7 @@ UNFOLD_RU = {
     'Save as new': 'Сохранить как новый',
     'Select': 'Выбрать',
     'Select all rows': 'Выбрать все строки',
+    'Select record': 'Выбрать запись',
     'Show counts': 'Показать количество',
     'Submit': 'Отправить',
     'System': 'Системная',

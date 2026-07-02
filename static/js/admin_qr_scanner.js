@@ -14,12 +14,25 @@
     if (input.dataset.qrReady) return;
     input.dataset.qrReady = "1";
 
+    // Localized strings come from the widget's data-* attrs (active admin
+    // language); fall back to Uzbek if the attribute is absent.
+    var d = input.dataset;
+    var T = {
+      label: d.qrLabel || "📷 QR kodni skanerlash",
+      close: d.qrClose || "Yopish",
+      found: d.qrFound || "Topildi:",
+      opening: d.qrOpening || "Kamera ochilmoqda…",
+      aim: d.qrAim || "QR kodni kameraga toʻgʻrilang…",
+      denied: d.qrDenied || "Kameraga ruxsat berilmadi:",
+      nocam: d.qrNocam || "Bu brauzerda kamera ishlamaydi. Havolani qoʻlda kiriting.",
+    };
+
     var wrap = document.createElement("div");
     wrap.style.marginTop = "6px";
 
     var btn = document.createElement("button");
     btn.type = "button";
-    btn.textContent = "📷 QR kodni skanerlash";
+    btn.textContent = T.label;
     btn.style.cssText =
       "padding:6px 12px;border-radius:8px;border:1px solid #ccc;" +
       "cursor:pointer;background:#f5f5f5;font-size:13px;";
@@ -36,7 +49,7 @@
 
     var stop = document.createElement("button");
     stop.type = "button";
-    stop.textContent = "Yopish";
+    stop.textContent = T.close;
     stop.style.cssText =
       "padding:4px 10px;border-radius:8px;border:1px solid #ccc;cursor:pointer;font-size:12px;";
 
@@ -74,7 +87,7 @@
         if (code && code.data) {
           input.value = code.data.trim();
           input.dispatchEvent(new Event("change", { bubbles: true }));
-          status.textContent = "Topildi: " + code.data;
+          status.textContent = T.found + " " + code.data;
           cleanup();
           return;
         }
@@ -85,22 +98,21 @@
     btn.addEventListener("click", function () {
       box.style.display = "block";
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        status.textContent =
-          "Bu brauzerda kamera ishlamaydi. Havolani qoʻlda kiriting.";
+        status.textContent = T.nocam;
         return;
       }
-      status.textContent = "Kamera ochilmoqda…";
+      status.textContent = T.opening;
       navigator.mediaDevices
         .getUserMedia({ video: { facingMode: "environment" } })
         .then(function (s) {
           stream = s;
           video.srcObject = s;
           video.play();
-          status.textContent = "QR kodni kameraga toʻgʻrilang…";
+          status.textContent = T.aim;
           raf = requestAnimationFrame(scan);
         })
         .catch(function (e) {
-          status.textContent = "Kameraga ruxsat berilmadi: " + e.message;
+          status.textContent = T.denied + " " + e.message;
         });
     });
 

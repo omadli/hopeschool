@@ -178,6 +178,9 @@ msgstr "User agent"
 msgid "Brending"
 msgstr "Branding"
 
+msgid "Bu brauzerda kamera ishlamaydi. Havolani qoʻlda kiriting."
+msgstr "The camera doesn't work in this browser. Enter the link manually."
+
 msgid "Bu oy"
 msgstr "This month"
 
@@ -365,6 +368,9 @@ msgstr "Secondary button"
 msgid "Ikonka"
 msgstr "Icon"
 
+msgid "Ilovani oʻrnatish"
+msgstr "Install app"
+
 msgid "Import yakunlandi — muvaffaqiyatli: %(ok)d, xato: %(f)d."
 msgstr "Import finished — successful: %(ok)d, failed: %(f)d."
 
@@ -406,6 +412,12 @@ msgstr "Location is set in the admin panel"
 
 msgid "Juda koʻp soʻrov. Birozdan soʻng urinib koʻring."
 msgstr "Too many requests. Please try again later."
+
+msgid "Kamera ochilmoqda…"
+msgstr "Opening camera…"
+
+msgid "Kameraga ruxsat berilmadi:"
+msgstr "Camera access denied:"
 
 msgid "Kenglik (lat)"
 msgstr "Latitude (lat)"
@@ -507,10 +519,10 @@ msgid "Menyu"
 msgstr "Menu"
 
 msgid "Menyuni ochish yoki yopish"
-msgstr ""
+msgstr "Open or close menu"
 
 msgid "Menyuni yopish"
-msgstr ""
+msgstr "Close menu"
 
 msgid "Metod"
 msgstr "Method"
@@ -620,6 +632,9 @@ msgstr "Tablet"
 msgid "Platforma"
 msgstr "Platform"
 
+msgid "QR kodni kameraga toʻgʻrilang…"
+msgstr "Point the camera at the QR code…"
+
 msgid "Qalqon (kafolat)"
 msgstr "Shield (guarantee)"
 
@@ -720,9 +735,6 @@ msgstr "Site content"
 msgid "Sayt matnlari"
 msgstr "Site texts"
 
-msgid "Sayt mazmuni"
-msgstr "Site content"
-
 msgid "Sayt nomi"
 msgstr "Site name"
 
@@ -751,7 +763,7 @@ msgid "Shior"
 msgstr "Tagline"
 
 msgid "Show all"
-msgstr ""
+msgstr "Show all"
 
 msgid "Slug"
 msgstr "Slug"
@@ -877,6 +889,9 @@ msgstr "Top sources"
 msgid "Top sahifalar"
 msgstr "Top pages"
 
+msgid "Topildi:"
+msgstr "Found:"
+
 msgid "Tugmalar"
 msgstr "Buttons"
 
@@ -997,11 +1012,13 @@ msgstr "average"
 msgid "yangi oʻquvchi"
 msgstr "new students"
 
+msgid "📷 QR kodni skanerlash"
+msgstr "📷 Scan QR code"
+
 msgid "%(counter)s result"
 msgid_plural "%(counter)s results"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%(counter)s result"
+msgstr[1] "%(counter)s results"
 
 msgid "%(years)s yil tajriba"
 msgid_plural "%(years)s yil tajriba"

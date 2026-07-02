@@ -181,6 +181,9 @@ msgstr "Данные браузера"
 msgid "Brending"
 msgstr "Брендинг"
 
+msgid "Bu brauzerda kamera ishlamaydi. Havolani qoʻlda kiriting."
+msgstr "В этом браузере камера не работает. Введите ссылку вручную."
+
 msgid "Bu oy"
 msgstr "В этом месяце"
 
@@ -373,6 +376,9 @@ msgstr "Дополнительная кнопка"
 msgid "Ikonka"
 msgstr "Иконка"
 
+msgid "Ilovani oʻrnatish"
+msgstr "Установить приложение"
+
 msgid "Import yakunlandi — muvaffaqiyatli: %(ok)d, xato: %(f)d."
 msgstr "Импорт завершён — успешно: %(ok)d, ошибок: %(f)d."
 
@@ -414,6 +420,12 @@ msgstr "Местоположение задаётся в админ-панели
 
 msgid "Juda koʻp soʻrov. Birozdan soʻng urinib koʻring."
 msgstr "Слишком много запросов. Пожалуйста, повторите попытку позже."
+
+msgid "Kamera ochilmoqda…"
+msgstr "Открывается камера…"
+
+msgid "Kameraga ruxsat berilmadi:"
+msgstr "Доступ к камере запрещён:"
 
 msgid "Kenglik (lat)"
 msgstr "Широта (lat)"
@@ -515,10 +527,10 @@ msgid "Menyu"
 msgstr "Меню"
 
 msgid "Menyuni ochish yoki yopish"
-msgstr ""
+msgstr "Открыть или закрыть меню"
 
 msgid "Menyuni yopish"
-msgstr ""
+msgstr "Закрыть меню"
 
 msgid "Metod"
 msgstr "Метод"
@@ -628,6 +640,9 @@ msgstr "Планшет"
 msgid "Platforma"
 msgstr "Платформа"
 
+msgid "QR kodni kameraga toʻgʻrilang…"
+msgstr "Наведите камеру на QR-код…"
+
 msgid "Qalqon (kafolat)"
 msgstr "Щит (гарантия)"
 
@@ -728,9 +743,6 @@ msgstr "Содержимое сайта"
 msgid "Sayt matnlari"
 msgstr "Тексты сайта"
 
-msgid "Sayt mazmuni"
-msgstr "Содержимое сайта"
-
 msgid "Sayt nomi"
 msgstr "Название сайта"
 
@@ -759,7 +771,7 @@ msgid "Shior"
 msgstr "Слоган"
 
 msgid "Show all"
-msgstr ""
+msgstr "Показать все"
 
 msgid "Slug"
 msgstr "Слаг"
@@ -886,6 +898,9 @@ msgstr "Топ источников"
 msgid "Top sahifalar"
 msgstr "Топ страниц"
 
+msgid "Topildi:"
+msgstr "Найдено:"
+
 msgid "Tugmalar"
 msgstr "Кнопки"
 
@@ -1006,11 +1021,14 @@ msgstr "в среднем"
 msgid "yangi oʻquvchi"
 msgstr "новых учеников"
 
+msgid "📷 QR kodni skanerlash"
+msgstr "📷 Сканировать QR-код"
+
 msgid "%(counter)s result"
 msgid_plural "%(counter)s results"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%(counter)s результат"
+msgstr[1] "%(counter)s результата"
+msgstr[2] "%(counter)s результатов"
 
 msgid "%(years)s yil tajriba"
 msgid_plural "%(years)s yil tajriba"
@@ -1035,6 +1053,9 @@ msgstr "Изменить"
 
 msgid "Change password"
 msgstr "Изменить пароль"
+
+msgid "Choose file to upload"
+msgstr "Выберите файл для загрузки"
 
 msgid "Clear"
 msgstr "Очистить"
@@ -1176,3 +1197,12 @@ msgstr "Посмотреть"
 
 msgid "View site"
 msgstr "Посмотреть сайт"
+
+msgid "Nothing matched your search"
+msgstr "Ничего не соответствует вашему запросу"
+
+msgid "Select record"
+msgstr "Выбрать запись"
+
+msgid "Submit"
+msgstr "Отправить"
