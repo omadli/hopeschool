@@ -65,25 +65,27 @@ sudo apt install -y python3-venv python3-pip nginx certbot python3-certbot-nginx
 
 ## Foydalanuvchi va kataloglar
 
-Ilova uchun alohida (login qila olmaydigan) tizim foydalanuvchisi yaratamiz:
+Ilova **alohida servis foydalanuvchisi talab qilmaydi** — barcha ish oddiy
+`ubuntu` login foydalanuvchisida, to'g'ridan-to'g'ri `/home/ubuntu/hopeschool`
+papkasida ketadi (alohida `app/` papka ham yoʻq).
 
 ```bash
-sudo adduser --system --group --home /home/hopeschool hopeschool
-sudo mkdir -p /home/hopeschool/app
-sudo chown hopeschool:www-data /home/hopeschool/app
+mkdir -p /home/ubuntu/hopeschool
+# nginx (www-data) statik/media fayllarni oʻqishi uchun home papkaga "traverse"
+# (x) ruxsati kerak — aks holda /static/ va /media/ 403 beradi:
+chmod o+x /home/ubuntu
 ```
 
-> `deploy/` ichidagi fayllar `/home/hopeschool/app` yoʻlini va `hopeschool`
-> foydalanuvchisini nazarda tutadi. Boshqa yoʻl tanlasangiz, fayllardagi
-> yoʻllarni mos ravishda oʻzgartiring.
+> `deploy/` ichidagi fayllar `/home/ubuntu/hopeschool` yoʻlini va `ubuntu`
+> foydalanuvchisini nazarda tutadi. Servis `www-data` guruhida ishlaydi, shuning
+> uchun nginx gunicorn socketini (`/run/hopeschool/gunicorn.sock`) oʻqiy oladi.
 
 ---
 
 ## Kodni olish va paketlar
 
 ```bash
-sudo -u hopeschool -H bash
-cd /home/hopeschool/app
+cd /home/ubuntu/hopeschool
 git clone https://github.com/omadli/hopeschool.git .
 python3 -m venv venv
 source venv/bin/activate
@@ -131,7 +133,7 @@ TELEGRAM_ADMIN_CHAT_ID=<chat-id>
 ## Baza, statik, tarjima, superuser
 
 ```bash
-# venv aktiv, /home/hopeschool/app da
+# venv aktiv, /home/ubuntu/hopeschool da
 python manage.py migrate
 python manage.py createcachetable          # rate-limit uchun umumiy cache jadvali
 python manage.py tailwind build            # → assets/css/tailwind.css (collectstatic'dan OLDIN!)
@@ -151,9 +153,8 @@ python manage.py import_cefr            # cefr_urls.txt dan o'qiydi
 Kataloglarga yozish huquqini taʼminlang:
 
 ```bash
-exit   # hopeschool sessiyasidan chiqing (agar sudo -u bilan kirgan boʻlsangiz)
-sudo chown -R hopeschool:www-data /home/hopeschool/app
-sudo chmod -R g+rwX /home/hopeschool/app/media
+sudo chown -R ubuntu:www-data /home/ubuntu/hopeschool
+sudo chmod -R g+rwX /home/ubuntu/hopeschool/media
 ```
 
 ---
@@ -176,7 +177,7 @@ tekshiruvni avtomatlashtirilgan testda ham ushlab turadi
 ## gunicorn (systemd)
 
 ```bash
-sudo cp /home/hopeschool/app/deploy/hopeschool.service /etc/systemd/system/hopeschool.service
+sudo cp /home/ubuntu/hopeschool/deploy/hopeschool.service /etc/systemd/system/hopeschool.service
 # Unit sintaksisini tekshiring:
 systemd-analyze verify /etc/systemd/system/hopeschool.service
 sudo systemctl daemon-reload
@@ -189,15 +190,33 @@ gunicorn unix-socketni `/run/hopeschool/gunicorn.sock` da yaratadi
 (`deploy/gunicorn.conf.py`). Worker sonini `.env` da `GUNICORN_WORKERS` bilan
 sozlash mumkin (SQLite uchun 2–3 yetarli).
 
+> **gunicorn 25+ "Control server error":** yangi gunicorn versiyalari boshqaruv
+> socketini `~/.gunicorn` ga yozadi, lekin servis `ProtectHome=read-only` bilan
+> ishlaydi — shuning uchun `deploy/gunicorn.conf.py` da
+> `control_socket_disable = True` qoʻyilgan (biz `gunicornc` ishlatmaymiz).
+
+### Avtomatik deploy uchun `sudo` (CI/CD)
+
+GitHub Actions (`.github/workflows/deploy.yml`) `ubuntu` sifatida SSH orqali
+ulanib, oxirida `sudo systemctl restart hopeschool` bajaradi. Bu CI da **parolsiz**
+ishlashi uchun tor doiradagi NOPASSWD qoidasini qoʻshing:
+
+```bash
+echo 'ubuntu ALL=(root) NOPASSWD: /usr/bin/systemctl restart hopeschool, /usr/bin/systemctl reload hopeschool' \
+  | sudo tee /etc/sudoers.d/hopeschool-deploy
+sudo chmod 440 /etc/sudoers.d/hopeschool-deploy
+sudo visudo -cf /etc/sudoers.d/hopeschool-deploy    # sintaksisni tekshiring
+```
+
 ---
 
 ## nginx
 
 ```bash
 # Rate-limit zonalari (http kontekstida — conf.d ga):
-sudo cp /home/hopeschool/app/deploy/nginx-ratelimit.conf /etc/nginx/conf.d/hopeschool-ratelimit.conf
+sudo cp /home/ubuntu/hopeschool/deploy/nginx-ratelimit.conf /etc/nginx/conf.d/hopeschool-ratelimit.conf
 # Sayt konfiguratsiyasi:
-sudo cp /home/hopeschool/app/deploy/hopeschool.uz.conf /etc/nginx/sites-available/hopeschool.uz.conf
+sudo cp /home/ubuntu/hopeschool/deploy/hopeschool.uz.conf /etc/nginx/sites-available/hopeschool.uz.conf
 sudo ln -s /etc/nginx/sites-available/hopeschool.uz.conf /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
@@ -227,8 +246,8 @@ Dashboarddagi "Davlatlar boʻyicha tashriflar" paneli `resolve_geoip` buyruq
 ishlamaguncha boʻsh boʻladi. Uni 30 daqiqada bir avtomatik ishlatamiz:
 
 ```bash
-sudo cp /home/hopeschool/app/deploy/resolve-geoip.service /etc/systemd/system/
-sudo cp /home/hopeschool/app/deploy/resolve-geoip.timer   /etc/systemd/system/
+sudo cp /home/ubuntu/hopeschool/deploy/resolve-geoip.service /etc/systemd/system/
+sudo cp /home/ubuntu/hopeschool/deploy/resolve-geoip.timer   /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now resolve-geoip.timer
 sudo systemctl list-timers resolve-geoip.timer
@@ -261,8 +280,8 @@ nginx loglarini kuzatib, cheklovni qayta-qayta buzgan IP larni **iptables**
 darajasida bloklaydi — keyingi trafik nginx gacha ham yetib bormaydi.
 
 ```bash
-sudo cp /home/hopeschool/app/deploy/fail2ban/filter.d/hopeschool-nginx-429.conf /etc/fail2ban/filter.d/
-sudo cp /home/hopeschool/app/deploy/fail2ban/jail.d/hopeschool.conf /etc/fail2ban/jail.d/
+sudo cp /home/ubuntu/hopeschool/deploy/fail2ban/filter.d/hopeschool-nginx-429.conf /etc/fail2ban/filter.d/
+sudo cp /home/ubuntu/hopeschool/deploy/fail2ban/jail.d/hopeschool.conf /etc/fail2ban/jail.d/
 # O'z IP manzilingizni jail.d/hopeschool.conf ichidagi `ignoreip` ga qo'shing!
 # Filtr regex'ini haqiqiy logga moslab tekshiring (0 ta match boʻlsa, format farq qiladi):
 sudo fail2ban-regex /var/log/nginx/access.log /etc/fail2ban/filter.d/hopeschool-nginx-429.conf
@@ -296,15 +315,13 @@ saytni quyidagilar orqasiga qoʻyish kerak:
 ## Yangilash (redeploy)
 
 ```bash
-sudo -u hopeschool -H bash
-cd /home/hopeschool/app && source venv/bin/activate
-git pull
+cd /home/ubuntu/hopeschool && source venv/bin/activate
+git pull --ff-only
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py tailwind build            # collectstatic'dan OLDIN — aks holda CSS yig'ilmaydi
 python manage.py collectstatic --noinput
 python manage.py compilemo                 # .po → .mo (polib; serverda msgfmt yo'q)
-exit
 sudo systemctl restart hopeschool
 ```
 
@@ -316,9 +333,9 @@ SQLite bazasi va yuklangan media — eng muhim maʼlumotlar:
 
 ```bash
 # Baza (WAL rejimida xavfsiz nusxa olish uchun .backup ishlating):
-sqlite3 /home/hopeschool/app/db.sqlite3 ".backup '/home/hopeschool/backups/db-$(date +%F).sqlite3'"
+sqlite3 /home/ubuntu/hopeschool/db.sqlite3 ".backup '/home/ubuntu/backups/db-$(date +%F).sqlite3'"
 # Media fayllar:
-tar czf /home/hopeschool/backups/media-$(date +%F).tar.gz -C /home/hopeschool/app media
+tar czf /home/ubuntu/backups/media-$(date +%F).tar.gz -C /home/ubuntu/hopeschool media
 ```
 
 > Bu buyruqlarni `cron` yoki systemd timer orqali kunlik avtomatlashtiring, va
@@ -340,7 +357,7 @@ ls -l /run/hopeschool/gunicorn.sock     # www-data oʻqiy olishi kerak
 `collectstatic` bajarilmagan yoki nginx `alias` yoʻli notoʻgʻri.
 ```bash
 python manage.py collectstatic --noinput
-ls /home/hopeschool/app/staticfiles/css/tailwind.css
+ls /home/ubuntu/hopeschool/staticfiles/css/tailwind.css
 ```
 
 ### Yuklangan rasm/video koʻrinmayapti (404)

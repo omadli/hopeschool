@@ -17,14 +17,14 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-User=hopeschool
+User=ubuntu
 Group=www-data
-WorkingDirectory=/home/hopeschool/app
-EnvironmentFile=/home/hopeschool/app/.env
-ExecStart=/home/hopeschool/app/venv/bin/python manage.py resolve_geoip
+WorkingDirectory=/home/ubuntu/hopeschool
+EnvironmentFile=/home/ubuntu/hopeschool/.env
+ExecStart=/home/ubuntu/hopeschool/venv/bin/python manage.py resolve_geoip
 
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full
 ProtectHome=read-only
-ReadWritePaths=/home/hopeschool/app
+ReadWritePaths=/home/ubuntu/hopeschool

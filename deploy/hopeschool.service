@@ -13,19 +13,21 @@ Description=Hope School gunicorn daemon
 After=network.target
 
 [Service]
-User=hopeschool
+# Runs as the ordinary 'ubuntu' login user (no dedicated service user). Group is
+# www-data so the nginx worker can read the unix socket in /run/hopeschool.
+User=ubuntu
 Group=www-data
 
-WorkingDirectory=/home/hopeschool/app
-EnvironmentFile=/home/hopeschool/app/.env
+WorkingDirectory=/home/ubuntu/hopeschool
+EnvironmentFile=/home/ubuntu/hopeschool/.env
 
 # systemd creates /run/hopeschool owned by User:Group on start, where gunicorn
 # places its unix socket; it is removed automatically on stop.
 RuntimeDirectory=hopeschool
 RuntimeDirectoryMode=0750
 
-ExecStart=/home/hopeschool/app/venv/bin/gunicorn \
-    --config /home/hopeschool/app/deploy/gunicorn.conf.py \
+ExecStart=/home/ubuntu/hopeschool/venv/bin/gunicorn \
+    --config /home/ubuntu/hopeschool/deploy/gunicorn.conf.py \
     config.wsgi:application
 ExecReload=/bin/kill -s HUP $MAINPID
 
@@ -39,8 +41,11 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full
 ProtectHome=read-only
-# The app needs to write uploads (media/), the SQLite DB and WAL files:
-ReadWritePaths=/home/hopeschool/app
+# The app needs to write uploads (media/), the SQLite DB and WAL files. This
+# ReadWritePaths overrides ProtectHome=read-only for the project subtree only —
+# the rest of /home/ubuntu stays read-only. (gunicorn's control socket is
+# disabled in gunicorn.conf.py, so nothing tries to write to ~/.gunicorn.)
+ReadWritePaths=/home/ubuntu/hopeschool
 
 [Install]
 WantedBy=multi-user.target

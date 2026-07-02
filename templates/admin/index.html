@@ -9,14 +9,14 @@
 {% endblock %}
 
 {% block content %}
-    {# ---- KPI cards ---- #}
-    <div class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-3">
+    {# ---- KPI cards (2 columns on mobile, 3 on desktop) ---- #}
+    <div class="grid grid-cols-2 gap-3 mb-8 sm:gap-4 lg:grid-cols-3">
         {% for kpi in kpis %}
             {% component "unfold/components/card.html" with class="h-full" %}
-                <div class="flex items-center gap-4">
-                    <span class="material-symbols-outlined text-primary-500 text-4xl">{{ kpi.icon }}</span>
-                    <div class="flex flex-col">
-                        <span class="text-font-subtle-light dark:text-font-subtle-dark text-sm">{{ kpi.title }}</span>
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary-500 text-3xl sm:text-4xl shrink-0">{{ kpi.icon }}</span>
+                    <div class="flex flex-col min-w-0">
+                        <span class="text-font-subtle-light dark:text-font-subtle-dark text-xs sm:text-sm">{{ kpi.title }}</span>
                         {% component "unfold/components/title.html" %}{{ kpi.value }}{% endcomponent %}
                     </div>
                 </div>
@@ -33,7 +33,19 @@
         </div>
         <div>
             {% component "unfold/components/card.html" with title=_('Qurilmalar') class="h-full" %}
-                {% component "unfold/components/chart/bar.html" with data=device_chart height="280" %}{% endcomponent %}
+                {% component "unfold/components/chart/doughnut.html" with data=device_chart height="200" %}{% endcomponent %}
+                {% if device_legend %}
+                    <div class="mt-5 flex flex-col gap-2.5">
+                        {% for d in device_legend %}
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-2xl shrink-0" style="color:{{ d.color }}">{{ d.icon }}</span>
+                                <span class="text-sm text-font-default-light dark:text-font-default-dark truncate">{{ d.label }}</span>
+                                <span class="ml-auto text-sm font-semibold text-font-important-light dark:text-font-important-dark">{{ d.count }}</span>
+                                <span class="w-10 text-right text-xs text-font-subtle-light dark:text-font-subtle-dark">{{ d.percent }}%</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             {% endcomponent %}
         </div>
     </div>

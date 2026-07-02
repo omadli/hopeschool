@@ -746,8 +746,8 @@ push / pull_request (main)
    ┌─────────┐   testlar oʻtsa va main ga push boʻlsa   ┌──────────┐
    │  test   │ ───────────────────────────────────────▶ │  deploy  │
    └─────────┘                                           └──────────┘
-   • python check         • SSH orqali serverga ulanadi
-   • makemigrations --check  (ForceCommand → hopeschool-deploy ishga tushadi)
+   • python check         • ubuntu sifatida SSH (parol) bilan ulanadi
+   • makemigrations --check  (script → redeploy qadamlari ishga tushadi)
    • test (286 ta test)
 ```
 
@@ -764,11 +764,12 @@ CI da `.env` yoʻq (gitignore) — sozlamalar dev standartlariga qaytadi va xavf
 
 **`deploy` ishi** faqat `main` ga **push** boʻlganda va **testlar oʻtgach** ishlaydi:
 
-- `appleboy/ssh-action` orqali serverga SSH ulanadi.
-- Serverdagi `deploy` foydalanuvchisi sshd **ForceCommand** bilan `/usr/local/bin/hopeschool-deploy` ga bogʻlangan — ulanishning oʻzi deployni ishga tushiradi (`script: "true"` eʼtiborga olinmaydi).
+- `appleboy/ssh-action` orqali `ubuntu` sifatida **parol bilan** SSH ulanadi.
+- `script` bloki `/home/ubuntu/hopeschool` da redeploy qadamlarini bajaradi: `git pull` → `pip install` → `migrate` → `tailwind build` → `collectstatic` → `compilemo` → `sudo systemctl restart hopeschool`.
+- Oxirgi qadam (`systemctl restart`) CI da parolsiz ishlashi uchun serverda tor NOPASSWD sudoers qoidasi kerak (`docs/JOYLASHTIRISH.md`).
 - `concurrency` bilan ikki deploy bir vaqtda ketmasligi kafolatlanadi.
 
-> Kerakli GitHub Secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_PASSWORD`.
+> Kerakli GitHub Secrets: `DEPLOY_HOST`, `DEPLOY_USER` (=`ubuntu`), `DEPLOY_PASSWORD` (ubuntu login paroli).
 
 ---
 

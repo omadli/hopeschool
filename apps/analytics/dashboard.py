@@ -29,6 +29,15 @@ _DEVICE_COLORS = [
 
 _DEVICE_LABELS = dict(VisitLog.DeviceType.choices)
 
+# Material Symbols icon per device type (shown in the doughnut legend).
+_DEVICE_ICONS = {
+    "mobile": "smartphone",
+    "tablet": "tablet",
+    "desktop": "computer",
+    "bot": "smart_toy",
+    "other": "devices_other",
+}
+
 
 def _empty_chart():
     return json.dumps({"labels": [], "datasets": []})
@@ -93,23 +102,39 @@ def _build_context(request, context):
             "backgroundColor": _FILL_COLOR,
             "fill": True,
             "tension": 0.4,
+            # Show the count scale on the Y axis (day-by-day totals are then
+            # readable; hovering a point still shows the exact number).
+            "displayYAxis": True,
         }],
     })
 
     # ---- Device-type breakdown -------------------------------------------
-    device_rows = (
+    device_rows = list(
         visits.values("device_type").annotate(total=Count("id")).order_by("-total")
     )
     device_labels = [str(_DEVICE_LABELS.get(r["device_type"], r["device_type"])) for r in device_rows]
     device_data = [r["total"] for r in device_rows]
+    device_colors = _DEVICE_COLORS[: len(device_data)] or _DEVICE_COLORS
     context["device_chart"] = json.dumps({
         "labels": device_labels,
         "datasets": [{
             "label": str(_("Qurilmalar")),
             "data": device_data,
-            "backgroundColor": _DEVICE_COLORS[: len(device_data)] or _DEVICE_COLORS,
+            "backgroundColor": device_colors,
         }],
     })
+    # Custom legend rendered under the doughnut: icon + label + count + share.
+    device_total = sum(device_data) or 1
+    context["device_legend"] = [
+        {
+            "label": device_labels[i],
+            "count": row["total"],
+            "percent": round(row["total"] * 100 / device_total),
+            "color": device_colors[i % len(device_colors)],
+            "icon": _DEVICE_ICONS.get(row["device_type"], "devices_other"),
+        }
+        for i, row in enumerate(device_rows)
+    ]
 
     # ---- Top 5 paths ------------------------------------------------------
     top_paths = list(
@@ -205,6 +230,7 @@ def dashboard_callback(request, context):
         context.setdefault("kpis", [])
         context.setdefault("visits_chart", _empty_chart())
         context.setdefault("device_chart", _empty_chart())
+        context.setdefault("device_legend", [])
         context.setdefault("leads_chart", _empty_chart())
         context.setdefault("top_paths", {"headers": [], "rows": []})
         context.setdefault("top_referrers", {"headers": [], "rows": []})

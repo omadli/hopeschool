@@ -20,6 +20,13 @@ worker_class = "sync"
 # Socket created mode 0660 so the www-data nginx worker can read/write it.
 umask = 0o007
 
+# gunicorn 25+ opens a "control socket" for the `gunicornc` management tool. With
+# no XDG_RUNTIME_DIR (systemd services don't get one), it defaults to
+# $HOME/.gunicorn/gunicorn.ctl — but the unit sets ProtectHome=read-only, so that
+# write fails with "Control server error: [Errno 30] Read-only file system". We
+# don't use gunicornc, so turn the control socket off entirely.
+control_socket_disable = True
+
 timeout = 60
 graceful_timeout = 30
 keepalive = 5
