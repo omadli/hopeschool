@@ -51,8 +51,9 @@ jobs:
 
   # ---------------------------------------------------------------------------
   # CD — deploy to the server, but ONLY on push to main and ONLY if tests pass.
-  # The server's 'deploy' user is pinned to /usr/local/bin/hopeschool-deploy via
-  # an sshd ForceCommand, so `script` is ignored — connecting triggers deploy.
+  # Connects as the ordinary 'ubuntu' user over SSH (password auth) and runs the
+  # redeploy steps in-place under /home/ubuntu/hopeschool. `systemctl restart`
+  # needs a NOPASSWD sudoers rule for that one command — see docs/JOYLASHTIRISH.md.
   # ---------------------------------------------------------------------------
   deploy:
     name: Deploy
@@ -67,8 +68,17 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          password: ${{ secrets.DEPLOY_PASSWORD }}
+          username: ${{ secrets.DEPLOY_USER }}       # ubuntu
+          password: ${{ secrets.DEPLOY_PASSWORD }}   # ubuntu's login password
           port: 22
           command_timeout: 15m
-          script: "true"
+          script_stop: true                          # abort on first failing command
+          script: |
+            cd /home/ubuntu/hopeschool
+            git pull --ff-only
+            venv/bin/pip install -r requirements.txt
+            venv/bin/python manage.py migrate --noinput
+            venv/bin/python manage.py tailwind build          # BEFORE collectstatic
+            venv/bin/python manage.py collectstatic --noinput
+            venv/bin/python manage.py compilemo               # .po -> .mo (polib)
+            sudo systemctl restart hopeschool
