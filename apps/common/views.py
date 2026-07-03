@@ -29,3 +29,14 @@ def web_manifest(request):
     """Serve the PWA web app manifest (rendered so {% static %} resolves hashed
     asset URLs and the correct application/manifest+json content type is set)."""
     return render(request, "site.webmanifest", content_type="application/manifest+json")
+
+
+@require_GET
+def admin_web_manifest(request):
+    """Serve a dedicated PWA manifest for the admin panel so it installs as its
+    own standalone app (start_url/scope = the admin, not the public site).
+
+    Mounted under the obfuscated ADMIN_URL prefix (see config/urls.py) so the
+    manifest — and the real admin path it exposes via start_url — is not
+    discoverable without already knowing that secret prefix."""
+    return render(request, "admin.webmanifest", content_type="application/manifest+json")

@@ -192,42 +192,7 @@
     return false;
   };
 
-  // ---- PWA install prompt (Chromium fires beforeinstallprompt) ----
-  var pwaWrap = document.getElementById("pwa-install");
-  if (pwaWrap) {
-    var pwaBtn = document.getElementById("pwa-install-btn");
-    var pwaDismiss = document.getElementById("pwa-install-dismiss");
-    var deferredPrompt = null;
-    var PWA_KEY = "pwa-install-dismissed";
-    function pwaStandalone() {
-      return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
-        window.navigator.standalone === true;
-    }
-    function pwaDismissed() {
-      try { return localStorage.getItem(PWA_KEY) === "1"; } catch (e) { return false; }
-    }
-    function hidePwa() { pwaWrap.classList.add("hidden"); }
-    window.addEventListener("beforeinstallprompt", function (e) {
-      e.preventDefault();
-      deferredPrompt = e;
-      if (!pwaStandalone() && !pwaDismissed()) pwaWrap.classList.remove("hidden");
-    });
-    if (pwaBtn) {
-      pwaBtn.addEventListener("click", function () {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(function () { deferredPrompt = null; hidePwa(); });
-      });
-    }
-    if (pwaDismiss) {
-      pwaDismiss.addEventListener("click", function () {
-        hidePwa();
-        try { localStorage.setItem(PWA_KEY, "1"); } catch (e) {}
-      });
-    }
-    window.addEventListener("appinstalled", function () {
-      hidePwa();
-      try { localStorage.setItem(PWA_KEY, "1"); } catch (e) {}
-    });
-  }
+  // PWA install on the public site now relies on the browser's native install
+  // UI (the linked web manifest) — no custom in-page prompt. The admin panel
+  // keeps its own dedicated install button (see static/js/admin_pwa.js).
 })();

@@ -21,9 +21,20 @@
   directly, so it does NOT inherit this override; the switcher therefore appears
   on all content pages (changelists / change forms), not the dashboard index.
 {% endcomment %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+    {# Dedicated admin PWA: linking this manifest makes the panel installable as
+       its own standalone app; admin_pwa.js reveals the header install button. #}
+    <link rel="manifest" href="{% url 'admin_web_manifest' %}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Admin">
+    <link rel="apple-touch-icon" href="{% static 'img/pwa/apple-touch-icon.png' %}">
+    <script src="{% static 'js/admin_pwa.js' %}" defer></script>
+{% endblock %}
 
 {% block branding %}
     {% include "unfold/helpers/site_branding.html" %}
@@ -37,7 +48,14 @@
     {% get_available_languages as LANGUAGES %}
     {% get_language_info_list for LANGUAGES as languages %}
     <div class="px-4 -mt-2 mb-4">
-        <div class="{% if not cl.model_admin.list_fullwidth and is_fullwidth != "1" %}container{% endif %} mx-auto flex justify-end">
+        <div class="{% if not cl.model_admin.list_fullwidth and is_fullwidth != "1" %}container{% endif %} mx-auto flex items-center justify-end gap-2">
+            {# Install button — hidden until the browser fires beforeinstallprompt (see admin_pwa.js). #}
+            <button id="admin-pwa-install" type="button"
+                    title="{% translate 'Ilovani oʻrnatish' %}"
+                    class="hidden cursor-pointer whitespace-nowrap rounded-default bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-primary-700">
+                <span class="material-symbols-outlined mr-1 align-middle" style="font-size:16px;">install_desktop</span>
+                <span class="align-middle">{% translate "Ilovani oʻrnatish" %}</span>
+            </button>
             <div class="inline-flex flex-row items-center gap-1 rounded-default border border-base-200 bg-white px-1 py-1 dark:border-base-700 dark:bg-base-900">
                 <span class="material-symbols-outlined mr-1 text-base-400 dark:text-base-500" style="font-size:18px;">language</span>
                 {% for language in languages %}

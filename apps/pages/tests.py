@@ -340,6 +340,61 @@ class WebManifestTests(TestCase):
 
 
 @override_settings(STORAGES=_STATIC_STORAGE)
+class AdminWebManifestTests(TestCase):
+    """The admin panel installs as its OWN PWA — a dedicated manifest scoped to
+    the admin (not the public site), served under the obfuscated ADMIN_URL, plus
+    an in-header install button rendered on admin pages."""
+
+    def test_manifest_status_and_content_type(self):
+        response = self.client.get(reverse("admin_web_manifest"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            response["Content-Type"].startswith("application/manifest+json"),
+            f"admin manifest Content-Type should be application/manifest+json, "
+            f"got {response['Content-Type']}",
+        )
+
+    def test_manifest_is_admin_scoped_standalone(self):
+        import json
+
+        response = self.client.get(reverse("admin_web_manifest"))
+        data = json.loads(response.content)
+        for key in ("name", "short_name", "start_url", "scope", "display", "icons"):
+            self.assertIn(key, data, f"admin manifest missing required key '{key}'")
+        self.assertEqual(data["display"], "standalone")
+        admin_index = reverse("admin:index")
+        # A *separate* admin app: start_url/scope point at the admin, not "/".
+        self.assertEqual(data["start_url"], admin_index)
+        self.assertEqual(data["scope"], admin_index)
+        self.assertNotEqual(data["start_url"], "/")
+
+    def test_manifest_lives_under_admin_prefix(self):
+        # Kept under the obfuscated ADMIN_URL so it never leaks the admin path.
+        self.assertEqual(
+            reverse("admin_web_manifest"),
+            "/" + settings.ADMIN_URL + "app.webmanifest",
+        )
+
+    def test_admin_page_links_manifest_and_shows_install_button(self):
+        superuser = User.objects.create_superuser(
+            username="admin_pwa", password="pwapass123", email="admin_pwa@test.com",
+        )
+        self.client.force_login(superuser)
+        body = self.client.get(
+            reverse("admin:pages_sitecopy_changelist"), follow=True
+        ).content.decode("utf-8", "replace")
+        self.assertIn('rel="manifest"', body, "admin page must link a PWA manifest")
+        self.assertIn(
+            reverse("admin_web_manifest"), body,
+            "admin page must link the dedicated admin manifest",
+        )
+        self.assertIn(
+            'id="admin-pwa-install"', body,
+            "admin page must render the install button",
+        )
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
 class HomePageHeadTagsTests(TestCase):
     """GET /uz/ head contains canonical, hreflang, OG tags, and JSON-LD schema."""
 
