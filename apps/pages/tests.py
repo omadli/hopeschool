@@ -392,6 +392,12 @@ class AdminWebManifestTests(TestCase):
             'id="admin-pwa-install"', body,
             "admin page must render the install button",
         )
+        # Guard against a multi-line {# #} comment leaking onto the page (Django
+        # only treats {# #} as a comment when it opens/closes on one line).
+        self.assertNotIn(
+            "reveals the header install button", body,
+            "a template comment leaked into the rendered admin page",
+        )
 
 
 @override_settings(STORAGES=_STATIC_STORAGE)

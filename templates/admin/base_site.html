@@ -26,8 +26,7 @@
 {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
 {% block extrahead %}{{ block.super }}
-    {# Dedicated admin PWA: linking this manifest makes the panel installable as
-       its own standalone app; admin_pwa.js reveals the header install button. #}
+    {# Dedicated admin PWA: this manifest makes the panel installable; admin_pwa.js reveals the header install button. #}
     <link rel="manifest" href="{% url 'admin_web_manifest' %}">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
