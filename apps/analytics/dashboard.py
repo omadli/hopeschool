@@ -237,7 +237,11 @@ def _build_context(request, context):
         row["source"]: row["total"]
         for row in src_leads.values("source").annotate(total=Count("id"))
     }
-    total_src = sum(counts.values()) or 1
+    active_sources = list(LeadSource.objects.filter(is_active=True))
+    # Denominator is the sum of counts for the active sources actually shown
+    # as cards below, so displayed percentages sum to ~100 even when some
+    # leads belong to an inactive/deleted (NULL) source.
+    total_src = sum(counts.get(s.id, 0) for s in active_sources) or 1
     try:
         domain = SiteConfig.get_solo().site_domain or request.get_host()
     except Exception:  # pragma: no cover - defensive
@@ -245,7 +249,7 @@ def _build_context(request, context):
     lang = get_language() or "uz"
 
     source_stats = []
-    for s in LeadSource.objects.filter(is_active=True):
+    for s in active_sources:
         c = counts.get(s.id, 0)
         source_stats.append({
             "name": s.name,

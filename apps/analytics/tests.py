@@ -189,3 +189,20 @@ class DashboardSourceStatsTests(TestCase):
 
     def test_source_period_today_is_recorded(self):
         self.assertEqual(self._ctx("today")["source_period"], "today")
+
+    def test_percent_excludes_inactive_source_leads(self):
+        from apps.leads.models import Lead, LeadSource
+        tg = LeadSource.objects.get(slug="telegram")
+        ig = LeadSource.objects.get(slug="instagram")
+        # instagram gets a lead, then is deactivated -> it has no card
+        Lead.objects.create(full_name="I", phone="+998901234500", source=ig)
+        ig.is_active = False
+        ig.save()
+        Lead.objects.create(full_name="A", phone="+998901234567", source=tg)
+        Lead.objects.create(full_name="B", phone="+998901234568", source=tg)
+        stats = self._ctx()["source_stats"]
+        names = [s["name"] for s in stats]
+        self.assertNotIn("Instagram", names)  # inactive -> no card
+        tg_row = next(s for s in stats if s["name"] == "Telegram")
+        # 2 telegram of 2 active-source leads = 100%, NOT 2/3 = 67%
+        self.assertEqual(tg_row["percent"], 100)
