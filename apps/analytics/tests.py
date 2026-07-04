@@ -231,3 +231,64 @@ class DashboardSourceCardsTests(TestCase):
         tg_card = self._card(ctx, "Telegram")
         # 2 telegram of 2 active-source leads = 100%, NOT 2/3 = 67%
         self.assertEqual(json.loads(tg_card["percents_json"])["all"], 100)
+
+
+class DashboardDataTests(TestCase):
+    """build_dashboard_data + _series bucketing across periods."""
+
+    def _visit(self, when=None, **kw):
+        from apps.analytics.models import VisitLog
+        v = VisitLog.objects.create(path="/", device_type="mobile", **kw)
+        if when is not None:
+            VisitLog.objects.filter(pk=v.pk).update(created_at=when)  # bypass auto_now_add
+        return v
+
+    def _data(self, period):
+        from apps.analytics.dashboard import build_dashboard_data
+        return build_dashboard_data(RequestFactory().get("/admin/"), period)
+
+    def test_clean_period_defaults_to_month(self):
+        from apps.analytics.dashboard import clean_period
+        self.assertEqual(clean_period("bogus"), "month")
+        self.assertEqual(clean_period(None), "month")
+        self.assertEqual(clean_period("year"), "year")
+
+    def test_today_series_is_24_hourly_buckets(self):
+        import json
+        from django.utils import timezone
+        now = timezone.now()
+        self._visit(when=now)  # falls in current hour
+        cfg = json.loads(self._data("today")["visits_chart"])
+        self.assertEqual(len(cfg["labels"]), 24)
+        self.assertEqual(cfg["labels"][0], "00")
+        self.assertEqual(sum(cfg["datasets"][0]["data"]), 1)
+
+    def test_week_series_is_7_daily_buckets(self):
+        import json
+        cfg = json.loads(self._data("week")["visits_chart"])
+        self.assertEqual(len(cfg["labels"]), 7)
+
+    def test_year_series_is_12_monthly_buckets(self):
+        import json
+        cfg = json.loads(self._data("year")["visits_chart"])
+        self.assertEqual(len(cfg["labels"]), 12)
+
+    def test_month_window_excludes_older_visits(self):
+        from django.utils import timezone
+        from datetime import timedelta
+        now = timezone.now()
+        self._visit(when=now)                       # in window
+        self._visit(when=now - timedelta(days=40))  # outside month
+        kpi = {k["icon"]: k["value"] for k in self._data("month")["kpis"]}
+        self.assertEqual(kpi["visibility"], 1)      # Tashriflar (davr) KPI
+
+    def test_source_cards_period_and_default(self):
+        from apps.leads.models import Lead, LeadSource
+        tg = LeadSource.objects.get(slug="telegram")
+        Lead.objects.create(full_name="A", phone="+998901234567", source=tg)
+        data = self._data("all")
+        self.assertEqual(data["dash_period"], "all")
+        tg_card = next(c for c in data["source_cards"] if c["name"] == "Telegram")
+        self.assertEqual(tg_card["count"], 1)
+        self.assertEqual(tg_card["percent"], 100)
+        self.assertIn("source=telegram", tg_card["link"])

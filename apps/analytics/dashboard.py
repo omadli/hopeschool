@@ -9,10 +9,10 @@ not yet exist (e.g. during a migration window) it degrades to zeros instead of
 import json
 from datetime import timedelta
 
-from django.db.models import Count
-from django.db.models.functions import TruncDate
+from django.db.models import Count, Min
+from django.db.models.functions import TruncDate, TruncHour, TruncMonth
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 
 from .models import VisitLog
 
@@ -37,6 +37,107 @@ _DEVICE_ICONS = {
     "bot": "smart_toy",
     "other": "devices_other",
 }
+
+
+PERIODS = ("today", "week", "month", "year", "all")
+DEFAULT_PERIOD = "month"
+
+# Doughnut/legend colours as Unfold CSS-variable *keys* (resolved to rgb in JS
+# for the canvas; the legend HTML wraps each in var(--color-<key>)).
+_DEVICE_COLOR_KEYS = ["primary-500", "primary-300", "primary-700", "base-400", "base-300"]
+
+
+def clean_period(value):
+    """Whitelist a requested period, defaulting to month."""
+    return value if value in PERIODS else DEFAULT_PERIOD
+
+
+def period_qs(qs, period, now, today):
+    """Filter a queryset to the period's rolling window (created_at)."""
+    if period == "today":
+        return qs.filter(created_at__date=today)
+    if period == "week":
+        return qs.filter(created_at__gte=now - timedelta(days=7))
+    if period == "month":
+        return qs.filter(created_at__gte=now - timedelta(days=30))
+    if period == "year":
+        return qs.filter(created_at__gte=now - timedelta(days=365))
+    return qs  # all
+
+
+def _month_first(d):
+    return d.replace(day=1)
+
+
+def _month_range(end_first, count):
+    """`count` first-of-month dates ending at end_first (ascending)."""
+    months, y, m = [], end_first.year, end_first.month
+    for _i in range(count):
+        months.append(end_first.replace(year=y, month=m, day=1))
+        m -= 1
+        if m == 0:
+            m = 12
+            y -= 1
+    return list(reversed(months))
+
+
+def _bucket_keys(qs, period, now, today):
+    """Return (granularity, [(key, label), ...]) ordered buckets for the period."""
+    if period == "today":
+        return "hour", [(h, f"{h:02d}") for h in range(24)]
+    if period == "week":
+        days = [today - timedelta(days=i) for i in range(6, -1, -1)]
+        return "day", [(d, d.strftime("%d.%m")) for d in days]
+    if period == "month":
+        days = [today - timedelta(days=i) for i in range(29, -1, -1)]
+        return "day", [(d, d.strftime("%d.%m")) for d in days]
+    if period == "year":
+        months = _month_range(_month_first(today), 12)
+        return "month", [(m, m.strftime("%m.%y")) for m in months]
+    # all: from the earliest record's month to this month (fallback 12)
+    first = qs.aggregate(m=Min("created_at"))["m"]
+    if not first:
+        months = _month_range(_month_first(today), 12)
+    else:
+        start = _month_first(timezone.localtime(first).date())
+        count = (today.year - start.year) * 12 + (today.month - start.month) + 1
+        months = _month_range(_month_first(today), max(count, 1))
+    return "month", [(m, m.strftime("%m.%y")) for m in months]
+
+
+def _series(qs, period, now, today):
+    """(labels, data) — counts bucketed by the period's granularity, gap-filled."""
+    gran, keys_labels = _bucket_keys(qs, period, now, today)
+    labels = [lbl for _k, lbl in keys_labels]
+    if gran == "hour":
+        rows = (qs.filter(created_at__date=today)
+                  .annotate(b=TruncHour("created_at")).values("b").annotate(t=Count("id")))
+        counts = {timezone.localtime(r["b"]).hour: r["t"] for r in rows}
+        return labels, [counts.get(h, 0) for h, _l in keys_labels]
+    if gran == "day":
+        rows = qs.annotate(b=TruncDate("created_at")).values("b").annotate(t=Count("id"))
+        counts = {r["b"]: r["t"] for r in rows}
+        return labels, [counts.get(d, 0) for d, _l in keys_labels]
+    rows = qs.annotate(b=TruncMonth("created_at")).values("b").annotate(t=Count("id"))
+    counts = {timezone.localtime(r["b"]).date().replace(day=1): r["t"] for r in rows}
+    return labels, [counts.get(m, 0) for m, _l in keys_labels]
+
+
+def _line_json(label, labels, data):
+    return json.dumps({
+        "type": "line",
+        "labels": labels,
+        "datasets": [{"label": str(label), "data": data, "line": "primary-500", "fill": "primary-100"}],
+        "showLabels": True,
+    })
+
+
+def _doughnut_json(labels, data, color_keys):
+    return json.dumps({
+        "type": "doughnut",
+        "labels": [str(l) for l in labels],
+        "datasets": [{"data": data, "colors": color_keys}],
+    })
 
 
 def _empty_chart():
@@ -296,3 +397,100 @@ def dashboard_callback(request, context):
         context.setdefault("source_cards", [])
         context.setdefault("source_period", "all")
         return context
+
+
+def build_dashboard_data(request, period):
+    """All period-dependent dashboard widgets for `period`. Defensive: returns
+    zeroed widgets if the analytics/leads tables are unavailable."""
+    period = clean_period(period)
+    data = {"dash_period": period}
+    try:
+        from apps.courses.models import Course
+        from apps.leads.models import Lead, LeadSource
+        from apps.siteconfig.models import SiteConfig
+        from apps.teachers.models import Teacher
+
+        now = timezone.now()
+        today = timezone.localdate()
+        visits = VisitLog.objects.all()
+        leads = Lead.objects.all()
+        pv = period_qs(visits, period, now, today)
+        pl = period_qs(leads, period, now, today)
+
+        # KPIs (period-aware, + static totals)
+        data["kpis"] = [
+            {"title": _("Tashriflar (davr)"), "value": pv.count(), "icon": "visibility"},
+            {"title": _("Arizalar (davr)"), "value": pl.count(), "icon": "mail"},
+            {"title": _("Yangi arizalar (davr)"),
+             "value": pl.filter(status=Lead.Status.NEW).count(), "icon": "inbox"},
+            {"title": _("Kurslar / oʻqituvchilar"),
+             "value": f"{Course.objects.count()} / {Teacher.objects.count()}", "icon": "school"},
+        ]
+
+        # Line charts (series applies its own bucket window)
+        data["visits_chart"] = _line_json(_("Tashriflar"), *_series(visits, period, now, today))
+        data["leads_chart"] = _line_json(_("Arizalar"), *_series(leads, period, now, today))
+
+        # Device doughnut + legend (period-filtered)
+        drows = list(pv.values("device_type").annotate(total=Count("id")).order_by("-total"))
+        dlabels = [str(_DEVICE_LABELS.get(r["device_type"], r["device_type"])) for r in drows]
+        ddata = [r["total"] for r in drows]
+        dkeys = _DEVICE_COLOR_KEYS[: len(ddata)] or _DEVICE_COLOR_KEYS
+        data["device_chart"] = _doughnut_json(dlabels, ddata, dkeys)
+        dtotal = sum(ddata) or 1
+        data["device_legend"] = [
+            {"label": dlabels[i], "count": r["total"], "percent": round(r["total"] * 100 / dtotal),
+             "color": f"var(--color-{dkeys[i % len(dkeys)]})",
+             "icon": _DEVICE_ICONS.get(r["device_type"], "devices_other")}
+            for i, r in enumerate(drows)
+        ]
+
+        # Tables (period-filtered)
+        data["top_paths"] = {
+            "headers": [str(_("Sahifa")), str(_("Tashriflar"))],
+            "rows": [[p["path"], p["total"]] for p in
+                     pv.values("path").annotate(total=Count("id")).order_by("-total")[:5]],
+        }
+        data["top_referrers"] = {
+            "headers": [str(_("Manba")), str(_("Tashriflar"))],
+            "rows": [[r["referrer"], r["total"]] for r in
+                     pv.exclude(referrer="").values("referrer").annotate(total=Count("id")).order_by("-total")[:5]],
+        }
+        data["top_countries"] = {
+            "headers": [str(_("Davlat")), str(_("Tashriflar"))],
+            "rows": [[r["country"], r["total"]] for r in
+                     pv.exclude(country="").values("country").annotate(total=Count("id")).order_by("-total")[:8]],
+        }
+        status_labels = dict(Lead.Status.choices)
+        data["leads_by_status"] = {
+            "headers": [str(_("Holat")), str(_("Soni"))],
+            "rows": [[str(status_labels.get(r["status"], r["status"])), r["total"]] for r in
+                     pl.values("status").annotate(total=Count("id")).order_by("-total")],
+        }
+
+        # CRM source cards (period-filtered, denominator = shown active sources)
+        counts = {r["source"]: r["total"]
+                  for r in pl.values("source").annotate(total=Count("id"))}
+        active = list(LeadSource.objects.filter(is_active=True))
+        total_src = sum(counts.get(s.id, 0) for s in active) or 1
+        try:
+            domain = SiteConfig.get_solo().site_domain or request.get_host()
+        except Exception:  # pragma: no cover - defensive
+            domain = request.get_host()
+        lang = get_language() or "uz"
+        data["source_cards"] = [{
+            "name": s.name, "count": counts.get(s.id, 0),
+            "percent": round(counts.get(s.id, 0) * 100 / total_src),
+            "link": s.build_link(domain, lang),
+            "image": s.image.url if s.image else "",
+            "brand": s.brand_key, "icon": s.icon or "hub", "color": s.color or "",
+        } for s in active]
+    except Exception:  # pragma: no cover - defensive (unmigrated tables)
+        data.setdefault("kpis", [])
+        for k in ("visits_chart", "leads_chart", "device_chart"):
+            data.setdefault(k, json.dumps({"type": "line", "labels": [], "datasets": []}))
+        data.setdefault("device_legend", [])
+        for k in ("top_paths", "top_referrers", "top_countries", "leads_by_status"):
+            data.setdefault(k, {"headers": [], "rows": []})
+        data.setdefault("source_cards", [])
+    return data
