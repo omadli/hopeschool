@@ -1,7 +1,7 @@
 {% load static %}{
   "id": "/",
-  "name": "{{ site_config.site_name|default:"Hope School"|escapejs }}",
-  "short_name": "Hope",
+  "name": "Hopeschool",
+  "short_name": "Hopeschool",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

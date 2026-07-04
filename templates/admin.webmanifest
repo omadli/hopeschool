@@ -1,7 +1,7 @@
 {% load static %}{
   "id": "{% url 'admin:index' %}",
-  "name": "{{ site_config.site_name|default:"Hope School"|escapejs }} — Admin",
-  "short_name": "Admin",
+  "name": "Hopeschool Admin",
+  "short_name": "Hope Admin",
   "start_url": "{% url 'admin:index' %}",
   "scope": "{% url 'admin:index' %}",
   "display": "standalone",
