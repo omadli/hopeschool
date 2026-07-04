@@ -78,6 +78,17 @@ class HeroSection(SingletonModel):
     secondary_cta = models.CharField(
         _("Ikkilamchi tugma"), max_length=60, default="Kurslarni koʻrish",
     )
+    # Hero rasmi ustidagi suzuvchi yorliqlardagi raqamlar. Faqat qiymat
+    # (raqam) tahrirlanadi; atrofidagi so'zlar ({% translate %}) tarjimada
+    # qoladi, shuning uchun bu maydonlar tildan mustaqil — modeltranslationsiz.
+    metric1_value = models.CharField(
+        _("1-yorliq — qiymat"), max_length=40, default="IELTS 7.5",
+        help_text=_("Chap yuqoridagi yorliq, masalan «IELTS 7.5» ('oʻrtacha' izohi bilan)."),
+    )
+    metric2_value = models.CharField(
+        _("2-yorliq — qiymat"), max_length=20, default="100+",
+        help_text=_("«Bu oy … yangi oʻquvchi» yorlig'idagi raqam, masalan «100+»."),
+    )
 
     class Meta:
         verbose_name = _("Hero bo'limi")

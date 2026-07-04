@@ -52,11 +52,11 @@
           <div class="floaty absolute -left-3 sm:-left-7 top-8 surface-card rounded-2xl shadow-soft border bd p-3.5 w-[180px]">
             <div class="flex items-center gap-3">
               <span class="grid place-items-center h-10 w-10 rounded-xl bg-brand-blue-50 dark:bg-brand-blue-500/15 text-brand-blue-600 dark:text-brand-blue-300"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10 12 5 2 10l10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
-              <div><div class="font-display font-bold text-[15px] leading-none">IELTS 7.5</div><div class="text-[12px] txt-soft mt-1">{% translate "oʻrtacha" %}</div></div>
+              <div><div class="font-display font-bold text-[15px] leading-none">{{ hero_section.metric1_value }}</div><div class="text-[12px] txt-soft mt-1">{% translate "oʻrtacha" %}</div></div>
             </div>
           </div>
           <div class="floaty absolute -right-2 sm:-right-5 bottom-10 surface-card rounded-2xl shadow-soft border bd p-3.5 w-[200px]" style="animation-delay:-3s">
-            <div class="text-[12px] txt-soft leading-snug">{% translate "Bu oy" %} <b style="color:var(--text)">100+</b> {% translate "yangi oʻquvchi" %}</div>
+            <div class="text-[12px] txt-soft leading-snug">{% translate "Bu oy" %} <b style="color:var(--text)">{{ hero_section.metric2_value }}</b> {% translate "yangi oʻquvchi" %}</div>
             <div class="mt-2 h-1.5 rounded-full bg-brand-blue-100 dark:bg-brand-blue-500/20 overflow-hidden"><div class="h-full w-3/4 grad-cap rounded-full"></div></div>
           </div>
         </div>

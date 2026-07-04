@@ -44,6 +44,10 @@ class HeroSectionAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdm
         (_("Tugmalar"), {
             "fields": ("primary_cta", "secondary_cta"),
         }),
+        (_("Suzuvchi yorliqlar"), {
+            "fields": ("metric1_value", "metric2_value"),
+            "description": _("Hero rasmi ustidagi kichik kartalardagi raqamlar."),
+        }),
     )
 
 
