@@ -76,10 +76,10 @@
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {% for s in source_cards %}
                     <div class="flex items-center gap-5 rounded-xl border border-base-200 p-5 dark:border-base-800" data-source-card data-counts='{{ s.counts_json }}' data-percents='{{ s.percents_json }}'>
-                        <span class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-base-100 dark:bg-base-800" style="{% if s.color %}color:{{ s.color }}{% endif %}">
-                            {% if s.image %}<img src="{{ s.image }}" alt="{{ s.name }}" class="h-12 w-12 rounded-lg object-contain">
-                            {% elif s.brand %}{% social_icon s.brand size=36 %}
-                            {% else %}<span class="material-symbols-outlined text-4xl">{{ s.icon }}</span>{% endif %}
+                        <span class="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-base-100 dark:bg-base-800" style="{% if s.color %}color:{{ s.color }}{% endif %}">
+                            {% if s.image %}<img src="{{ s.image }}" alt="{{ s.name }}" class="h-full w-full rounded-2xl object-cover">
+                            {% elif s.brand %}{% social_icon s.brand size=48 %}
+                            {% else %}<span class="material-symbols-outlined" style="font-size:48px;line-height:1;">{{ s.icon }}</span>{% endif %}
                         </span>
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center justify-between gap-2">
