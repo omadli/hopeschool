@@ -67,29 +67,30 @@
     {# ---- CRM: manbalar boʻyicha lidlar ---- #}
     <div class="mb-8">
         {% component "unfold/components/card.html" with title=_('Manbalar boʻyicha lidlar (CRM)') class="h-full" %}
-            <div class="flex flex-wrap gap-1.5 mb-5 text-sm">
-                <a href="?source_period=today" class="px-3 py-1.5 rounded-lg font-medium {% if source_period == 'today' %}bg-primary-600 text-white{% else %}bg-base-100 dark:bg-base-800 text-font-subtle-light dark:text-font-subtle-dark{% endif %}">{% translate "Bugun" %}</a>
-                <a href="?source_period=30" class="px-3 py-1.5 rounded-lg font-medium {% if source_period == '30' %}bg-primary-600 text-white{% else %}bg-base-100 dark:bg-base-800 text-font-subtle-light dark:text-font-subtle-dark{% endif %}">{% translate "30 kun" %}</a>
-                <a href="?source_period=all" class="px-3 py-1.5 rounded-lg font-medium {% if source_period == 'all' %}bg-primary-600 text-white{% else %}bg-base-100 dark:bg-base-800 text-font-subtle-light dark:text-font-subtle-dark{% endif %}">{% translate "Jami" %}</a>
+            <div class="flex flex-wrap gap-1.5 mb-5 text-sm" data-source-tabs data-active-period="{{ source_period }}">
+                <button type="button" data-period="today" class="source-tab px-3 py-1.5 rounded-lg font-medium {% if source_period == 'today' %}bg-primary-600 text-white{% else %}bg-base-100 dark:bg-base-800 text-font-subtle-light dark:text-font-subtle-dark{% endif %}">{% translate "Bugun" %}</button>
+                <button type="button" data-period="week" class="source-tab px-3 py-1.5 rounded-lg font-medium {% if source_period == 'week' %}bg-primary-600 text-white{% else %}bg-base-100 dark:bg-base-800 text-font-subtle-light dark:text-font-subtle-dark{% endif %}">{% translate "Hafta" %}</button>
+                <button type="button" data-period="30" class="source-tab px-3 py-1.5 rounded-lg font-medium {% if source_period == '30' %}bg-primary-600 text-white{% else %}bg-base-100 dark:bg-base-800 text-font-subtle-light dark:text-font-subtle-dark{% endif %}">{% translate "30 kun" %}</button>
+                <button type="button" data-period="all" class="source-tab px-3 py-1.5 rounded-lg font-medium {% if source_period == 'all' %}bg-primary-600 text-white{% else %}bg-base-100 dark:bg-base-800 text-font-subtle-light dark:text-font-subtle-dark{% endif %}">{% translate "Jami" %}</button>
             </div>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {% for s in source_stats %}
-                    <div class="flex items-center gap-4 rounded-lg border border-base-200 p-4 dark:border-base-800">
-                        <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-base-100 dark:bg-base-800" style="{% if s.color %}color:{{ s.color }}{% endif %}">
-                            {% if s.image %}<img src="{{ s.image }}" alt="{{ s.name }}" class="h-8 w-8 rounded object-contain">
-                            {% elif s.brand %}{% social_icon s.brand size=26 %}
-                            {% else %}<span class="material-symbols-outlined text-3xl">{{ s.icon }}</span>{% endif %}
+                {% for s in source_cards %}
+                    <div class="flex items-center gap-5 rounded-xl border border-base-200 p-5 dark:border-base-800" data-source-card data-counts='{{ s.counts_json }}' data-percents='{{ s.percents_json }}'>
+                        <span class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-base-100 dark:bg-base-800" style="{% if s.color %}color:{{ s.color }}{% endif %}">
+                            {% if s.image %}<img src="{{ s.image }}" alt="{{ s.name }}" class="h-12 w-12 rounded-lg object-contain">
+                            {% elif s.brand %}{% social_icon s.brand size=36 %}
+                            {% else %}<span class="material-symbols-outlined text-4xl">{{ s.icon }}</span>{% endif %}
                         </span>
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center justify-between gap-2">
-                                <span class="truncate font-semibold text-font-important-light dark:text-font-important-dark">{{ s.name }}</span>
-                                <span class="text-lg font-bold text-primary-600 dark:text-primary-400" data-countup="{{ s.count }}">0</span>
+                                <span class="truncate font-semibold text-base text-font-important-light dark:text-font-important-dark">{{ s.name }}</span>
+                                <span class="text-2xl font-bold text-primary-600 dark:text-primary-400" data-count>{{ s.count }}</span>
                             </div>
-                            <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-base-100 dark:bg-base-800">
-                                <div class="h-full rounded-full bg-primary-500" style="width:{{ s.percent }}%"></div>
+                            <div class="mt-2.5 h-2 overflow-hidden rounded-full bg-base-100 dark:bg-base-800">
+                                <div class="h-full rounded-full bg-primary-500 transition-[width] duration-500" data-bar style="width:{{ s.percent }}%"></div>
                             </div>
                             <div class="mt-2 flex items-center justify-between gap-2">
-                                <span class="text-xs text-font-subtle-light dark:text-font-subtle-dark">{{ s.percent }}%</span>
+                                <span class="text-xs text-font-subtle-light dark:text-font-subtle-dark" data-percent>{{ s.percent }}%</span>
                                 <button type="button" data-copy-link="{{ s.link }}" class="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400">
                                     <span class="material-symbols-outlined text-base">content_copy</span>
                                     <span data-copy-label>{% translate "Havola" %}</span>
@@ -103,19 +104,61 @@
             </div>
             <script>
                 (function () {
-                    function countUp(el) {
-                        var target = parseInt(el.getAttribute("data-countup"), 10) || 0;
-                        if (target <= 0) { el.textContent = "0"; return; }
-                        var start = null, dur = 900;
+                    var tabsBox = document.querySelector("[data-source-tabs]");
+                    if (!tabsBox) return;
+                    var tabs = Array.prototype.slice.call(document.querySelectorAll(".source-tab"));
+                    var cards = Array.prototype.slice.call(document.querySelectorAll("[data-source-card]"));
+                    var ACTIVE = ["bg-primary-600", "text-white"];
+                    var INACTIVE = ["bg-base-100", "dark:bg-base-800", "text-font-subtle-light", "dark:text-font-subtle-dark"];
+
+                    function parse(s) { try { return JSON.parse(s || "{}"); } catch (e) { return {}; } }
+
+                    function setTab(tab, on) {
+                        (on ? ACTIVE : INACTIVE).forEach(function (c) { tab.classList.add(c); });
+                        (on ? INACTIVE : ACTIVE).forEach(function (c) { tab.classList.remove(c); });
+                    }
+
+                    function countUp(el, target) {
+                        if (!el) return;
+                        var from = parseInt(el.textContent, 10) || 0;
+                        target = target || 0;
+                        if (from === target) { el.textContent = String(target); return; }
+                        var start = null, dur = 700;
                         function step(ts) {
                             if (!start) start = ts;
                             var p = Math.min((ts - start) / dur, 1);
-                            el.textContent = Math.floor(p * target).toString();
+                            el.textContent = Math.round(from + (target - from) * p).toString();
                             if (p < 1) requestAnimationFrame(step);
                         }
                         requestAnimationFrame(step);
                     }
-                    document.querySelectorAll("[data-countup]").forEach(countUp);
+
+                    function applyPeriod(period) {
+                        tabs.forEach(function (t) { setTab(t, t.getAttribute("data-period") === period); });
+                        cards.forEach(function (card) {
+                            var counts = parse(card.getAttribute("data-counts"));
+                            var pcts = parse(card.getAttribute("data-percents"));
+                            var pct = pcts[period] || 0;
+                            var bar = card.querySelector("[data-bar]");
+                            var pctEl = card.querySelector("[data-percent]");
+                            if (bar) bar.style.width = pct + "%";
+                            if (pctEl) pctEl.textContent = pct + "%";
+                            countUp(card.querySelector("[data-count]"), counts[period] || 0);
+                        });
+                    }
+
+                    tabs.forEach(function (t) {
+                        t.addEventListener("click", function () { applyPeriod(t.getAttribute("data-period")); });
+                    });
+
+                    // Initial paint: count up from zero to the default period's values.
+                    var initial = tabsBox.getAttribute("data-active-period") || "all";
+                    cards.forEach(function (c) {
+                        var n = c.querySelector("[data-count]");
+                        if (n) n.textContent = "0";
+                    });
+                    applyPeriod(initial);
+
                     document.querySelectorAll("[data-copy-link]").forEach(function (btn) {
                         btn.addEventListener("click", function () {
                             var link = btn.getAttribute("data-copy-link");

@@ -219,51 +219,61 @@ def _build_context(request, context):
                  for label, mgr, flt in inventory],
     }
 
-    # ---- CRM: leads per source (period-filtered) --------------------------
+    # ---- CRM: leads per source, all periods (switched inline by JS) --------
     from django.utils.translation import get_language
 
     from apps.leads.models import LeadSource
     from apps.siteconfig.models import SiteConfig
 
-    period = request.GET.get("source_period", "all")
-    if period == "today":
-        src_leads = leads.filter(created_at__date=today)
-    elif period == "30":
-        src_leads = leads.filter(created_at__gte=last_30)
-    else:
-        period = "all"
-        src_leads = leads
-    counts = {
-        row["source"]: row["total"]
-        for row in src_leads.values("source").annotate(total=Count("id"))
+    # Rolling windows; keys match the dashboard tabs and the JS switcher. All
+    # periods are computed up front so the tabs switch client-side with no page
+    # reload and no extra request (the dataset is tiny — a few sources).
+    week_start = now - timedelta(days=7)
+    period_qs = {
+        "today": leads.filter(created_at__date=today),
+        "week": leads.filter(created_at__gte=week_start),
+        "30": leads.filter(created_at__gte=last_30),
+        "all": leads,
     }
     active_sources = list(LeadSource.objects.filter(is_active=True))
-    # Denominator is the sum of counts for the active sources actually shown
-    # as cards below, so displayed percentages sum to ~100 even when some
-    # leads belong to an inactive/deleted (NULL) source.
-    total_src = sum(counts.get(s.id, 0) for s in active_sources) or 1
+    active_ids = [s.id for s in active_sources]
+
+    # Per-period counts keyed by source id, plus the per-period denominator —
+    # summed over only the shown active sources, so displayed shares total ~100
+    # even when some leads belong to an inactive/deleted (NULL) source.
+    period_counts, period_total = {}, {}
+    for key, qs in period_qs.items():
+        c = {row["source"]: row["total"]
+             for row in qs.values("source").annotate(total=Count("id"))}
+        period_counts[key] = c
+        period_total[key] = sum(c.get(sid, 0) for sid in active_ids) or 1
+
     try:
         domain = SiteConfig.get_solo().site_domain or request.get_host()
     except Exception:  # pragma: no cover - defensive
         domain = request.get_host()
     lang = get_language() or "uz"
 
-    source_stats = []
+    default_period = "all"  # tab shown first (also the no-JS fallback value)
+    source_cards = []
+    # Fixed admin order (OrderedActiveModel) — cards do not reshuffle on switch.
     for s in active_sources:
-        c = counts.get(s.id, 0)
-        source_stats.append({
+        counts = {k: period_counts[k].get(s.id, 0) for k in period_qs}
+        percents = {k: round(counts[k] * 100 / period_total[k]) for k in period_qs}
+        source_cards.append({
             "name": s.name,
-            "count": c,
-            "percent": round(c * 100 / total_src),
             "link": s.build_link(domain, lang),
             "image": s.image.url if s.image else "",
             "brand": s.brand_key,
             "icon": s.icon or "hub",
             "color": s.color or "",
+            "counts_json": json.dumps(counts),
+            "percents_json": json.dumps(percents),
+            "count": counts[default_period],
+            "percent": percents[default_period],
         })
-    source_stats.sort(key=lambda x: x["count"], reverse=True)
-    context["source_stats"] = source_stats
-    context["source_period"] = period
+    context["source_cards"] = source_cards
+    context["source_period"] = default_period
 
     return context
 
@@ -283,6 +293,6 @@ def dashboard_callback(request, context):
         context.setdefault("leads_by_status", {"headers": [], "rows": []})
         context.setdefault("top_countries", {"headers": [], "rows": []})
         context.setdefault("content_inventory", {"headers": [], "rows": []})
-        context.setdefault("source_stats", [])
+        context.setdefault("source_cards", [])
         context.setdefault("source_period", "all")
         return context

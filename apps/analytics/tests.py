@@ -160,37 +160,62 @@ class DashboardCallbackTests(TestCase):
         self.assertIn("Uzbekistan", countries)
 
 
-class DashboardSourceStatsTests(TestCase):
-    """dashboard_callback builds per-source lead stats with a period filter."""
+class DashboardSourceCardsTests(TestCase):
+    """dashboard_callback builds per-source cards with every period precomputed
+    (tabs switch client-side, so no ``?source_period=`` reload param)."""
 
-    def _ctx(self, period=None):
-        from django.test import RequestFactory
-        from apps.analytics.dashboard import dashboard_callback
-        url = "/admin/" if not period else f"/admin/?source_period={period}"
-        return dashboard_callback(RequestFactory().get(url), {})
+    def _ctx(self):
+        return dashboard_callback(RequestFactory().get("/admin/"), {})
 
-    def test_source_stats_counts_leads(self):
+    def _card(self, ctx, name):
+        return next(c for c in ctx["source_cards"] if c["name"] == name)
+
+    def test_default_period_is_all(self):
+        self.assertEqual(self._ctx()["source_period"], "all")
+
+    def test_card_counts_all_period(self):
+        import json
         from apps.leads.models import Lead, LeadSource
         tg = LeadSource.objects.get(slug="telegram")
         Lead.objects.create(full_name="A", phone="+998901234567", source=tg)
         Lead.objects.create(full_name="B", phone="+998901234568", source=tg)
-        ctx = self._ctx()
-        by_name = {s["name"]: s["count"] for s in ctx["source_stats"]}
-        self.assertEqual(by_name["Telegram"], 2)
-        self.assertEqual(ctx["source_period"], "all")
+        card = self._card(self._ctx(), "Telegram")
+        self.assertEqual(json.loads(card["counts_json"])["all"], 2)
+        self.assertEqual(card["count"], 2)  # initial (no-JS) render value = all
 
-    def test_source_stats_link_and_percent(self):
+    def test_card_link_and_percent(self):
+        import json
         from apps.leads.models import Lead, LeadSource
         tg = LeadSource.objects.get(slug="telegram")
         Lead.objects.create(full_name="A", phone="+998901234567", source=tg)
-        tg_row = next(s for s in self._ctx()["source_stats"] if s["name"] == "Telegram")
-        self.assertIn("source=telegram", tg_row["link"])
-        self.assertEqual(tg_row["percent"], 100)
+        card = self._card(self._ctx(), "Telegram")
+        self.assertIn("source=telegram", card["link"])
+        self.assertEqual(json.loads(card["percents_json"])["all"], 100)
+        self.assertEqual(card["percent"], 100)
 
-    def test_source_period_today_is_recorded(self):
-        self.assertEqual(self._ctx("today")["source_period"], "today")
+    def test_periods_respect_time_windows(self):
+        import json
+        from datetime import timedelta
 
-    def test_percent_excludes_inactive_source_leads(self):
+        from django.utils import timezone
+
+        from apps.leads.models import Lead, LeadSource
+        tg = LeadSource.objects.get(slug="telegram")
+        Lead.objects.create(full_name="Now", phone="+998901234567", source=tg)
+        old = Lead.objects.create(full_name="Old", phone="+998901234568", source=tg)
+        # 8 days ago: outside today+week, inside 30+all. .update() bypasses
+        # auto_now_add so we can backdate created_at.
+        Lead.objects.filter(pk=old.pk).update(
+            created_at=timezone.now() - timedelta(days=8)
+        )
+        counts = json.loads(self._card(self._ctx(), "Telegram")["counts_json"])
+        self.assertEqual(counts["today"], 1)
+        self.assertEqual(counts["week"], 1)
+        self.assertEqual(counts["30"], 2)
+        self.assertEqual(counts["all"], 2)
+
+    def test_inactive_source_excluded_and_percent_rebased(self):
+        import json
         from apps.leads.models import Lead, LeadSource
         tg = LeadSource.objects.get(slug="telegram")
         ig = LeadSource.objects.get(slug="instagram")
@@ -200,9 +225,9 @@ class DashboardSourceStatsTests(TestCase):
         ig.save()
         Lead.objects.create(full_name="A", phone="+998901234567", source=tg)
         Lead.objects.create(full_name="B", phone="+998901234568", source=tg)
-        stats = self._ctx()["source_stats"]
-        names = [s["name"] for s in stats]
+        ctx = self._ctx()
+        names = [c["name"] for c in ctx["source_cards"]]
         self.assertNotIn("Instagram", names)  # inactive -> no card
-        tg_row = next(s for s in stats if s["name"] == "Telegram")
+        tg_card = self._card(ctx, "Telegram")
         # 2 telegram of 2 active-source leads = 100%, NOT 2/3 = 67%
-        self.assertEqual(tg_row["percent"], 100)
+        self.assertEqual(json.loads(tg_card["percents_json"])["all"], 100)
