@@ -192,6 +192,28 @@
     return false;
   };
 
+  // ---- capture ad source from the URL (hash or query) into lead forms ----
+  // Links look like /uz/#contact?source=telegram — the source lives in the
+  // hash fragment, which the server never sees. Read it here, remember it for
+  // the session, and stamp it onto every hidden source input before submit.
+  (function () {
+    function fromParams(str) {
+      try { return new URLSearchParams(str).get("source") || ""; }
+      catch (e) { return ""; }
+    }
+    var hash = window.location.hash || "";
+    var hashQuery = hash.indexOf("?") >= 0 ? hash.slice(hash.indexOf("?") + 1) : "";
+    var src = fromParams(hashQuery) || fromParams(window.location.search);
+    try {
+      if (src) sessionStorage.setItem("lead_source", src);
+      else src = sessionStorage.getItem("lead_source") || "";
+    } catch (e) {}
+    if (!src) return;
+    document.querySelectorAll('input[name="source"]').forEach(function (i) {
+      i.value = src;
+    });
+  })();
+
   // PWA install on the public site now relies on the browser's native install
   // UI (the linked web manifest) — no custom in-page prompt. The admin panel
   // keeps its own dedicated install button (see static/js/admin_pwa.js).
