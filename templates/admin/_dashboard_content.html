@@ -1,6 +1,6 @@
 {% load i18n unfold ui %}
 {# ---- KPI cards ---- #}
-<div class="grid grid-cols-2 gap-3 mb-8 sm:gap-4 lg:grid-cols-4">
+<div class="grid grid-cols-2 gap-3 mb-8 gap-4 lg:grid-cols-4">
     {% for kpi in kpis %}
         {% component "unfold/components/card.html" with class="h-full" %}
             <div class="flex items-center gap-3">
@@ -25,7 +25,7 @@
         {% component "unfold/components/card.html" with title=_('Qurilmalar') class="h-full" %}
             <div class="relative w-full" style="height:200px;"><canvas data-dash-chart data-chart="{{ device_chart }}"></canvas></div>
             {% if device_legend %}
-                <div class="mt-5 flex flex-col gap-2.5">
+                <div class="mt-5 flex flex-col gap-2">
                     {% for d in device_legend %}
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined text-2xl shrink-0" style="color:{{ d.color }}">{{ d.icon }}</span>

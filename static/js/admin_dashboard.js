@@ -146,7 +146,13 @@
       fetch(url + "?period=" + encodeURIComponent(period), {
         headers: { "X-Requested-With": "XMLHttpRequest" },
       })
-        .then(function (r) { return r.text(); })
+        .then(function (r) {
+          if (r.redirected || !r.ok) {
+            window.location.reload();
+            return Promise.reject();
+          }
+          return r.text();
+        })
         .then(function (html) {
           content.innerHTML = html;
           initCharts(content);

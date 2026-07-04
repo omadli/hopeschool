@@ -16,17 +16,6 @@ from django.utils.translation import get_language, gettext_lazy as _
 
 from .models import VisitLog
 
-# Tailwind/Unfold CSS variables understood by the chart JS colour resolver.
-_LINE_COLOR = "var(--color-primary-500)"
-_FILL_COLOR = "var(--color-primary-100)"
-_DEVICE_COLORS = [
-    "var(--color-primary-500)",
-    "var(--color-primary-300)",
-    "var(--color-primary-700)",
-    "var(--color-base-400)",
-    "var(--color-base-300)",
-]
-
 _DEVICE_LABELS = dict(VisitLog.DeviceType.choices)
 
 # Material Symbols icon per device type (shown in the doughnut legend).
@@ -52,19 +41,6 @@ def clean_period(value):
     return value if value in PERIODS else DEFAULT_PERIOD
 
 
-def period_qs(qs, period, now, today):
-    """Filter a queryset to the period's rolling window (created_at)."""
-    if period == "today":
-        return qs.filter(created_at__date=today)
-    if period == "week":
-        return qs.filter(created_at__gte=now - timedelta(days=7))
-    if period == "month":
-        return qs.filter(created_at__gte=now - timedelta(days=30))
-    if period == "year":
-        return qs.filter(created_at__gte=now - timedelta(days=365))
-    return qs  # all
-
-
 def _month_first(d):
     return d.replace(day=1)
 
@@ -79,6 +55,28 @@ def _month_range(end_first, count):
             m = 12
             y -= 1
     return list(reversed(months))
+
+
+def _period_start_date(period, today):
+    """Calendar start date matching the chart bucket windows (None = no lower
+    bound), so KPIs/tables reconcile with the chart bars."""
+    if period == "week":
+        return today - timedelta(days=6)
+    if period == "month":
+        return today - timedelta(days=29)
+    if period == "year":
+        return _month_range(_month_first(today), 12)[0]
+    return None
+
+
+def period_qs(qs, period, now, today):
+    """Filter a queryset to the period's window (aligned to the chart buckets)."""
+    if period == "today":
+        return qs.filter(created_at__date=today)
+    start = _period_start_date(period, today)
+    if start is None:
+        return qs  # all
+    return qs.filter(created_at__date__gte=start)
 
 
 def _bucket_keys(qs, period, now, today):
@@ -144,10 +142,6 @@ def _doughnut_json(labels, data, color_keys):
         "labels": [str(l) for l in labels],
         "datasets": [{"data": data, "colors": color_keys}],
     })
-
-
-def _empty_chart():
-    return json.dumps({"labels": [], "datasets": []})
 
 
 def _content_inventory():

@@ -270,6 +270,21 @@ class DashboardDataTests(TestCase):
         self.assertEqual(len(cfg["labels"]), 7)
         self.assertEqual(sum(cfg["datasets"][0]["data"]), 1)  # only the in-window visit
 
+    def test_kpi_reconciles_with_chart_sum_for_week(self):
+        import json
+        from datetime import timedelta
+
+        from django.utils import timezone
+        now = timezone.now()
+        self._visit(when=now)                       # today (in window)
+        self._visit(when=now - timedelta(days=3))   # in week window
+        self._visit(when=now - timedelta(days=10))  # outside week window
+        data = self._data("week")
+        kpi = {k["icon"]: k["value"] for k in data["kpis"]}["visibility"]
+        chart_sum = sum(json.loads(data["visits_chart"])["datasets"][0]["data"])
+        self.assertEqual(kpi, 2)          # only the two in-window visits
+        self.assertEqual(kpi, chart_sum)  # headline == sum of bars
+
     def test_source_cards_period_and_default(self):
         from apps.leads.models import Lead, LeadSource
         tg = LeadSource.objects.get(slug="telegram")
@@ -298,7 +313,7 @@ class DashboardIndexRenderTests(TestCase):
         self.assertIn('data-dash-tabs', html)          # filter bar present
         self.assertIn('id="dashboard-content"', html)   # swappable wrapper
         self.assertIn('data-dash-chart', html)          # our own chart canvas
-        self.assertIn('data-period="week"', html)
+        self.assertIn('data-active-period="week"', html)
 
 
 @override_settings(STORAGES=_STATIC_STORAGE)
