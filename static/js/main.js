@@ -202,7 +202,14 @@
       catch (e) { return ""; }
     }
     var hash = window.location.hash || "";
-    var hashQuery = hash.indexOf("?") >= 0 ? hash.slice(hash.indexOf("?") + 1) : "";
+    var qIndex = hash.indexOf("?");
+    // "#contact?source=telegram" is not a valid element id, so the browser
+    // won't scroll to it. Scroll to the base anchor ("#contact") ourselves.
+    if (qIndex > 1) {
+      var anchor = document.getElementById(hash.slice(1, qIndex));
+      if (anchor) { setTimeout(function () { anchor.scrollIntoView(); }, 0); }
+    }
+    var hashQuery = qIndex >= 0 ? hash.slice(qIndex + 1) : "";
     var src = fromParams(hashQuery) || fromParams(window.location.search);
     try {
       if (src) sessionStorage.setItem("lead_source", src);
