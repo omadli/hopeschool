@@ -15,7 +15,7 @@ from django.urls import reverse
 
 from apps.leads.badges import new_leads_count
 from apps.leads.forms import LeadForm
-from apps.leads.models import Lead
+from apps.leads.models import Lead, LeadSource
 from apps.leads.notifications import _resolve_config, notify_new_lead
 from apps.leads.views import _client_ip
 from apps.siteconfig.models import SiteConfig, TelegramRecipient
@@ -64,6 +64,45 @@ class LeadModelTests(TestCase):
         self.assertIn("contacted", [c.value for c in Lead.Status])
         self.assertIn("enrolled", [c.value for c in Lead.Status])
         self.assertIn("rejected", [c.value for c in Lead.Status])
+
+
+class LeadSourceModelTests(TestCase):
+    """LeadSource resolve/default/build_link + built-ins from migration."""
+
+    def test_builtins_created_by_migration(self):
+        self.assertEqual(
+            LeadSource.objects.filter(is_protected=True).count(), 4
+        )
+        self.assertTrue(
+            LeadSource.objects.filter(slug="site", is_protected=True).exists()
+        )
+
+    def test_resolve_known_active_slug(self):
+        self.assertEqual(LeadSource.resolve("telegram").slug, "telegram")
+
+    def test_resolve_unknown_slug_returns_site(self):
+        self.assertEqual(LeadSource.resolve("bogus").slug, "site")
+
+    def test_resolve_empty_returns_site(self):
+        self.assertEqual(LeadSource.resolve("").slug, "site")
+        self.assertEqual(LeadSource.resolve(None).slug, "site")
+
+    def test_resolve_inactive_slug_returns_site(self):
+        LeadSource.objects.filter(slug="telegram").update(is_active=False)
+        self.assertEqual(LeadSource.resolve("telegram").slug, "site")
+
+    def test_brand_key_maps_site_to_website(self):
+        self.assertEqual(LeadSource.objects.get(slug="site").brand_key, "website")
+        self.assertEqual(
+            LeadSource.objects.get(slug="telegram").brand_key, "telegram"
+        )
+
+    def test_build_link_uses_lang_and_slug(self):
+        src = LeadSource.resolve("instagram")
+        self.assertEqual(
+            src.build_link("hopeschool.uz", "ru"),
+            "https://hopeschool.uz/ru/#contact?source=instagram",
+        )
 
 
 # ---------------------------------------------------------------------------
