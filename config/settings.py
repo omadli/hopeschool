@@ -403,6 +403,7 @@ UNFOLD = {
     ],
     "SCRIPTS": [
         lambda request: static("js/admin_sidebar.js"),
+        lambda request: static("js/admin_dashboard.js"),
     ],
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": True,
