@@ -299,3 +299,32 @@ class DashboardIndexRenderTests(TestCase):
         self.assertIn('id="dashboard-content"', html)   # swappable wrapper
         self.assertIn('data-dash-chart', html)          # our own chart canvas
         self.assertIn('data-period="week"', html)
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class DashboardDataViewTests(TestCase):
+    """The AJAX endpoint is staff-only and returns the content partial."""
+
+    def _url(self):
+        return reverse("admin_dashboard_data")
+
+    def test_anonymous_is_redirected(self):
+        resp = self.client.get(self._url())
+        self.assertIn(resp.status_code, (302, 403))
+
+    def test_staff_gets_partial_html(self):
+        admin = User.objects.create_superuser(
+            username="ajax_admin", password="pass12345", email="a@test.com")
+        self.client.force_login(admin)
+        resp = self.client.get(self._url() + "?period=week")
+        self.assertEqual(resp.status_code, 200)
+        html = resp.content.decode()
+        self.assertIn("data-dash-chart", html)
+        self.assertNotIn('data-dash-tabs', html)  # partial only, no filter bar
+
+    def test_invalid_period_defaults_to_month(self):
+        admin = User.objects.create_superuser(
+            username="ajax_admin2", password="pass12345", email="a2@test.com")
+        self.client.force_login(admin)
+        resp = self.client.get(self._url() + "?period=bogus")
+        self.assertEqual(resp.status_code, 200)

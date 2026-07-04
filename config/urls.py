@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 
+from apps.analytics.views import dashboard_data
 from apps.common.sitemaps import sitemaps
 from apps.common.views import admin_web_manifest, robots_txt, web_manifest
 from apps.leads.views import lead_create
@@ -14,6 +15,9 @@ urlpatterns = [
     # (and listed before the admin include so it is not swallowed by it) so the
     # real admin path it reveals stays as hidden as the admin itself.
     path(settings.ADMIN_URL + "app.webmanifest", admin_web_manifest, name="admin_web_manifest"),
+    # Global admin-dashboard AJAX endpoint — same reasoning: must precede the
+    # admin.site.urls catch-all or it would 404 inside the admin's own resolver.
+    path(settings.ADMIN_URL + "dashboard-data/", dashboard_data, name="admin_dashboard_data"),
     path(settings.ADMIN_URL, admin.site.urls),
     path("i18n/", include("django.conf.urls.i18n")),  # set_language (outside i18n_patterns)
     path("ckeditor5/", include("django_ckeditor_5.urls")),
