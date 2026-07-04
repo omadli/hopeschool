@@ -76,7 +76,7 @@
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {% for s in source_cards %}
                     <div class="flex items-center gap-5 rounded-xl border border-base-200 p-5 dark:border-base-800" data-source-card data-counts='{{ s.counts_json }}' data-percents='{{ s.percents_json }}'>
-                        <span class="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-base-100 dark:bg-base-800" style="{% if s.color %}color:{{ s.color }}{% endif %}">
+                        <span class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-base-100 dark:bg-base-800" style="{% if s.color %}color:{{ s.color }}{% endif %}">
                             {% if s.image %}<img src="{{ s.image }}" alt="{{ s.name }}" class="h-full w-full rounded-2xl object-cover">
                             {% elif s.brand %}{% social_icon s.brand size=48 %}
                             {% else %}<span class="material-symbols-outlined" style="font-size:48px;line-height:1;">{{ s.icon }}</span>{% endif %}
@@ -86,8 +86,8 @@
                                 <span class="truncate font-semibold text-base text-font-important-light dark:text-font-important-dark">{{ s.name }}</span>
                                 <span class="text-2xl font-bold text-primary-600 dark:text-primary-400" data-count>{{ s.count }}</span>
                             </div>
-                            <div class="mt-2.5 h-2 overflow-hidden rounded-full bg-base-100 dark:bg-base-800">
-                                <div class="h-full rounded-full bg-primary-500 transition-[width] duration-500" data-bar style="width:{{ s.percent }}%"></div>
+                            <div class="mt-2 h-2 overflow-hidden rounded-full bg-base-100 dark:bg-base-800">
+                                <div class="h-full rounded-full bg-primary-500 transition-all" data-bar style="width:{{ s.percent }}%"></div>
                             </div>
                             <div class="mt-2 flex items-center justify-between gap-2">
                                 <span class="text-xs text-font-subtle-light dark:text-font-subtle-dark" data-percent>{{ s.percent }}%</span>
