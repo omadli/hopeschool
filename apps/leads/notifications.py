@@ -25,6 +25,7 @@ def _build_message(lead):
     """Render a tidy HTML message body (parse_mode=HTML)."""
     course = html.escape(str(lead.course)) if lead.course else "—"
     message = html.escape(lead.message) if lead.message else "—"
+    source = html.escape(lead.source.name) if lead.source else "Sayt"
     created = timezone.localtime(lead.created_at).strftime("%d.%m.%Y %H:%M")
     lines = [
         "<b>🆕 Yangi ariza</b>",
@@ -33,6 +34,7 @@ def _build_message(lead):
         f"📞 <b>Telefon:</b> {html.escape(lead.phone)}",
         f"📚 <b>Kurs:</b> {course}",
         f"💬 <b>Izoh:</b> {message}",
+        f"🔗 <b>Manba:</b> {source}",
         f"🕒 <b>Vaqt:</b> {created}",
     ]
     return "\n".join(lines)

@@ -601,3 +601,25 @@ class NotifyNewLeadTests(TestCase):
         with mock.patch("apps.leads.notifications.requests.post") as post:
             notify_new_lead(self.lead)
         post.assert_not_called()
+
+
+class BuildMessageSourceTests(TestCase):
+    """The Telegram message body names the lead's source."""
+
+    def test_message_includes_source_name(self):
+        from apps.leads.models import Lead, LeadSource
+        from apps.leads.notifications import _build_message
+        tg = LeadSource.objects.get(slug="telegram")
+        lead = Lead.objects.create(
+            full_name="A", phone="+998901234567", source=tg,
+        )
+        msg = _build_message(lead)
+        self.assertIn("Manba", msg)
+        self.assertIn("Telegram", msg)
+
+    def test_message_source_falls_back_when_missing(self):
+        from apps.leads.models import Lead
+        from apps.leads.notifications import _build_message
+        lead = Lead.objects.create(full_name="A", phone="+998901234567")
+        lead.source = None  # force the fallback branch
+        self.assertIn("Sayt", _build_message(lead))
