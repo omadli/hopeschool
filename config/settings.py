@@ -424,6 +424,13 @@ UNFOLD = {
                 ],
             },
             {
+                "title": _("CRM"),
+                "items": [
+                    {"title": _("Manbalar"), "icon": "hub",
+                     "link": reverse_lazy("admin:leads_leadsource_changelist")},
+                ],
+            },
+            {
                 "title": _("Sayt kontenti"),
                 "collapsible": True,
                 "items": [

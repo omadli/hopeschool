@@ -411,6 +411,43 @@ class LeadAdminTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+@override_settings(STORAGES=_STATIC_STORAGE)
+class LeadSourceAdminTests(TestCase):
+    """CRM sources changelist + protection of built-ins."""
+
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username="admin_src", password="pass12345",
+            email="admin_src@test.com",
+        )
+        self.client.force_login(self.superuser)
+
+    def test_leadsource_changelist_returns_200(self):
+        url = reverse("admin:leads_leadsource_changelist")
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_protected_source_cannot_be_deleted(self):
+        from django.contrib.admin.sites import AdminSite
+        from apps.leads.admin import LeadSourceAdmin
+        from apps.leads.models import LeadSource
+        admin_obj = LeadSourceAdmin(LeadSource, AdminSite())
+        request = RequestFactory().get("/")
+        request.user = self.superuser
+        site = LeadSource.objects.get(slug="site")
+        self.assertFalse(admin_obj.has_delete_permission(request, site))
+
+    def test_custom_source_can_be_deleted(self):
+        from django.contrib.admin.sites import AdminSite
+        from apps.leads.admin import LeadSourceAdmin
+        from apps.leads.models import LeadSource
+        admin_obj = LeadSourceAdmin(LeadSource, AdminSite())
+        request = RequestFactory().get("/")
+        request.user = self.superuser
+        custom = LeadSource.objects.create(name="Promo", slug="promo")
+        self.assertTrue(admin_obj.has_delete_permission(request, custom))
+
+
 # ---------------------------------------------------------------------------
 # CSRF — the public form must keep working on a long-idle page (stale token)
 # ---------------------------------------------------------------------------
