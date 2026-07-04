@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import RequestFactory, TestCase, override_settings
+from django.urls import reverse
 
 from apps.analytics import geoip
 from apps.analytics.dashboard import dashboard_callback
@@ -161,40 +162,19 @@ class DashboardCallbackTests(TestCase):
 
 
 class DashboardSourceCardsTests(TestCase):
-    """dashboard_callback builds per-source cards with every period precomputed
-    (tabs switch client-side, so no ``?source_period=`` reload param)."""
+    """Per-source cards are now driven entirely by the global period filter
+    (``build_dashboard_data``) — no more independent CRM tabs/``source_period``/
+    ``counts_json``/``percents_json`` (removed with the global filter; see
+    ``DashboardIndexRenderTests`` for the filter-bar rendering)."""
 
-    def _ctx(self):
-        return dashboard_callback(RequestFactory().get("/admin/"), {})
+    def _data(self, period="all"):
+        from apps.analytics.dashboard import build_dashboard_data
+        return build_dashboard_data(RequestFactory().get("/admin/"), period)
 
-    def _card(self, ctx, name):
-        return next(c for c in ctx["source_cards"] if c["name"] == name)
-
-    def test_default_period_is_all(self):
-        self.assertEqual(self._ctx()["source_period"], "all")
-
-    def test_card_counts_all_period(self):
-        import json
-        from apps.leads.models import Lead, LeadSource
-        tg = LeadSource.objects.get(slug="telegram")
-        Lead.objects.create(full_name="A", phone="+998901234567", source=tg)
-        Lead.objects.create(full_name="B", phone="+998901234568", source=tg)
-        card = self._card(self._ctx(), "Telegram")
-        self.assertEqual(json.loads(card["counts_json"])["all"], 2)
-        self.assertEqual(card["count"], 2)  # initial (no-JS) render value = all
-
-    def test_card_link_and_percent(self):
-        import json
-        from apps.leads.models import Lead, LeadSource
-        tg = LeadSource.objects.get(slug="telegram")
-        Lead.objects.create(full_name="A", phone="+998901234567", source=tg)
-        card = self._card(self._ctx(), "Telegram")
-        self.assertIn("source=telegram", card["link"])
-        self.assertEqual(json.loads(card["percents_json"])["all"], 100)
-        self.assertEqual(card["percent"], 100)
+    def _card(self, data, name):
+        return next(c for c in data["source_cards"] if c["name"] == name)
 
     def test_periods_respect_time_windows(self):
-        import json
         from datetime import timedelta
 
         from django.utils import timezone
@@ -203,19 +183,17 @@ class DashboardSourceCardsTests(TestCase):
         tg = LeadSource.objects.get(slug="telegram")
         Lead.objects.create(full_name="Now", phone="+998901234567", source=tg)
         old = Lead.objects.create(full_name="Old", phone="+998901234568", source=tg)
-        # 8 days ago: outside today+week, inside 30+all. .update() bypasses
-        # auto_now_add so we can backdate created_at.
+        # 8 days ago: outside today+week, inside month(30d)+all. .update()
+        # bypasses auto_now_add so we can backdate created_at.
         Lead.objects.filter(pk=old.pk).update(
             created_at=timezone.now() - timedelta(days=8)
         )
-        counts = json.loads(self._card(self._ctx(), "Telegram")["counts_json"])
-        self.assertEqual(counts["today"], 1)
-        self.assertEqual(counts["week"], 1)
-        self.assertEqual(counts["30"], 2)
-        self.assertEqual(counts["all"], 2)
+        self.assertEqual(self._card(self._data("today"), "Telegram")["count"], 1)
+        self.assertEqual(self._card(self._data("week"), "Telegram")["count"], 1)
+        self.assertEqual(self._card(self._data("month"), "Telegram")["count"], 2)
+        self.assertEqual(self._card(self._data("all"), "Telegram")["count"], 2)
 
     def test_inactive_source_excluded_and_percent_rebased(self):
-        import json
         from apps.leads.models import Lead, LeadSource
         tg = LeadSource.objects.get(slug="telegram")
         ig = LeadSource.objects.get(slug="instagram")
@@ -225,12 +203,11 @@ class DashboardSourceCardsTests(TestCase):
         ig.save()
         Lead.objects.create(full_name="A", phone="+998901234567", source=tg)
         Lead.objects.create(full_name="B", phone="+998901234568", source=tg)
-        ctx = self._ctx()
-        names = [c["name"] for c in ctx["source_cards"]]
+        data = self._data("all")
+        names = [c["name"] for c in data["source_cards"]]
         self.assertNotIn("Instagram", names)  # inactive -> no card
-        tg_card = self._card(ctx, "Telegram")
         # 2 telegram of 2 active-source leads = 100%, NOT 2/3 = 67%
-        self.assertEqual(json.loads(tg_card["percents_json"])["all"], 100)
+        self.assertEqual(self._card(data, "Telegram")["percent"], 100)
 
 
 class DashboardDataTests(TestCase):
@@ -303,3 +280,22 @@ class DashboardDataTests(TestCase):
         self.assertEqual(tg_card["count"], 1)
         self.assertEqual(tg_card["percent"], 100)
         self.assertIn("source=telegram", tg_card["link"])
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class DashboardIndexRenderTests(TestCase):
+    """The admin index renders the new filter bar + content for a period."""
+
+    def setUp(self):
+        self.admin = User.objects.create_superuser(
+            username="dash_admin", password="pass12345", email="d@test.com")
+        self.client.force_login(self.admin)
+
+    def test_index_has_filter_and_content(self):
+        resp = self.client.get(reverse("admin:index") + "?period=week", follow=True)
+        self.assertEqual(resp.status_code, 200)
+        html = resp.content.decode()
+        self.assertIn('data-dash-tabs', html)          # filter bar present
+        self.assertIn('id="dashboard-content"', html)   # swappable wrapper
+        self.assertIn('data-dash-chart', html)          # our own chart canvas
+        self.assertIn('data-period="week"', html)

@@ -1,0 +1,103 @@
+{% load i18n unfold ui %}
+{# ---- KPI cards ---- #}
+<div class="grid grid-cols-2 gap-3 mb-8 sm:gap-4 lg:grid-cols-4">
+    {% for kpi in kpis %}
+        {% component "unfold/components/card.html" with class="h-full" %}
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary-500 text-3xl sm:text-4xl shrink-0">{{ kpi.icon }}</span>
+                <div class="flex flex-col min-w-0">
+                    <span class="text-font-subtle-light dark:text-font-subtle-dark text-xs sm:text-sm">{{ kpi.title }}</span>
+                    {% component "unfold/components/title.html" %}{{ kpi.value }}{% endcomponent %}
+                </div>
+            </div>
+        {% endcomponent %}
+    {% endfor %}
+</div>
+
+{# ---- Charts: visits (line) + devices (doughnut) ---- #}
+<div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-3">
+    <div class="lg:col-span-2">
+        {% component "unfold/components/card.html" with title=_('Tashriflar dinamikasi') class="h-full" %}
+            <div class="relative w-full" style="height:300px;"><canvas data-dash-chart data-chart="{{ visits_chart }}"></canvas></div>
+        {% endcomponent %}
+    </div>
+    <div>
+        {% component "unfold/components/card.html" with title=_('Qurilmalar') class="h-full" %}
+            <div class="relative w-full" style="height:200px;"><canvas data-dash-chart data-chart="{{ device_chart }}"></canvas></div>
+            {% if device_legend %}
+                <div class="mt-5 flex flex-col gap-2.5">
+                    {% for d in device_legend %}
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl shrink-0" style="color:{{ d.color }}">{{ d.icon }}</span>
+                            <span class="text-sm text-font-default-light dark:text-font-default-dark truncate">{{ d.label }}</span>
+                            <span class="ml-auto text-sm font-semibold text-font-important-light dark:text-font-important-dark">{{ d.count }}</span>
+                            <span class="w-10 text-right text-xs text-font-subtle-light dark:text-font-subtle-dark">{{ d.percent }}%</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endcomponent %}
+    </div>
+</div>
+
+{# ---- Leads chart + status ---- #}
+<div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-3">
+    <div class="lg:col-span-2">
+        {% component "unfold/components/card.html" with title=_('Arizalar dinamikasi') class="h-full" %}
+            <div class="relative w-full" style="height:300px;"><canvas data-dash-chart data-chart="{{ leads_chart }}"></canvas></div>
+        {% endcomponent %}
+    </div>
+    <div>
+        {% component "unfold/components/card.html" with title=_('Arizalar holati boʻyicha') class="h-full" %}
+            {% component "unfold/components/table.html" with table=leads_by_status %}{% endcomponent %}
+        {% endcomponent %}
+    </div>
+</div>
+
+{# ---- CRM source cards (driven by the global filter) ---- #}
+<div class="mb-8">
+    {% component "unfold/components/card.html" with title=_('Manbalar boʻyicha lidlar (CRM)') class="h-full" %}
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {% for s in source_cards %}
+                <div class="flex items-center gap-5 rounded-xl border border-base-200 p-5 dark:border-base-800">
+                    <span class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-base-100 dark:bg-base-800" style="{% if s.color %}color:{{ s.color }}{% endif %}">
+                        {% if s.image %}<img src="{{ s.image }}" alt="{{ s.name }}" class="h-full w-full rounded-2xl object-cover">
+                        {% elif s.brand %}{% social_icon s.brand size=48 %}
+                        {% else %}<span class="material-symbols-outlined" style="font-size:48px;line-height:1;">{{ s.icon }}</span>{% endif %}
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="truncate font-semibold text-base text-font-important-light dark:text-font-important-dark">{{ s.name }}</span>
+                            <span class="text-2xl font-bold text-primary-600 dark:text-primary-400">{{ s.count }}</span>
+                        </div>
+                        <div class="mt-2 h-2 overflow-hidden rounded-full bg-base-100 dark:bg-base-800">
+                            <div class="h-full rounded-full bg-primary-500 transition-all" style="width:{{ s.percent }}%"></div>
+                        </div>
+                        <div class="mt-2 flex items-center justify-between gap-2">
+                            <span class="text-xs text-font-subtle-light dark:text-font-subtle-dark">{{ s.percent }}%</span>
+                            <button type="button" data-copy-link="{{ s.link }}" class="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                                <span class="material-symbols-outlined text-base">content_copy</span>
+                                <span data-copy-label>{% translate "Havola" %}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-sm text-font-subtle-light dark:text-font-subtle-dark">{% translate "Hali manba yoʻq." %}</p>
+            {% endfor %}
+        </div>
+    {% endcomponent %}
+</div>
+
+{# ---- Geo + top tables ---- #}
+<div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    {% component "unfold/components/card.html" with title=_('Davlatlar boʻyicha tashriflar') class="h-full" %}
+        {% component "unfold/components/table.html" with table=top_countries %}{% endcomponent %}
+    {% endcomponent %}
+    {% component "unfold/components/card.html" with title=_('Top sahifalar') class="h-full" %}
+        {% component "unfold/components/table.html" with table=top_paths %}{% endcomponent %}
+    {% endcomponent %}
+    {% component "unfold/components/card.html" with title=_('Top manbalar') class="h-full" %}
+        {% component "unfold/components/table.html" with table=top_referrers %}{% endcomponent %}
+    {% endcomponent %}
+</div>
