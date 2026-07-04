@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from .forms import LeadForm
+from .models import LeadSource
 
 # IP rate-limit: max submissions per window (anti-flood for Telegram).
 RATE_LIMIT_MAX = 5
@@ -31,8 +32,8 @@ def _client_ip(request):
     return request.META.get("REMOTE_ADDR", "") or "unknown"
 
 
-def _capture_source(request):
-    """Derive a lead source string from utm params or the referrer."""
+def _capture_referrer(request):
+    """Derive a referrer string from utm params or the HTTP referer."""
     utm = request.POST.get("utm_source") or request.GET.get("utm_source")
     if utm:
         return utm[:255]
@@ -75,7 +76,8 @@ def lead_create(request):
         )
 
     lead = form.save(commit=False)
-    lead.source = _capture_source(request)
+    lead.referrer = _capture_referrer(request)
+    lead.source = LeadSource.resolve(request.POST.get("source"))
     lead.save()
 
     # Increment the rate-limit counter only on a successful save.

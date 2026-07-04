@@ -252,12 +252,27 @@ class LeadCreateViewTests(TestCase):
         response = self.client.get(LEAD_URL)
         self.assertEqual(response.status_code, 405)
 
-    # --- UTM source captured ---
-    def test_utm_source_captured(self):
+    # --- UTM/referrer captured on `referrer` ---
+    def test_utm_source_captured_as_referrer(self):
         data = {**self._valid_data, "utm_source": "google"}
         self._post(data=data)
         lead = Lead.objects.get()
-        self.assertEqual(lead.source, "google")
+        self.assertEqual(lead.referrer, "google")
+
+    # --- source slug resolves to the LeadSource FK ---
+    def test_source_slug_resolved_to_fk(self):
+        data = {**self._valid_data, "source": "telegram"}
+        self._post(data=data)
+        self.assertEqual(Lead.objects.get().source.slug, "telegram")
+
+    def test_unknown_source_defaults_to_site(self):
+        data = {**self._valid_data, "source": "bogus-xyz"}
+        self._post(data=data)
+        self.assertEqual(Lead.objects.get().source.slug, "site")
+
+    def test_missing_source_defaults_to_site(self):
+        self._post()
+        self.assertEqual(Lead.objects.get().source.slug, "site")
 
     # --- Rate limiting ---
     def test_rate_limit_allows_first_five_requests(self):
