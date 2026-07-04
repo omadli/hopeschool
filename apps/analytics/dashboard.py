@@ -219,6 +219,48 @@ def _build_context(request, context):
                  for label, mgr, flt in inventory],
     }
 
+    # ---- CRM: leads per source (period-filtered) --------------------------
+    from django.utils.translation import get_language
+
+    from apps.leads.models import LeadSource
+    from apps.siteconfig.models import SiteConfig
+
+    period = request.GET.get("source_period", "all")
+    if period == "today":
+        src_leads = leads.filter(created_at__date=today)
+    elif period == "30":
+        src_leads = leads.filter(created_at__gte=last_30)
+    else:
+        period = "all"
+        src_leads = leads
+    counts = {
+        row["source"]: row["total"]
+        for row in src_leads.values("source").annotate(total=Count("id"))
+    }
+    total_src = sum(counts.values()) or 1
+    try:
+        domain = SiteConfig.get_solo().site_domain or request.get_host()
+    except Exception:  # pragma: no cover - defensive
+        domain = request.get_host()
+    lang = get_language() or "uz"
+
+    source_stats = []
+    for s in LeadSource.objects.filter(is_active=True):
+        c = counts.get(s.id, 0)
+        source_stats.append({
+            "name": s.name,
+            "count": c,
+            "percent": round(c * 100 / total_src),
+            "link": s.build_link(domain, lang),
+            "image": s.image.url if s.image else "",
+            "brand": s.brand_key,
+            "icon": s.icon or "hub",
+            "color": s.color or "",
+        })
+    source_stats.sort(key=lambda x: x["count"], reverse=True)
+    context["source_stats"] = source_stats
+    context["source_period"] = period
+
     return context
 
 
@@ -237,4 +279,6 @@ def dashboard_callback(request, context):
         context.setdefault("leads_by_status", {"headers": [], "rows": []})
         context.setdefault("top_countries", {"headers": [], "rows": []})
         context.setdefault("content_inventory", {"headers": [], "rows": []})
+        context.setdefault("source_stats", [])
+        context.setdefault("source_period", "all")
         return context

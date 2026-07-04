@@ -158,3 +158,34 @@ class DashboardCallbackTests(TestCase):
         ctx = dashboard_callback(RequestFactory().get("/admin/"), {})
         countries = [row[0] for row in ctx["top_countries"]["rows"]]
         self.assertIn("Uzbekistan", countries)
+
+
+class DashboardSourceStatsTests(TestCase):
+    """dashboard_callback builds per-source lead stats with a period filter."""
+
+    def _ctx(self, period=None):
+        from django.test import RequestFactory
+        from apps.analytics.dashboard import dashboard_callback
+        url = "/admin/" if not period else f"/admin/?source_period={period}"
+        return dashboard_callback(RequestFactory().get(url), {})
+
+    def test_source_stats_counts_leads(self):
+        from apps.leads.models import Lead, LeadSource
+        tg = LeadSource.objects.get(slug="telegram")
+        Lead.objects.create(full_name="A", phone="+998901234567", source=tg)
+        Lead.objects.create(full_name="B", phone="+998901234568", source=tg)
+        ctx = self._ctx()
+        by_name = {s["name"]: s["count"] for s in ctx["source_stats"]}
+        self.assertEqual(by_name["Telegram"], 2)
+        self.assertEqual(ctx["source_period"], "all")
+
+    def test_source_stats_link_and_percent(self):
+        from apps.leads.models import Lead, LeadSource
+        tg = LeadSource.objects.get(slug="telegram")
+        Lead.objects.create(full_name="A", phone="+998901234567", source=tg)
+        tg_row = next(s for s in self._ctx()["source_stats"] if s["name"] == "Telegram")
+        self.assertIn("source=telegram", tg_row["link"])
+        self.assertEqual(tg_row["percent"], 100)
+
+    def test_source_period_today_is_recorded(self):
+        self.assertEqual(self._ctx("today")["source_period"], "today")
