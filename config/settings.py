@@ -371,12 +371,31 @@ from django.templatetags.static import static  # noqa: E402
 from django.urls import reverse_lazy  # noqa: E402
 from django.utils.translation import gettext_lazy as _  # noqa: E402
 
+def _admin_favicon_href(request):
+    """Admin browser-tab icon href: the uploaded site favicon if one is set,
+    otherwise the bundled brand logo. Mirrors the public <link rel="icon">
+    (see templates/base.html). Defensive so a missing table (e.g. during an
+    early migration) degrades to the static logo instead of erroring."""
+    try:
+        from apps.siteconfig.models import SiteConfig
+        favicon = SiteConfig.get_solo().favicon
+        if favicon:
+            return favicon.url
+    except Exception:  # pragma: no cover - defensive
+        pass
+    return static("img/logo.png")
+
+
 UNFOLD = {
     "SITE_TITLE": "Hope School",
     "SITE_HEADER": "Hope School",
     "SITE_SUBHEADER": _("Boshqaruv paneli"),
     "DASHBOARD_CALLBACK": "apps.analytics.dashboard.dashboard_callback",
     "SITE_SYMBOL": "school",
+    # Admin browser-tab favicon (Unfold renders these in the admin <head>).
+    "SITE_FAVICONS": [
+        {"rel": "icon", "type": "image/png", "href": _admin_favicon_href},
+    ],
     "SITE_URL": "/",  # "Saytni koʻrish" tugmasi
     # Qo'shimcha admin CSS (CKEditor tungi rejim tuzatmasi + UI tweaks)
     "STYLES": [
