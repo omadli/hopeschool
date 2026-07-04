@@ -114,11 +114,17 @@ def _series(qs, period, now, today):
                   .annotate(b=TruncHour("created_at")).values("b").annotate(t=Count("id")))
         counts = {timezone.localtime(r["b"]).hour: r["t"] for r in rows}
         return labels, [counts.get(h, 0) for h, _l in keys_labels]
+    if not keys_labels:
+        return labels, []
     if gran == "day":
-        rows = qs.annotate(b=TruncDate("created_at")).values("b").annotate(t=Count("id"))
+        first = keys_labels[0][0]
+        rows = (qs.filter(created_at__date__gte=first)
+                  .annotate(b=TruncDate("created_at")).values("b").annotate(t=Count("id")))
         counts = {r["b"]: r["t"] for r in rows}
         return labels, [counts.get(d, 0) for d, _l in keys_labels]
-    rows = qs.annotate(b=TruncMonth("created_at")).values("b").annotate(t=Count("id"))
+    first = keys_labels[0][0]
+    rows = (qs.filter(created_at__date__gte=first)
+              .annotate(b=TruncMonth("created_at")).values("b").annotate(t=Count("id")))
     counts = {timezone.localtime(r["b"]).date().replace(day=1): r["t"] for r in rows}
     return labels, [counts.get(m, 0) for m, _l in keys_labels]
 
@@ -487,8 +493,9 @@ def build_dashboard_data(request, period):
         } for s in active]
     except Exception:  # pragma: no cover - defensive (unmigrated tables)
         data.setdefault("kpis", [])
-        for k in ("visits_chart", "leads_chart", "device_chart"):
+        for k in ("visits_chart", "leads_chart"):
             data.setdefault(k, json.dumps({"type": "line", "labels": [], "datasets": []}))
+        data.setdefault("device_chart", json.dumps({"type": "doughnut", "labels": [], "datasets": []}))
         data.setdefault("device_legend", [])
         for k in ("top_paths", "top_referrers", "top_countries", "leads_by_status"):
             data.setdefault(k, {"headers": [], "rows": []})

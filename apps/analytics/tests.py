@@ -282,6 +282,17 @@ class DashboardDataTests(TestCase):
         kpi = {k["icon"]: k["value"] for k in self._data("month")["kpis"]}
         self.assertEqual(kpi["visibility"], 1)      # Tashriflar (davr) KPI
 
+    def test_week_series_excludes_out_of_window_visits(self):
+        import json
+        from django.utils import timezone
+        from datetime import timedelta
+        now = timezone.now()
+        self._visit(when=now)                        # in window
+        self._visit(when=now - timedelta(days=20))   # older than 7 days
+        cfg = json.loads(self._data("week")["visits_chart"])
+        self.assertEqual(len(cfg["labels"]), 7)
+        self.assertEqual(sum(cfg["datasets"][0]["data"]), 1)  # only the in-window visit
+
     def test_source_cards_period_and_default(self):
         from apps.leads.models import Lead, LeadSource
         tg = LeadSource.objects.get(slug="telegram")
