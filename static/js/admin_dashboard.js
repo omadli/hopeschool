@@ -4,12 +4,28 @@
 (function () {
   "use strict";
 
+  function rgba(r, g, b, alpha) {
+    var t = r + "," + g + "," + b;
+    return alpha != null ? "rgba(" + t + "," + alpha + ")" : "rgb(" + t + ")";
+  }
+
+  // Resolve a chart colour. Accepts a literal hex ("#2c6bd4") or an Unfold CSS
+  // var key ("primary-500"). Unfold exposes our primary palette as "R G B"
+  // triplets but base-* as oklch(...) — so we only rgb()-wrap plain triplets,
+  // pass full colour functions through verbatim, and fall back to brand blue.
   function cssColor(key, alpha) {
+    if (key && key.charAt(0) === "#") {
+      var h = key.slice(1);
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      return rgba(parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16),
+                  parseInt(h.slice(4, 6), 16), alpha);
+    }
     var v = getComputedStyle(document.documentElement)
       .getPropertyValue("--color-" + key).trim();
-    if (!v) v = "44 107 212";
-    var triplet = v.split(/\s+/).join(",");
-    return alpha != null ? "rgba(" + triplet + "," + alpha + ")" : "rgb(" + triplet + ")";
+    var m = v.match(/^(\d+)\s+(\d+)\s+(\d+)$/);
+    if (m) return rgba(m[1], m[2], m[3], alpha);
+    if (v && alpha == null) return v;       // full colour (oklch/hex) verbatim
+    return rgba(44, 107, 212, alpha);       // brand-blue fallback
   }
 
   // Draws each point's value above it on line charts; thins labels when dense.
@@ -22,11 +38,12 @@
         var meta = chart.getDatasetMeta(di);
         var n = meta.data.length;
         var step = n > 16 ? Math.ceil(n / 12) : 1;
+        var labelColor = ds.borderColor || cssColor("primary-600");
         meta.data.forEach(function (pt, i) {
           if (i % step !== 0 && i !== n - 1) return;
           ctx.save();
           ctx.font = "600 11px Inter, sans-serif";
-          ctx.fillStyle = cssColor("primary-600");
+          ctx.fillStyle = labelColor;
           ctx.textAlign = "center";
           ctx.fillText(String(ds.data[i]), pt.x, pt.y - 8);
           ctx.restore();
@@ -75,7 +92,7 @@
         layout: { padding: { top: 18 } },
         plugins: { legend: { display: false } },
         scales: {
-          y: { beginAtZero: true, grid: { color: cssColor("base-200", 0.6) } },
+          y: { beginAtZero: true, grid: { color: "rgba(100,116,139,0.18)" } },
           x: { grid: { display: false } },
         },
       },

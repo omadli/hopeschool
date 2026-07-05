@@ -31,9 +31,15 @@ _DEVICE_ICONS = {
 PERIODS = ("today", "week", "month", "year", "all")
 DEFAULT_PERIOD = "month"
 
-# Doughnut/legend colours as Unfold CSS-variable *keys* (resolved to rgb in JS
-# for the canvas; the legend HTML wraps each in var(--color-<key>)).
-_DEVICE_COLOR_KEYS = ["primary-500", "primary-300", "primary-700", "base-400", "base-300"]
+# Doughnut/legend colours as literal brand hexes (blue + red logo palette, with
+# supporting tones). Used verbatim by the canvas AND the legend swatches. NOT
+# Unfold var keys: Unfold's base-* vars are oklch(), which the canvas can't take
+# through our rgb() shim and render black.
+_DEVICE_PALETTE = ["#2c6bd4", "#da2128", "#84acf7", "#f59e0b", "#64748b"]
+
+# Line colours (visits = brand blue, leads = brand red).
+_BLUE = "#2c6bd4"
+_RED = "#da2128"
 
 
 def clean_period(value):
@@ -127,11 +133,11 @@ def _series(qs, period, now, today):
     return labels, [counts.get(m, 0) for m, _l in keys_labels]
 
 
-def _line_json(label, labels, data):
+def _line_json(label, labels, data, line=_BLUE, fill=_BLUE):
     return json.dumps({
         "type": "line",
         "labels": labels,
-        "datasets": [{"label": str(label), "data": data, "line": "primary-500", "fill": "primary-100"}],
+        "datasets": [{"label": str(label), "data": data, "line": line, "fill": fill}],
         "showLabels": True,
     })
 
@@ -213,18 +219,19 @@ def build_dashboard_data(request, period):
 
         # Line charts (series applies its own bucket window)
         data["visits_chart"] = _line_json(_("Tashriflar"), *_series(visits, period, now, today))
-        data["leads_chart"] = _line_json(_("Arizalar"), *_series(leads, period, now, today))
+        data["leads_chart"] = _line_json(_("Arizalar"), *_series(leads, period, now, today),
+                                         line=_RED, fill=_RED)
 
         # Device doughnut + legend (period-filtered)
         drows = list(pv.values("device_type").annotate(total=Count("id")).order_by("-total"))
         dlabels = [str(_DEVICE_LABELS.get(r["device_type"], r["device_type"])) for r in drows]
         ddata = [r["total"] for r in drows]
-        dkeys = _DEVICE_COLOR_KEYS[: len(ddata)] or _DEVICE_COLOR_KEYS
+        dkeys = _DEVICE_PALETTE[: len(ddata)] or _DEVICE_PALETTE
         data["device_chart"] = _doughnut_json(dlabels, ddata, dkeys)
         dtotal = sum(ddata) or 1
         data["device_legend"] = [
             {"label": dlabels[i], "count": r["total"], "percent": round(r["total"] * 100 / dtotal),
-             "color": f"var(--color-{dkeys[i % len(dkeys)]})",
+             "color": dkeys[i % len(dkeys)],
              "icon": _DEVICE_ICONS.get(r["device_type"], "devices_other")}
             for i, r in enumerate(drows)
         ]
