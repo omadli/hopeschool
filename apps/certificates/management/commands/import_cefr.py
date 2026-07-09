@@ -85,13 +85,15 @@ class Command(BaseCommand):
         return urls
 
     def handle(self, *args, **options):
-        reorder_only = options["reorder"] and not options["urls"] and not options["file"]
-        if reorder_only:
+        try:
+            urls = self._resolve_urls(options)
+        except CommandError:
+            if not options["reorder"]:
+                raise
             changed = reorder_certificates()
             self.stdout.write(self.style.SUCCESS(f"Qayta tartiblandi — {changed} ta yozuv."))
             return
 
-        urls = self._resolve_urls(options)
         created = updated = skipped = failed = 0
         next_order = (
             Certificate.objects.aggregate(models.Max("order"))["order__max"] or -1
