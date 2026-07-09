@@ -21,15 +21,16 @@ class CertificateAdminForm(forms.ModelForm):
 @admin.register(Certificate)
 class CertificateAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin):
     form = CertificateAdminForm
-    list_display = ("title", "student_name", "badge", "is_active", "order")
+    list_display = ("title", "student_name", "badge", "issued_on", "is_active", "order")
     list_editable = ("is_active", "order")
     list_filter = ("badge", "is_active")
+    ordering = ("-issued_on",)
     search_fields = ("title", "student_name")
     actions = ["import_selected_from_url"]
     fieldsets = (
         (None, {"fields": ("title", "student_name", "description", "badge", "badge_accent")}),
         (_("CEFR / havola (QR skaner)"), {
-            "fields": ("external_url", "image", "pdf_file"),
+            "fields": ("external_url", "image", "pdf_file", "issued_on"),
             "description": _("CEFR sertifikati havolasini kiriting yoki QR kodni skanerlang — saqlaganda PDF rasmga aylantiriladi va oʻquvchi ismi aniqlanadi."),
         }),
         (_("Holat"), {"fields": ("is_active", "order")}),

@@ -17,14 +17,23 @@ Usage:
     python manage.py import_cefr --file urls.txt  # reads a specific file
     python manage.py import_cefr <url> <url> …    # explicit URLs
     python manage.py import_cefr --force          # re-render everything
+    python manage.py import_cefr --reorder        # just renumber `order`
+                                                   # (chronological by issued_on,
+                                                   # repeat-certificate students
+                                                   # grouped together)
 """
 from pathlib import Path
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.db import models
 
 from apps.certificates.models import Certificate
-from apps.certificates.services import CertificateImportError, populate_certificate
+from apps.certificates.services import (
+    CertificateImportError,
+    populate_certificate,
+    reorder_certificates,
+)
 
 DEFAULT_URL_FILE = "cefr_urls.txt"
 
@@ -55,6 +64,11 @@ class Command(BaseCommand):
             "--force", action="store_true",
             help="Re-download and re-render even if an image already exists.",
         )
+        parser.add_argument(
+            "--reorder", action="store_true",
+            help="Renumber `order` chronologically by issued_on afterward "
+                 "(or on its own, with no URLs, to just reorder existing rows).",
+        )
 
     def _resolve_urls(self, options):
         if options["urls"]:
@@ -71,14 +85,25 @@ class Command(BaseCommand):
         return urls
 
     def handle(self, *args, **options):
+        reorder_only = options["reorder"] and not options["urls"] and not options["file"]
+        if reorder_only:
+            changed = reorder_certificates()
+            self.stdout.write(self.style.SUCCESS(f"Qayta tartiblandi — {changed} ta yozuv."))
+            return
+
         urls = self._resolve_urls(options)
         created = updated = skipped = failed = 0
+        next_order = (
+            Certificate.objects.aggregate(models.Max("order"))["order__max"] or -1
+        ) + 1
 
-        for i, url in enumerate(urls):
+        for url in urls:
             cert, was_created = Certificate.objects.get_or_create(
                 external_url=url,
-                defaults={"title": "CEFR sertifikati", "is_active": True, "order": i},
+                defaults={"title": "CEFR sertifikati", "is_active": True, "order": next_order},
             )
+            if was_created:
+                next_order += 1
             if cert.image and not options["force"]:
                 self.stdout.write(f"=  skip (mavjud): {url}")
                 skipped += 1
@@ -100,3 +125,7 @@ class Command(BaseCommand):
             f"Tayyor — yangi: {created}, yangilangan: {updated}, "
             f"oʻtkazib yuborilgan: {skipped}, xato: {failed}"
         ))
+
+        if options["reorder"]:
+            changed = reorder_certificates()
+            self.stdout.write(self.style.SUCCESS(f"Qayta tartiblandi — {changed} ta yozuv."))

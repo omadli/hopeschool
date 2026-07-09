@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import io
 import re
+from datetime import datetime
 
 import requests
 from django.core.files.base import ContentFile
@@ -25,6 +26,10 @@ JPEG_QUALITY = 82
 CEFR_RE = re.compile(r"\b([ABC][12])\b")
 # Certificate serial, e.g. 24BBA1263659AA (informational / dedup reference).
 SERIAL_RE = re.compile(r"^\d{2}[A-Z]{2,5}\d{4,}[A-Z]{0,3}$")
+# Issue/expiry dates: the PDF renders them as two DD.MM.YYYY tokens run
+# together on one line with no separator, e.g. "29.05.202730.05.2025"
+# (expiry then issue date). The earlier of the two is always the issue date.
+DATE_RE = re.compile(r"\d{2}\.\d{2}\.\d{4}")
 # Apostrophe variants seen in Uzbek text (oʻgʻli / o'g'li / o‘g‘li ...).
 _APOS = "‘’ʻ'`ʼ"
 
@@ -135,9 +140,19 @@ def parse_cefr(lines):
     of ALL-CAPS lines immediately preceding the subject line ("… TILI"), which
     we anchor on and walk backwards from.
     """
-    result = {"name": "", "level": "", "subject": "", "serial": ""}
+    result = {"name": "", "level": "", "subject": "", "serial": "", "issued_on": None}
 
     result["serial"] = next((l for l in lines if SERIAL_RE.match(l)), "")
+
+    dates = []
+    for l in lines:
+        for tok in DATE_RE.findall(l):
+            try:
+                dates.append(datetime.strptime(tok, "%d.%m.%Y").date())
+            except ValueError:
+                pass
+    if dates:
+        result["issued_on"] = min(dates)
 
     subj_idx = next((i for i, l in enumerate(lines) if "TILI" in l), None)
     if subj_idx is not None:
@@ -165,8 +180,49 @@ def parse_cefr(lines):
 
 
 # ---------------------------------------------------------------------------
-# Orchestration
+# Reordering
 # ---------------------------------------------------------------------------
+def _person_key(student_name):
+    """Normalize a name for same-person grouping (casefold + apostrophe glyphs).
+
+    Doesn't bridge Cyrillic/Latin spellings of the same name (that needs real
+    transliteration) — a student whose two certificates were rendered in
+    different scripts won't auto-group; nudge their `order` in admin.
+    """
+    return _strip_apostrophes((student_name or "").casefold()).split()
+
+
+def reorder_certificates():
+    """Renumber every certificate's `order` chronologically by `issued_on`,
+    keeping a student's repeat certificates adjacent (grouped by their first
+    certificate's date, then by date within the group). Certs without
+    `issued_on` sort last, by id. Returns the number of rows changed.
+    """
+    from apps.certificates.models import Certificate
+
+    certs = list(Certificate.objects.order_by("id"))
+    groups = {}
+    for cert in certs:
+        groups.setdefault(tuple(_person_key(cert.student_name)), []).append(cert)
+
+    for group in groups.values():
+        group.sort(key=lambda c: (c.issued_on is None, c.issued_on, c.id))
+    ordered_groups = sorted(
+        groups.values(),
+        key=lambda g: (g[0].issued_on is None, g[0].issued_on, g[0].id),
+    )
+
+    changed = 0
+    order = 0
+    for group in ordered_groups:
+        for cert in group:
+            if cert.order != order:
+                Certificate.objects.filter(pk=cert.pk).update(order=order)
+                changed += 1
+            order += 1
+    return changed
+
+
 def _set_translated(obj, field, uz, ru, en):
     setattr(obj, field, uz)
     setattr(obj, f"{field}_uz", uz)
@@ -195,6 +251,9 @@ def populate_certificate(cert, *, fetcher=fetch_pdf_bytes, save=False):
 
     if data.get("name"):
         cert.student_name = data["name"]
+
+    if data.get("issued_on"):
+        cert.issued_on = data["issued_on"]
 
     level = data.get("level") or ""
     subj_raw = (data.get("subject") or "").upper()

@@ -19,6 +19,8 @@ class Certificate(OrderedActiveModel):
     pdf_file = models.FileField(_("PDF fayl"), upload_to="certificates/pdf/", blank=True,
                                 validators=pdf_validators)
     external_url = models.URLField(_("Tashqi havola"), blank=True)
+    issued_on = models.DateField(_("Sertifikat olingan sanasi"), null=True, blank=True,
+                                 help_text=_("PDF havoladan avtomatik aniqlanadi (topilsa)."))
 
     class Meta(OrderedActiveModel.Meta):
         verbose_name = _("Sertifikat")
