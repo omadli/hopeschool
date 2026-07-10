@@ -1,12 +1,16 @@
 """
 Django settings for Hope School.
 """
+import sys
 from pathlib import Path
 
 import environ
 from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# True while the Django test runner is active (``manage.py test``).
+TESTING = "test" in sys.argv
 
 # ---------------------------------------------------------------------------
 # Environment
@@ -247,8 +251,29 @@ CACHES = {
         "LOCATION": "hopeschool_cache",
         "TIMEOUT": 300,
         "OPTIONS": {"MAX_ENTRIES": 5000},
-    }
+    },
+    # Per-process in-memory cache for the read-mostly singletons (SiteConfig,
+    # HeroSection, SiteCopy). django-solo hits the DB on every get_solo() unless
+    # SOLO_CACHE is set; a LocMemCache serves them from RAM with no DB round-trip
+    # (a shared DatabaseCache would just swap 3 model SELECTs for 3 cache SELECTs).
+    "solo": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "hopeschool-solo",
+    },
 }
+
+# django-solo: cache the singletons in the "solo" LocMemCache. Solo invalidates
+# its own key on save; the short timeout bounds cross-worker staleness (another
+# gunicorn worker keeps a stale copy for at most this long after an admin edit).
+SOLO_CACHE = "solo"
+SOLO_CACHE_TIMEOUT = 300  # seconds
+SOLO_CACHE_PREFIX = "solo"
+
+# The solo LocMemCache is process-global and is NOT rolled back between tests
+# (unlike the DB), so a cached singleton would leak across test methods. Disable
+# solo caching under the test runner to keep tests isolated; production keeps it.
+if TESTING:
+    SOLO_CACHE = None
 
 # ---------------------------------------------------------------------------
 # Internationalization (uz default, ru, en)

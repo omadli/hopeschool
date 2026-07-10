@@ -9,6 +9,11 @@ from apps.siteconfig.models import SiteConfig, SocialLink
 def site_context(request):
     """Expose global site config, editable copy, language alternates and course
     list to every template."""
+    # The admin renders on every page under ADMIN_URL and needs none of this —
+    # skip the queries/URL work entirely there (Unfold has its own context).
+    if request.path.startswith("/" + settings.ADMIN_URL.rstrip("/")):
+        return {}
+
     current = request.get_full_path()
     alt_urls = [
         {"code": code, "name": name, "url": translate_url(current, code)}
