@@ -239,22 +239,110 @@ class ImportCefrCommandTests(TestCase):
 class FetchPdfTests(SimpleTestCase):
     def _resp(self, content, ctype):
         resp = mock.Mock()
-        resp.content = content
+        resp.is_redirect = False
+        resp.is_permanent_redirect = False
         resp.headers = {"Content-Type": ctype}
         resp.raise_for_status = mock.Mock()
+        resp.iter_content = mock.Mock(return_value=iter([content]))
+        resp.close = mock.Mock()
         return resp
 
-    def test_rejects_non_pdf_response(self):
+    def _fetch(self, resp):
+        """Run fetch_pdf_bytes with the SSRF host-check stubbed out (its own
+        tests cover it) and requests.get returning ``resp``."""
         from apps.certificates.services import fetch_pdf_bytes
 
-        with mock.patch("apps.certificates.services.requests.get",
-                        return_value=self._resp(b"<html>no</html>", "text/html")):
-            with self.assertRaises(CertificateImportError):
-                fetch_pdf_bytes("https://example.com/x")
+        with mock.patch("apps.certificates.services._validate_public_url"), \
+             mock.patch("apps.certificates.services.requests.get", return_value=resp):
+            return fetch_pdf_bytes("https://example.com/x")
+
+    def test_rejects_non_pdf_response(self):
+        with self.assertRaises(CertificateImportError):
+            self._fetch(self._resp(b"<html>no</html>", "text/html"))
 
     def test_accepts_pdf_by_magic_bytes(self):
-        from apps.certificates.services import fetch_pdf_bytes
+        self.assertTrue(
+            self._fetch(self._resp(b"%PDF-1.4\n...", "application/octet-stream")).startswith(b"%PDF")
+        )
 
-        with mock.patch("apps.certificates.services.requests.get",
-                        return_value=self._resp(b"%PDF-1.4\n...", "application/octet-stream")):
-            self.assertTrue(fetch_pdf_bytes("https://example.com/x").startswith(b"%PDF"))
+    def test_oversized_response_is_rejected(self):
+        from apps.certificates.services import MAX_PDF_BYTES
+        big = self._resp(b"%PDF-" + b"0" * (MAX_PDF_BYTES + 10), "application/pdf")
+        with self.assertRaises(CertificateImportError):
+            self._fetch(big)
+
+
+class FetchPdfSsrfTests(SimpleTestCase):
+    """The SSRF guard rejects internal/non-http targets before any request."""
+
+    def _validate(self, url):
+        from apps.certificates.services import _validate_public_url
+        _validate_public_url(url)
+
+    def test_loopback_is_rejected(self):
+        with self.assertRaises(CertificateImportError):
+            self._validate("http://127.0.0.1/x")
+
+    def test_cloud_metadata_ip_is_rejected(self):
+        with self.assertRaises(CertificateImportError):
+            self._validate("http://169.254.169.254/latest/meta-data/")
+
+    def test_private_ip_is_rejected(self):
+        with self.assertRaises(CertificateImportError):
+            self._validate("http://10.0.0.5/x")
+
+    def test_non_http_scheme_is_rejected(self):
+        with self.assertRaises(CertificateImportError):
+            self._validate("file:///etc/passwd")
+
+    def test_public_ip_literal_passes(self):
+        # Public IP literal → getaddrinfo parses it locally (no DNS network).
+        self._validate("https://8.8.8.8/cert.pdf")
+
+
+class FetchPdfRedirectTests(SimpleTestCase):
+    """Manual redirect-following re-validates every hop — the whole point of
+    not using requests' built-in allow_redirects=True. IP literals throughout
+    so _validate_public_url runs for real (no stub, no DNS network)."""
+
+    def _resp(self, *, redirect=False, location=None, content=b"", ctype=""):
+        resp = mock.Mock()
+        resp.is_redirect = redirect
+        resp.is_permanent_redirect = False
+        headers = {"Content-Type": ctype}
+        if location is not None:
+            headers["Location"] = location
+        resp.headers = headers
+        resp.raise_for_status = mock.Mock()
+        resp.iter_content = mock.Mock(return_value=iter([content]))
+        resp.close = mock.Mock()
+        return resp
+
+    def test_redirect_to_internal_ip_is_rejected(self):
+        from apps.certificates.services import fetch_pdf_bytes
+        hop = self._resp(redirect=True, location="http://169.254.169.254/latest/meta-data/")
+        with mock.patch("apps.certificates.services.requests.get", return_value=hop):
+            with self.assertRaises(CertificateImportError):
+                fetch_pdf_bytes("https://8.8.8.8/redirect")
+
+    def test_redirect_missing_location_raises(self):
+        from apps.certificates.services import fetch_pdf_bytes
+        hop = self._resp(redirect=True, location=None)
+        with mock.patch("apps.certificates.services.requests.get", return_value=hop):
+            with self.assertRaises(CertificateImportError):
+                fetch_pdf_bytes("https://8.8.8.8/redirect")
+
+    def test_too_many_redirects_raises(self):
+        from apps.certificates.services import fetch_pdf_bytes
+        hop = self._resp(redirect=True, location="https://8.8.8.8/start")
+        with mock.patch("apps.certificates.services.requests.get", return_value=hop):
+            with self.assertRaises(CertificateImportError):
+                fetch_pdf_bytes("https://8.8.8.8/start")
+
+    def test_redirect_to_public_pdf_succeeds(self):
+        from apps.certificates.services import fetch_pdf_bytes
+        hop = self._resp(redirect=True, location="https://8.8.8.8/final.pdf")
+        final = self._resp(content=b"%PDF-1.4\n...", ctype="application/pdf")
+        with mock.patch("apps.certificates.services.requests.get", side_effect=[hop, final]):
+            data = fetch_pdf_bytes("https://8.8.8.8/start")
+        self.assertTrue(data.startswith(b"%PDF"))

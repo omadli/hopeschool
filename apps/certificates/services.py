@@ -12,13 +12,18 @@ from __future__ import annotations
 import hashlib
 import io
 import re
+import socket
 from datetime import datetime
+from urllib.parse import urljoin, urlparse
 
 import requests
 from django.core.files.base import ContentFile
 
+from apps.common.utils import is_public_ip
+
 USER_AGENT = "Mozilla/5.0 (compatible; HopeSchool-CertImporter/1.0)"
 MAX_PDF_BYTES = 10 * 1024 * 1024
+MAX_REDIRECTS = 4
 RENDER_SCALE = 2.0          # ~144 dpi
 JPEG_QUALITY = 82
 
@@ -49,25 +54,84 @@ class CertificateImportError(Exception):
 # ---------------------------------------------------------------------------
 # Network
 # ---------------------------------------------------------------------------
-def fetch_pdf_bytes(url, *, timeout=20):
-    """Download `url` and return the PDF bytes, or raise CertificateImportError."""
-    try:
-        resp = requests.get(
-            url, timeout=timeout, headers={"User-Agent": USER_AGENT}
-        )
-        resp.raise_for_status()
-    except requests.RequestException as exc:
-        raise CertificateImportError(f"Yuklab boʻlmadi: {exc}") from exc
+def _validate_public_url(url):
+    """Reject anything that could turn an import into an SSRF probe.
 
-    data = resp.content
-    if len(data) > MAX_PDF_BYTES:
-        raise CertificateImportError("PDF hajmi juda katta (10 MB dan oshdi).")
-    ctype = resp.headers.get("Content-Type", "").lower()
-    if not (data[:5] == b"%PDF-" or "pdf" in ctype):
-        raise CertificateImportError(
-            "Havola PDF faylga olib bormadi (sertifikat PDF havolasini kiriting)."
-        )
-    return data
+    Only http/https is allowed, and every IP the host resolves to must be a
+    routable public address — so an operator (or a crafted QR code) cannot make
+    the server fetch ``http://169.254.169.254/…`` (cloud metadata), ``localhost``
+    or any internal host.
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise CertificateImportError("Faqat http/https havolalar qoʻllab-quvvatlanadi.")
+    host = parsed.hostname
+    if not host:
+        raise CertificateImportError("Havola manzili notoʻgʻri.")
+    port = parsed.port or (443 if parsed.scheme == "https" else 80)
+    try:
+        infos = socket.getaddrinfo(host, port, proto=socket.IPPROTO_TCP)
+    except socket.gaierror as exc:
+        raise CertificateImportError(f"Havola manzili aniqlanmadi: {host}") from exc
+    for info in infos:
+        ip = info[4][0]
+        if not is_public_ip(ip):
+            raise CertificateImportError(
+                "Ichki/xususiy manzillarga soʻrov yuborib boʻlmaydi."
+            )
+
+
+def fetch_pdf_bytes(url, *, timeout=20):
+    """Download `url` and return the PDF bytes, or raise CertificateImportError.
+
+    SSRF-hardened: the target (and every manually-followed redirect hop) is
+    validated to be a public http/https host, and the body is streamed with a
+    hard byte cap so an oversized response cannot exhaust memory.
+    """
+    current = (url or "").strip()
+    for _ in range(MAX_REDIRECTS + 1):
+        _validate_public_url(current)
+        try:
+            resp = requests.get(
+                current, timeout=timeout, headers={"User-Agent": USER_AGENT},
+                allow_redirects=False, stream=True,
+            )
+        except requests.RequestException as exc:
+            raise CertificateImportError(f"Yuklab boʻlmadi: {exc}") from exc
+
+        try:
+            # Follow redirects manually so each hop is re-validated (an allowed
+            # host must not be able to bounce us to an internal one).
+            if resp.is_redirect or resp.is_permanent_redirect:
+                location = resp.headers.get("Location")
+                if not location:
+                    raise CertificateImportError("Yuklab boʻlmadi: redirect manzili yoʻq.")
+                current = urljoin(current, location)
+                continue
+
+            try:
+                resp.raise_for_status()
+            except requests.RequestException as exc:
+                raise CertificateImportError(f"Yuklab boʻlmadi: {exc}") from exc
+
+            chunks, total = [], 0
+            for chunk in resp.iter_content(chunk_size=64 * 1024):
+                total += len(chunk)
+                if total > MAX_PDF_BYTES:
+                    raise CertificateImportError("PDF hajmi juda katta (10 MB dan oshdi).")
+                chunks.append(chunk)
+            data = b"".join(chunks)
+            ctype = resp.headers.get("Content-Type", "").lower()
+        finally:
+            resp.close()
+
+        if not (data[:5] == b"%PDF-" or "pdf" in ctype):
+            raise CertificateImportError(
+                "Havola PDF faylga olib bormadi (sertifikat PDF havolasini kiriting)."
+            )
+        return data
+
+    raise CertificateImportError("Yuklab boʻlmadi: juda koʻp qayta yoʻnaltirish.")
 
 
 # ---------------------------------------------------------------------------
