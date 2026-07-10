@@ -191,3 +191,62 @@ class TelegramRecipientAdminTests(TestCase):
     def test_add(self):
         url = reverse("admin:siteconfig_telegramrecipient_add")
         self.assertEqual(self.client.get(url, follow=True).status_code, 200)
+
+
+# ---------------------------------------------------------------------------
+# Telegram bot token — write-only / one-time entry (never readable back)
+# ---------------------------------------------------------------------------
+class TelegramBotTokenWriteOnlyTests(TestCase):
+    """The stored bot token is a secret: it is never rendered back, an empty
+    submit keeps it unchanged, a new value overwrites it, and the clear box
+    drops it. See apps/siteconfig/admin.py:SiteConfigForm."""
+
+    def _form(self, **extra):
+        from apps.siteconfig.admin import SiteConfigForm
+        data = {"site_name": "Hope School", "telegram_notifications_enabled": "on"}
+        data.update(extra)
+        return SiteConfigForm(data=data, instance=self.config)
+
+    def setUp(self):
+        self.config = SiteConfig.get_solo()
+        self.config.telegram_bot_token = "SECRET-EXISTING-TOKEN"
+        self.config.save()
+
+    def test_empty_submit_keeps_existing_token(self):
+        form = self._form()
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["telegram_bot_token"], "SECRET-EXISTING-TOKEN")
+
+    def test_new_token_overwrites(self):
+        form = self._form(telegram_bot_token="NEW-TOKEN-999")
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["telegram_bot_token"], "NEW-TOKEN-999")
+
+    def test_clear_checkbox_empties_token(self):
+        form = self._form(clear_telegram_bot_token="on")
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["telegram_bot_token"], "")
+
+    def test_widget_never_renders_stored_token(self):
+        from apps.siteconfig.admin import SiteConfigForm
+        html = str(SiteConfigForm(instance=self.config)["telegram_bot_token"])
+        self.assertNotIn("SECRET-EXISTING-TOKEN", html)
+        self.assertIn('type="password"', html)
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class TelegramBotTokenAdminLeakTests(TestCase):
+    """The rendered admin change page must not leak the saved token."""
+
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username="admin_token", password="adminpass123", email="t@test.com")
+        self.client.force_login(self.superuser)
+        self.config = SiteConfig.get_solo()
+        self.config.telegram_bot_token = "SECRET-TOKEN-IN-PAGE"
+        self.config.save()
+
+    def test_change_page_does_not_leak_token(self):
+        url = reverse("admin:siteconfig_siteconfig_change", args=[self.config.pk])
+        body = self.client.get(url, follow=True).content.decode("utf-8", "replace")
+        self.assertNotIn("SECRET-TOKEN-IN-PAGE", body)
