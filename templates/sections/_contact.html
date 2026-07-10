@@ -37,8 +37,8 @@
 
       {# map (matches form height on desktop) #}
       <div class="sr rounded-card overflow-hidden border bd grad-cap relative min-h-[340px] lg:min-h-0" data-map>
-        {% if site_config.google_maps_embed %}
-          <div class="absolute inset-0 [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0">{{ site_config.google_maps_embed|safe }}</div>
+        {% if site_config.safe_google_maps_embed %}
+          <div class="absolute inset-0 [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0">{{ site_config.safe_google_maps_embed }}</div>
         {% elif gsrc %}
           <div class="absolute right-3 top-3 z-[1] flex gap-1 rounded-pill surface-card border bd p-0.5 text-[13px] font-semibold shadow-soft">
             <button type="button" data-map-tab="g" class="px-3.5 py-1.5 rounded-pill bg-brand-blue-500 text-white">Google</button>

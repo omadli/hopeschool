@@ -250,3 +250,59 @@ class TelegramBotTokenAdminLeakTests(TestCase):
         url = reverse("admin:siteconfig_siteconfig_change", args=[self.config.pk])
         body = self.client.get(url, follow=True).content.decode("utf-8", "replace")
         self.assertNotIn("SECRET-TOKEN-IN-PAGE", body)
+
+
+# ---------------------------------------------------------------------------
+# Analytics IDs are echoed into inline <script> — validate their format (XSS)
+# ---------------------------------------------------------------------------
+class AnalyticsIdValidationTests(TestCase):
+    def _full_clean(self, **kwargs):
+        config = SiteConfig.get_solo()
+        for k, v in kwargs.items():
+            setattr(config, k, v)
+        config.full_clean()
+
+    def test_valid_ga4_id_passes(self):
+        self._full_clean(ga4_measurement_id="G-ABC1234567")
+
+    def test_valid_metrica_id_passes(self):
+        self._full_clean(yandex_metrica_id="12345678")
+
+    def test_script_payload_in_ga4_is_rejected(self):
+        with self.assertRaises(ValidationError):
+            self._full_clean(ga4_measurement_id="1);alert(1);//")
+
+    def test_script_payload_in_metrica_is_rejected(self):
+        with self.assertRaises(ValidationError):
+            self._full_clean(yandex_metrica_id="1);alert(document.cookie);//")
+
+
+# ---------------------------------------------------------------------------
+# Map-embed sanitizer — strips scripts, keeps only allowlisted-host iframes
+# ---------------------------------------------------------------------------
+class MapEmbedSanitizeTests(TestCase):
+    def test_script_is_stripped(self):
+        from apps.siteconfig.models import sanitize_map_embed
+        out = sanitize_map_embed('<iframe src="https://www.google.com/maps?x=1"></iframe>'
+                                 '<script>alert(1)</script>')
+        self.assertNotIn("<script", out)
+        self.assertIn("<iframe", out)
+
+    def test_non_allowlisted_host_is_dropped(self):
+        from apps.siteconfig.models import sanitize_map_embed
+        self.assertEqual(sanitize_map_embed('<iframe src="https://evil.example/x"></iframe>'), "")
+
+    def test_javascript_scheme_is_dropped(self):
+        from apps.siteconfig.models import sanitize_map_embed
+        out = sanitize_map_embed('<iframe src="javascript:alert(1)"></iframe>')
+        self.assertNotIn("javascript:", out)
+
+    def test_blank_returns_empty(self):
+        from apps.siteconfig.models import sanitize_map_embed
+        self.assertEqual(sanitize_map_embed(""), "")
+
+    def test_safe_property_uses_sanitizer(self):
+        config = SiteConfig.get_solo()
+        config.google_maps_embed = '<iframe src="https://www.google.com/maps?q=1"></iframe><script>x</script>'
+        self.assertIn("<iframe", config.safe_google_maps_embed)
+        self.assertNotIn("<script", config.safe_google_maps_embed)
