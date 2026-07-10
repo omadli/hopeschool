@@ -310,6 +310,33 @@ class LeadCreateViewTests(TestCase):
         # No new lead created on the 6th request
         self.assertEqual(Lead.objects.count(), 5)
 
+    # --- Origin check (cross-site spam via fetch/XHR) ---
+    @override_settings(ALLOWED_HOSTS=["hopeschool.uz"])
+    def test_matching_origin_is_accepted(self):
+        # SERVER_NAME matches ALLOWED_HOSTS so the Host header itself validates
+        # — this test is about the separate Origin check, not Django's host guard.
+        client = Client(SERVER_NAME="hopeschool.uz")
+        response = client.post(
+            LEAD_URL, self._valid_data, HTTP_ORIGIN="https://hopeschool.uz"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(json.loads(response.content)["ok"])
+
+    @override_settings(ALLOWED_HOSTS=["hopeschool.uz"])
+    def test_foreign_origin_is_rejected(self):
+        client = Client(SERVER_NAME="hopeschool.uz")
+        response = client.post(
+            LEAD_URL, self._valid_data, HTTP_ORIGIN="https://evil.example"
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(json.loads(response.content)["ok"])
+        self.assertEqual(Lead.objects.count(), 0)
+
+    def test_missing_origin_is_accepted(self):
+        # Not every client sends Origin — only a mismatch is rejected.
+        response = self._post()
+        self.assertEqual(response.status_code, 200)
+
 
 # ---------------------------------------------------------------------------
 # Client-IP resolution (anti-spoof for the rate-limit)

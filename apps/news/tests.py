@@ -97,8 +97,14 @@ class NewsAdminTests(TestCase):
     def test_ckeditor_richer_toolbar_config(self):
         """The expanded CKEditor toolbar config must reach the change form."""
         html = self._get(reverse("admin:news_newspost_add")).content.decode("utf-8", "replace")
-        for item in ("mediaEmbed", "fontColor", "insertTable", "sourceEditing"):
+        for item in ("mediaEmbed", "fontColor", "insertTable"):
             self.assertIn(item, html)
+
+    def test_ckeditor_toolbar_has_no_source_editing(self):
+        """sourceEditing lets an admin paste raw HTML (incl. <script>) past the
+        editor's own escaping straight into a |safe-rendered field — dropped."""
+        html = self._get(reverse("admin:news_newspost_add")).content.decode("utf-8", "replace")
+        self.assertNotIn("sourceEditing", html)
 
 
 # ---------------------------------------------------------------------------

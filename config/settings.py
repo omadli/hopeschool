@@ -87,6 +87,10 @@ if not DEBUG:
     SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
     SESSION_COOKIE_HTTPONLY = True
     X_FRAME_OPTIONS = "DENY"
+    # Django defaults to "Lax" already; explicit so it's not silently relying
+    # on a default an upgrade could change.
+    SESSION_COOKIE_SAMESITE = "Lax"
+    CSRF_COOKIE_SAMESITE = "Lax"
 
 # ---------------------------------------------------------------------------
 # Applications
@@ -340,7 +344,7 @@ CKEDITOR_5_CONFIGS = {
             "bulletedList", "numberedList", "todoList", "outdent", "indent", "|",
             "link", "blockQuote", "insertImage", "mediaEmbed", "insertTable",
             "horizontalLine", "|",
-            "removeFormat", "sourceEditing", "|",
+            "removeFormat", "|",
             "undo", "redo",
         ],
         "height": "420px",

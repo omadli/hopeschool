@@ -368,6 +368,24 @@ class SiteContextProcessorTests(TestCase):
         self.assertIn("ru", codes)
         self.assertIn("en", codes)
 
+    def test_social_links_and_courses_are_cached(self):
+        """A row created after the first call isn't reflected until the TTL
+        expires — proves the second call hit cache, not the DB."""
+        from django.core.cache import cache
+
+        from apps.common.context_processors import site_context
+        from apps.courses.models import Course
+
+        cache.clear()
+        factory = RequestFactory()
+        request = factory.get("/uz/")
+        request.LANGUAGE_CODE = "uz"
+
+        before = len(site_context(request)["lead_courses"])
+        Course.objects.create(name="Yangi kurs", slug="yangi-kurs", is_active=True)
+        after = len(site_context(request)["lead_courses"])
+        self.assertEqual(before, after)
+
 
 # ---------------------------------------------------------------------------
 # Phase 6 — Performance / Responsive images / Accessibility tests
