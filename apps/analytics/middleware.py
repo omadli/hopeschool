@@ -1,7 +1,8 @@
 import user_agents
 from django.conf import settings
 
-from . import geoip
+from apps.common.utils import client_ip, is_public_ip
+
 from .models import VisitLog
 
 # Path prefixes that should never be logged as a public page visit. The admin
@@ -15,18 +16,6 @@ SKIP_PREFIXES = (
     "/i18n",
     "/ckeditor5",
 )
-
-
-def _client_ip(request):
-    """Return the originating client IP.
-
-    Honours the first hop of X-Forwarded-For (set by a trusted reverse proxy)
-    and falls back to REMOTE_ADDR for direct connections.
-    """
-    forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
-    return request.META.get("REMOTE_ADDR") or None
 
 
 def _device_type(ua):
@@ -87,8 +76,10 @@ class VisitLogMiddleware:
         # on 127.0.0.1, the host pinging itself, health checks) aren't genuine
         # traffic and can't be geolocated — drop them so they don't flood the
         # logs and so the country panel stays meaningful.
-        ip = _client_ip(request)
-        if not ip or not geoip.is_public_ip(ip):
+        # Trusted-proxy-aware: read the real client IP from the RIGHT of
+        # X-Forwarded-For so a forged prefix cannot spoof the logged IP/country.
+        ip = client_ip(request)
+        if not ip or not is_public_ip(ip):
             return
 
         ua_string = request.META.get("HTTP_USER_AGENT", "")

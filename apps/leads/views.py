@@ -1,9 +1,10 @@
-from django.conf import settings
 from django.core.cache import cache
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+
+from apps.common.utils import client_ip
 
 from .forms import LeadForm
 from .models import LeadSource
@@ -14,22 +15,13 @@ RATE_LIMIT_WINDOW = 60 * 60  # 1 hour, seconds
 
 
 def _client_ip(request):
-    """Real client IP, resilient to a forged X-Forwarded-For.
+    """Real client IP for the per-IP rate-limit key.
 
-    nginx forwards ``X-Forwarded-For: <client-supplied…>, <real peer>`` — it
-    *appends* the peer it actually saw. The leftmost entries are attacker-
-    controlled, so we must read from the RIGHT: the real client sits
-    ``TRUSTED_PROXY_COUNT`` hops from the end (nginx = 1, +1 for a CDN/WAF).
-    Taking ``[0]`` here would let anyone bypass the rate-limit by rotating a
-    fake first entry on every request.
+    Delegates to the shared, trusted-proxy-aware ``client_ip`` (reads the real
+    peer from the RIGHT of X-Forwarded-For so a forged prefix cannot bypass the
+    limit); falls back to a constant bucket when no IP is available.
     """
-    xff = request.META.get("HTTP_X_FORWARDED_FOR", "")
-    if xff:
-        parts = [p.strip() for p in xff.split(",") if p.strip()]
-        if parts:
-            hops = getattr(settings, "TRUSTED_PROXY_COUNT", 1)
-            return parts[-min(hops, len(parts))]
-    return request.META.get("REMOTE_ADDR", "") or "unknown"
+    return client_ip(request) or "unknown"
 
 
 def _capture_referrer(request):

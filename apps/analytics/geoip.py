@@ -6,29 +6,15 @@ per batch). The ``resolve_geoip`` management command calls this on distinct,
 unresolved IPs; each IP is resolved once and written to every VisitLog row that
 shares it. Any failure degrades to "unresolved" — analytics never blocks on it.
 """
-import ipaddress
-
 import requests
+
+# Re-exported so existing callers (middleware, tests) keep using geoip.is_public_ip;
+# the implementation now lives in apps.common.utils as the single source of truth.
+from apps.common.utils import is_public_ip  # noqa: F401
 
 BATCH_URL = "http://ip-api.com/batch"
 _FIELDS = "status,country,countryCode,query"
 _MAX_BATCH = 100
-
-
-def is_public_ip(ip: str) -> bool:
-    """True only for routable public addresses (skip private/loopback/etc.)."""
-    try:
-        addr = ipaddress.ip_address(ip)
-    except ValueError:
-        return False
-    return not (
-        addr.is_private
-        or addr.is_loopback
-        or addr.is_reserved
-        or addr.is_link_local
-        or addr.is_multicast
-        or addr.is_unspecified
-    )
 
 
 def resolve_ips(ips, timeout: int = 10) -> dict:
