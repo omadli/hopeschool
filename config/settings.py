@@ -114,6 +114,8 @@ INSTALLED_APPS = [
     "django_tailwind_cli",
     "django_ckeditor_5",
     "easy_thumbnails",
+    # Admin-login brute-force protection (rate-limit + lockout + attempt log).
+    "axes",
 
     # Local apps
     "apps.common",
@@ -139,7 +141,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "apps.analytics.middleware.VisitLogMiddleware",  # last: log public page visits
+    "apps.analytics.middleware.VisitLogMiddleware",  # log public page visits
+    # django-axes: MUST be the last middleware — wraps the login flow to enforce
+    # lockouts after too many failed admin-login attempts.
+    "axes.middleware.AxesMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -192,6 +197,39 @@ AUTH_PASSWORD_VALIDATORS = [
 # Auth is admin-only; keep redirects on the admin instead of Django's /accounts/* defaults.
 LOGIN_URL = "admin:login"
 LOGIN_REDIRECT_URL = "admin:index"
+
+# ---------------------------------------------------------------------------
+# django-axes — admin-login brute-force protection
+# ---------------------------------------------------------------------------
+# AxesStandaloneBackend MUST come first so a locked-out (ip, username) pair is
+# rejected before Django's ModelBackend ever checks the password. It has no
+# get_user(), so the test client's force_login() skips it and uses ModelBackend.
+AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+# App-level protection (defence-in-depth on top of the nginx rate-limit): the
+# admin login is the only auth surface. Lock a specific (client IP + username)
+# pair after 5 failed attempts for 1 hour; a successful login resets its counter.
+# Every attempt (success and failure) is recorded to the DB and is visible under
+# admin → "Access attempts", giving an audit trail of brute-force activity and
+# the source IPs to block.
+AXES_ENABLED = env.bool("AXES_ENABLED", default=True)
+AXES_FAILURE_LIMIT = env.int("AXES_FAILURE_LIMIT", default=5)
+AXES_COOLOFF_TIME = env.int("AXES_COOLOFF_HOURS", default=1)  # hours
+# Lock the IP+username *combination* (not the bare IP) so a shared/NAT IP does
+# not lock out unrelated staff, while still stopping a targeted password guess.
+AXES_LOCKOUT_PARAMETERS = [["ip_address", "username"]]
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_CALLABLE = None  # default 429 response on lockout
+# Read the real client IP behind nginx (same trust model as the lead-form limiter):
+# count TRUSTED_PROXY_COUNT proxy hops so a forged X-Forwarded-For cannot spoof it.
+AXES_IPWARE_PROXY_COUNT = TRUSTED_PROXY_COUNT
+AXES_IPWARE_META_PRECEDENCE_ORDER = ("HTTP_X_FORWARDED_FOR", "REMOTE_ADDR")
+# Only guard the admin login path (the sole login surface); never interfere with
+# public views if an auth check ever runs there.
+AXES_ONLY_ADMIN_SITE = True
 
 # ---------------------------------------------------------------------------
 # Cache — DatabaseCache: shared across gunicorn workers (no Redis needed)

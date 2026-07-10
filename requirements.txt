@@ -26,6 +26,9 @@ easy-thumbnails>=2.10
 pypdfium2>=4.30      # PDF render, Apache-2.0/BSD (NOT AGPL like PyMuPDF)
 pypdf>=4.3           # PDF text extraction, BSD
 
+# --- Security (admin login: rate-limit, lockout, failed-attempt logging) ---
+django-axes>=8.0
+
 # --- Integrations ---
 requests>=2.32
 user-agents>=2.2.0
