@@ -43,6 +43,20 @@ jobs:
       - name: Django system check
         run: python manage.py check
 
+      # Production-hardening gate: run the security checks the way the live
+      # server does (DEBUG=False + real hosts + strong key) and FAIL the build
+      # on any warning, so a regression that weakens HSTS/SSL-redirect/secure
+      # cookies can never reach main. This env overrides the job-level dev env
+      # (DEBUG/SECRET_KEY/ALLOWED_HOSTS) for this step only.
+      - name: Deploy hardening check (check --deploy)
+        env:
+          DEBUG: "False"
+          SECRET_KEY: "ci-deploy-check-strong-secret-key-not-for-production-abc123"
+          ALLOWED_HOSTS: "hopeschool.uz,www.hopeschool.uz"
+          CSRF_TRUSTED_ORIGINS: "https://hopeschool.uz,https://www.hopeschool.uz"
+          SECURE_SSL_REDIRECT: "True"
+        run: python manage.py check --deploy --fail-level WARNING
+
       - name: Check for missing migrations
         run: python manage.py makemigrations --check --dry-run
 
