@@ -40,6 +40,9 @@ desktop.ini
 *.swp
 .claude/
 
+# ---- Git worktrees (local isolated checkouts) ----
+.worktrees/
+
 # ---- Scratch / temporary ----
 _*.png
 _verify*.py
