@@ -22,6 +22,17 @@
       attribution: "© OpenStreetMap",
     }).addTo(map);
 
+    // Point Leaflet at the self-hosted marker images. The widget passes the
+    // resolved (hash-aware) static URLs via data-* so icons work under
+    // WhiteNoise's manifest storage in production, not just in dev.
+    if (mapEl.dataset.icon) {
+      L.Icon.Default.mergeOptions({
+        iconUrl: mapEl.dataset.icon,
+        iconRetinaUrl: mapEl.dataset.icon2x || mapEl.dataset.icon,
+        shadowUrl: mapEl.dataset.shadow || "",
+      });
+    }
+
     var marker = L.marker([lat, lng], { draggable: true }).addTo(map);
 
     function set(ll) {

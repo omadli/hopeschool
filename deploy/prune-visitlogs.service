@@ -1,0 +1,32 @@
+# Hope School — prune old VisitLog rows (analytics retention)
+#
+# Oneshot run, triggered by prune-visitlogs.timer. VisitLog gets one INSERT per
+# public page view, so without pruning the table (and its indexes) grow without
+# bound and every dashboard aggregation slows down. This deletes rows older than
+# the retention window (management command default: 6 months) and also bounds the
+# amount of visitor PII (IP + user-agent) kept on disk.
+#
+# Install (alongside the .timer):
+#   sudo cp deploy/prune-visitlogs.service /etc/systemd/system/
+#   sudo cp deploy/prune-visitlogs.timer   /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now prune-visitlogs.timer
+
+[Unit]
+Description=Hope School — prune old VisitLog rows
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/hopeschool
+EnvironmentFile=/home/ubuntu/hopeschool/.env
+ExecStart=/home/ubuntu/hopeschool/venv/bin/python manage.py prune_visitlogs
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/home/ubuntu/hopeschool

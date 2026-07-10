@@ -191,3 +191,118 @@ class TelegramRecipientAdminTests(TestCase):
     def test_add(self):
         url = reverse("admin:siteconfig_telegramrecipient_add")
         self.assertEqual(self.client.get(url, follow=True).status_code, 200)
+
+
+# ---------------------------------------------------------------------------
+# Telegram bot token — write-only / one-time entry (never readable back)
+# ---------------------------------------------------------------------------
+class TelegramBotTokenWriteOnlyTests(TestCase):
+    """The stored bot token is a secret: it is never rendered back, an empty
+    submit keeps it unchanged, a new value overwrites it, and the clear box
+    drops it. See apps/siteconfig/admin.py:SiteConfigForm."""
+
+    def _form(self, **extra):
+        from apps.siteconfig.admin import SiteConfigForm
+        data = {"site_name": "Hope School", "telegram_notifications_enabled": "on"}
+        data.update(extra)
+        return SiteConfigForm(data=data, instance=self.config)
+
+    def setUp(self):
+        self.config = SiteConfig.get_solo()
+        self.config.telegram_bot_token = "SECRET-EXISTING-TOKEN"
+        self.config.save()
+
+    def test_empty_submit_keeps_existing_token(self):
+        form = self._form()
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["telegram_bot_token"], "SECRET-EXISTING-TOKEN")
+
+    def test_new_token_overwrites(self):
+        form = self._form(telegram_bot_token="NEW-TOKEN-999")
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["telegram_bot_token"], "NEW-TOKEN-999")
+
+    def test_clear_checkbox_empties_token(self):
+        form = self._form(clear_telegram_bot_token="on")
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["telegram_bot_token"], "")
+
+    def test_widget_never_renders_stored_token(self):
+        from apps.siteconfig.admin import SiteConfigForm
+        html = str(SiteConfigForm(instance=self.config)["telegram_bot_token"])
+        self.assertNotIn("SECRET-EXISTING-TOKEN", html)
+        self.assertIn('type="password"', html)
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
+class TelegramBotTokenAdminLeakTests(TestCase):
+    """The rendered admin change page must not leak the saved token."""
+
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username="admin_token", password="adminpass123", email="t@test.com")
+        self.client.force_login(self.superuser)
+        self.config = SiteConfig.get_solo()
+        self.config.telegram_bot_token = "SECRET-TOKEN-IN-PAGE"
+        self.config.save()
+
+    def test_change_page_does_not_leak_token(self):
+        url = reverse("admin:siteconfig_siteconfig_change", args=[self.config.pk])
+        body = self.client.get(url, follow=True).content.decode("utf-8", "replace")
+        self.assertNotIn("SECRET-TOKEN-IN-PAGE", body)
+
+
+# ---------------------------------------------------------------------------
+# Analytics IDs are echoed into inline <script> — validate their format (XSS)
+# ---------------------------------------------------------------------------
+class AnalyticsIdValidationTests(TestCase):
+    def _full_clean(self, **kwargs):
+        config = SiteConfig.get_solo()
+        for k, v in kwargs.items():
+            setattr(config, k, v)
+        config.full_clean()
+
+    def test_valid_ga4_id_passes(self):
+        self._full_clean(ga4_measurement_id="G-ABC1234567")
+
+    def test_valid_metrica_id_passes(self):
+        self._full_clean(yandex_metrica_id="12345678")
+
+    def test_script_payload_in_ga4_is_rejected(self):
+        with self.assertRaises(ValidationError):
+            self._full_clean(ga4_measurement_id="1);alert(1);//")
+
+    def test_script_payload_in_metrica_is_rejected(self):
+        with self.assertRaises(ValidationError):
+            self._full_clean(yandex_metrica_id="1);alert(document.cookie);//")
+
+
+# ---------------------------------------------------------------------------
+# Map-embed sanitizer — strips scripts, keeps only allowlisted-host iframes
+# ---------------------------------------------------------------------------
+class MapEmbedSanitizeTests(TestCase):
+    def test_script_is_stripped(self):
+        from apps.siteconfig.models import sanitize_map_embed
+        out = sanitize_map_embed('<iframe src="https://www.google.com/maps?x=1"></iframe>'
+                                 '<script>alert(1)</script>')
+        self.assertNotIn("<script", out)
+        self.assertIn("<iframe", out)
+
+    def test_non_allowlisted_host_is_dropped(self):
+        from apps.siteconfig.models import sanitize_map_embed
+        self.assertEqual(sanitize_map_embed('<iframe src="https://evil.example/x"></iframe>'), "")
+
+    def test_javascript_scheme_is_dropped(self):
+        from apps.siteconfig.models import sanitize_map_embed
+        out = sanitize_map_embed('<iframe src="javascript:alert(1)"></iframe>')
+        self.assertNotIn("javascript:", out)
+
+    def test_blank_returns_empty(self):
+        from apps.siteconfig.models import sanitize_map_embed
+        self.assertEqual(sanitize_map_embed(""), "")
+
+    def test_safe_property_uses_sanitizer(self):
+        config = SiteConfig.get_solo()
+        config.google_maps_embed = '<iframe src="https://www.google.com/maps?q=1"></iframe><script>x</script>'
+        self.assertIn("<iframe", config.safe_google_maps_embed)
+        self.assertNotIn("<script", config.safe_google_maps_embed)

@@ -1,3 +1,8 @@
+# Hope School — top-level dependencies (loose ranges for readability).
+# For a reproducible deploy, install with the pinned lockfile:
+#   pip install -r requirements.txt -c constraints.txt
+# Regenerate the lock after changing this file:  pip freeze > constraints.txt
+
 # --- Core ---
 Django>=5.2,<5.3
 django-environ>=0.11
@@ -25,6 +30,12 @@ easy-thumbnails>=2.10
 # --- CEFR certificate import (PDF -> image + name parse; permissive licences) ---
 pypdfium2>=4.30      # PDF render, Apache-2.0/BSD (NOT AGPL like PyMuPDF)
 pypdf>=4.3           # PDF text extraction, BSD
+
+# --- Security ---
+# Admin login: rate-limit, lockout, failed-attempt logging.
+django-axes>=8.0
+# Server-side HTML sanitizer (map-embed fields; defense-in-depth for rich text).
+nh3>=0.2
 
 # --- Integrations ---
 requests>=2.32

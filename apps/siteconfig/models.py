@@ -1,5 +1,9 @@
+import re
+
+import nh3
 from django.core.validators import RegexValidator
 from django.db import models
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel
 
@@ -12,6 +16,58 @@ telegram_chat_id_validator = RegexValidator(
     regex=r"^(-?\d+|@[A-Za-z0-9_]{4,})$",
     message=_("Chat ID raqam (masalan: 123456789 yoki -1001234567890) yoki @username koʻrinishida boʻlishi kerak."),
 )
+
+# Analytics IDs are echoed verbatim into inline <script> blocks, so their format
+# is validated strictly to shut the door on script/JS-context injection (stored
+# XSS) — only the real vendor shapes are accepted.
+ga4_measurement_id_validator = RegexValidator(
+    regex=r"^(G-[A-Z0-9]{4,20}|UA-\d{4,10}-\d{1,4})$",
+    message=_("Google Analytics ID G-XXXXXXX (yoki UA-XXXX-Y) koʻrinishida boʻlishi kerak."),
+)
+yandex_metrica_id_validator = RegexValidator(
+    regex=r"^\d{4,12}$",
+    message=_("Yandex Metrica ID faqat raqamlardan iborat boʻlishi kerak (masalan: 12345678)."),
+)
+
+# Manual map-embed fields hold operator-supplied HTML rendered with |safe. Run
+# it through nh3 first: only an <iframe> with https-scheme src (from an allowed
+# maps host) and a few layout attributes survive — <script>, event handlers and
+# javascript:/data: URLs are stripped, closing the stored-XSS hole.
+_EMBED_TAGS = {"iframe"}
+_EMBED_ATTRS = {
+    "iframe": {
+        "src", "width", "height", "style", "title",
+        "allow", "allowfullscreen", "loading", "referrerpolicy", "frameborder",
+    }
+}
+_EMBED_ALLOWED_HOSTS = (
+    "google.com", "maps.google.com", "www.google.com",
+    "yandex.com", "yandex.ru", "maps.yandex.com", "maps.yandex.ru",
+    "yandex.uz", "maps.yandex.uz",
+)
+
+
+def sanitize_map_embed(raw):
+    """Return a safe, mark_safe'd <iframe> embed (or '') from operator HTML."""
+    if not raw or not raw.strip():
+        return ""
+    from urllib.parse import urlparse
+
+    cleaned = nh3.clean(
+        raw,
+        tags=_EMBED_TAGS,
+        attributes=_EMBED_ATTRS,
+        url_schemes={"https"},
+    )
+    # Host allowlist: keep the iframe only if its src points at a known maps host
+    # (nh3 already dropped scripts / non-https URLs; this blocks arbitrary sites).
+    src_match = re.search(r'src="([^"]+)"', cleaned)
+    if not src_match:
+        return ""
+    host = (urlparse(src_match.group(1)).hostname or "").lower()
+    if not any(host == h or host.endswith("." + h) for h in _EMBED_ALLOWED_HOSTS):
+        return ""
+    return mark_safe(cleaned)
 
 
 class SiteConfig(SingletonModel):
@@ -60,8 +116,10 @@ class SiteConfig(SingletonModel):
 
     # --- Analytics IDs ---
     ga4_measurement_id = models.CharField(_("Google Analytics 4 ID"), max_length=40, blank=True,
+                                          validators=[ga4_measurement_id_validator],
                                           help_text="G-XXXXXXX")
-    yandex_metrica_id = models.CharField(_("Yandex Metrica ID"), max_length=40, blank=True)
+    yandex_metrica_id = models.CharField(_("Yandex Metrica ID"), max_length=40, blank=True,
+                                         validators=[yandex_metrica_id_validator])
 
     # --- Telegram ---
     telegram_notifications_enabled = models.BooleanField(
@@ -83,6 +141,15 @@ class SiteConfig(SingletonModel):
         self.phone_primary = normalize_phone(self.phone_primary)
         self.phone_secondary = normalize_phone(self.phone_secondary)
         super().save(*args, **kwargs)
+
+    # --- Safe manual map embeds (sanitized; rendered with |safe in templates) ---
+    @property
+    def safe_google_maps_embed(self):
+        return sanitize_map_embed(self.google_maps_embed)
+
+    @property
+    def safe_yandex_maps_embed(self):
+        return sanitize_map_embed(self.yandex_maps_embed)
 
     # --- Map helpers (auto-built from picked coordinates) ---
     @property
