@@ -1,0 +1,28 @@
+{% load i18n %}
+{# Populated from the clicked card's data-cert-* attributes by static/js/main.js. #}
+<div id="cert-lightbox" class="fixed inset-0 z-[100] hidden">
+  <div data-cert-close class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+  <div class="absolute inset-0 grid place-items-center p-4 overflow-y-auto">
+    <div class="relative w-full max-w-lg rounded-card surface-card shadow-strong my-8 max-h-[92vh] overflow-hidden flex flex-col" style="animation:fadeUp .35s ease">
+      <button type="button" data-cert-close class="absolute top-3 right-3 z-10 h-9 w-9 grid place-items-center rounded-lg bg-black/45 text-white hover:bg-black/60" aria-label="{% translate 'Yopish' %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      {# Image capped by viewport height, not modal width, so it never crowds out the info below. #}
+      <div class="shrink-0 flex justify-center bg-neutral-100 dark:bg-neutral-800">
+        <img data-cert-image-el src="" alt="" class="max-h-[70vh] w-auto max-w-full object-contain">
+      </div>
+      <div class="p-5 space-y-2 overflow-y-auto">
+        <div class="flex items-center gap-2">
+          <span data-cert-badge-el class="hidden rounded-pill bg-brand-blue-50 dark:bg-brand-blue-500/15 text-brand-blue-700 dark:text-brand-blue-300 px-2.5 py-1 text-[12px] font-bold"></span>
+          <span data-cert-date-el class="hidden text-[12.5px] txt-soft"></span>
+        </div>
+        <p data-cert-name-el class="font-display font-bold text-[17px]"></p>
+        <p data-cert-description-el class="hidden text-[13.5px] txt-soft"></p>
+        <a data-cert-link-el href="#" target="_blank" rel="noopener" class="hidden inline-flex items-center gap-2 mt-2 rounded-pill bg-brand-blue-600 px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-brand-blue-700">
+          {% translate "Havolani ochish" %}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

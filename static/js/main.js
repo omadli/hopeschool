@@ -141,6 +141,45 @@
   document.querySelectorAll("[data-close-modal]").forEach(function (b) { b.addEventListener("click", closeM); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeM(); });
 
+  // ---- certificate lightbox (Sertifikatlar sahifasi) ----
+  var certLb = document.getElementById("cert-lightbox");
+  if (certLb) {
+    var certImg = certLb.querySelector("[data-cert-image-el]");
+    var certBadge = certLb.querySelector("[data-cert-badge-el]");
+    var certDate = certLb.querySelector("[data-cert-date-el]");
+    var certName = certLb.querySelector("[data-cert-name-el]");
+    var certDesc = certLb.querySelector("[data-cert-description-el]");
+    var certLink = certLb.querySelector("[data-cert-link-el]");
+
+    function openCertLb(card) {
+      var d = card.dataset;
+      certImg.src = d.certImage || "";
+      certImg.alt = d.certName || "";
+      certBadge.textContent = d.certBadge || "";
+      certBadge.classList.toggle("hidden", !d.certBadge);
+      certDate.textContent = d.certDate || "";
+      certDate.classList.toggle("hidden", !d.certDate);
+      certName.textContent = d.certName || "";
+      certDesc.textContent = d.certDescription || "";
+      certDesc.classList.toggle("hidden", !d.certDescription);
+      certLink.classList.toggle("hidden", !d.certLink);
+      if (d.certLink) certLink.href = d.certLink;
+      certLb.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+    function closeCertLb() {
+      certLb.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+    document.querySelectorAll("[data-cert-open]").forEach(function (card) {
+      card.addEventListener("click", function () { openCertLb(card); });
+    });
+    certLb.querySelectorAll("[data-cert-close]").forEach(function (b) {
+      b.addEventListener("click", closeCertLb);
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCertLb(); });
+  }
+
   // ---- lead form submit (real endpoint, dependency-free) ----
   function showToast() {
     var t = document.getElementById("toast");
@@ -224,4 +263,14 @@
   // PWA install on the public site now relies on the browser's native install
   // UI (the linked web manifest) — no custom in-page prompt. The admin panel
   // keeps its own dedicated install button (see static/js/admin_pwa.js).
+
+  // ---- only one <video> plays at a time (gallery grids show several) ----
+  // "play" doesn't bubble, so listen on the capture phase at document level —
+  // this also covers videos added to the DOM later, with one listener.
+  document.addEventListener("play", function (e) {
+    if (e.target.tagName !== "VIDEO") return;
+    document.querySelectorAll("video").forEach(function (v) {
+      if (v !== e.target) v.pause();
+    });
+  }, true);
 })();

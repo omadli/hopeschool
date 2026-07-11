@@ -12,16 +12,34 @@
     </div>
     <div data-carousel="certs" data-interval="3000" class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1 mb-12">
       {% for c in certificates %}
-      <a href="{{ c.link }}" target="_blank" rel="noopener" class="snap-start shrink-0 w-[62%] sm:w-[40%] lg:w-[23.4%] card-hover group block rounded-card surface-card border bd shadow-soft overflow-hidden">
+      {% if c.image %}
+      {# Certificates with an image open the lightbox instead of navigating away. #}
+      <button type="button" data-cert-open
+              data-cert-image="{{ c.image.url }}"
+              data-cert-name="{{ c.student_name|default:c.title }}"
+              data-cert-badge="{{ c.badge }}"
+              data-cert-description="{{ c.description }}"
+              data-cert-date="{% if c.issued_on %}{{ c.issued_on|date:'d.m.Y' }}{% endif %}"
+              data-cert-link="{{ c.link }}"
+              class="snap-start shrink-0 w-[46%] sm:w-[30%] lg:w-[18%] card-hover group block text-left rounded-card surface-card border bd shadow-soft overflow-hidden">
         <div class="relative aspect-[5/7] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
-          {% if c.image %}{% responsive_img c.image alt=c.title css="h-full w-full object-contain transition duration-500 group-hover:scale-[1.03]" width=480 width_2x=900 sizes="(min-width:1024px) 23vw, (min-width:640px) 40vw, 62vw" %}
-          {% else %}<div class="absolute inset-0 grad-cap grid place-items-center text-white"><div class="text-center px-4"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" class="mx-auto opacity-90" aria-hidden="true"><path d="M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5"/></svg><div class="mt-2 font-display font-extrabold text-[26px] leading-none">{{ c.badge|default:"Natija" }}</div></div></div>{% endif %}
-          {% if c.image and c.badge %}<span class="absolute top-3 left-3 rounded-pill bg-white/90 dark:bg-black/45 backdrop-blur px-2.5 py-1 text-[11px] font-bold {% if c.badge_accent %}text-brand-red-600 dark:text-brand-red-300{% else %}text-brand-blue-700 dark:text-brand-blue-300{% endif %}">{{ c.badge }}</span>{% endif %}
+          {% responsive_img c.image alt=c.title css="h-full w-full object-contain transition duration-500 group-hover:scale-[1.03]" width=480 width_2x=900 sizes="(min-width:1024px) 18vw, (min-width:640px) 30vw, 46vw" %}
+          {% if c.badge %}<span class="absolute top-3 left-3 rounded-pill bg-white/90 dark:bg-black/45 backdrop-blur px-2.5 py-1 text-[11px] font-bold {% if c.badge_accent %}text-brand-red-600 dark:text-brand-red-300{% else %}text-brand-blue-700 dark:text-brand-blue-300{% endif %}">{{ c.badge }}</span>{% endif %}
+        </div>
+        <div class="p-4"><p class="font-display font-bold text-[14px]">{{ c.student_name|default:c.title }}</p>{% if c.description %}<p class="text-[12px] txt-soft">{{ c.description }}</p>{% endif %}</div>
+      </button>
+      {% else %}
+      {# No image to enlarge (PDF/external link only) — behaves as before. #}
+      <a href="{{ c.link }}" target="_blank" rel="noopener" class="snap-start shrink-0 w-[46%] sm:w-[30%] lg:w-[18%] card-hover group block rounded-card surface-card border bd shadow-soft overflow-hidden">
+        <div class="relative aspect-[5/7] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+          <div class="absolute inset-0 grad-cap grid place-items-center text-white"><div class="text-center px-4"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" class="mx-auto opacity-90" aria-hidden="true"><path d="M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5"/></svg><div class="mt-2 font-display font-extrabold text-[26px] leading-none">{{ c.badge|default:"Natija" }}</div></div></div>
         </div>
         <div class="p-4"><p class="font-display font-bold text-[14px]">{{ c.student_name|default:c.title }}</p>{% if c.description %}<p class="text-[12px] txt-soft">{{ c.description }}</p>{% endif %}</div>
       </a>
+      {% endif %}
       {% endfor %}
     </div>
+    {% include "partials/_certificate_lightbox.html" %}
     {% endif %}
 
     {% if testimonials %}
