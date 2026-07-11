@@ -10,6 +10,7 @@ from .models import (
     AboutSection,
     HeroSection,
     HomeVideo,
+    Partner,
     SiteCopy,
     StatItem,
     WhyUsItem,
@@ -32,6 +33,12 @@ class StatItemAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin)
 class WhyUsItemAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin):
     list_display = ("title", "icon", "accent", "is_active", "order")
     list_editable = ("icon", "accent", "is_active", "order")
+
+
+@admin.register(Partner)
+class PartnerAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmin):
+    list_display = ("name", "website_url", "is_active", "order")
+    list_editable = ("website_url", "is_active", "order")
 
 
 @admin.register(HeroSection)
