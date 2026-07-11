@@ -124,6 +124,31 @@ class PartnerSeedMigrationTests(TestCase):
 
 
 @override_settings(STORAGES=_STATIC_STORAGE)
+class PartnersSectionTests(TestCase):
+    """LandingView passes partners to the template; _partners.html renders them."""
+
+    def test_partner_name_renders_on_landing_page(self):
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertIn("Cambridge", body)
+
+    def test_link_wraps_name_when_website_url_set(self):
+        Partner.objects.filter(name="IELTS").update(website_url="https://www.ielts.org")
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertIn('href="https://www.ielts.org"', body)
+
+    def test_plain_name_has_no_link_when_url_blank(self):
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        # "Pearson" is seeded with a blank website_url — must render as plain
+        # text (a <span>), not wrapped in a link.
+        self.assertIn("<span>Pearson</span>", body)
+
+    def test_section_hidden_when_no_partners(self):
+        Partner.objects.all().delete()
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertNotIn("marquee-track", body)
+
+
+@override_settings(STORAGES=_STATIC_STORAGE)
 class PagesAdminTests(TestCase):
     """Admin changelist and add pages return 200 for pages app models."""
 

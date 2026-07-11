@@ -7,7 +7,7 @@ from apps.news.models import NewsPost
 from apps.teachers.models import Teacher
 from apps.testimonials.models import Testimonial
 
-from .models import AboutSection, HomeVideo, StatItem, WhyUsItem
+from .models import AboutSection, HomeVideo, Partner, StatItem, WhyUsItem
 
 
 class LandingView(TemplateView):
@@ -19,6 +19,7 @@ class LandingView(TemplateView):
         ctx["home_video"] = HomeVideo.get_solo()
         ctx["stats"] = StatItem.objects.filter(is_active=True)
         ctx["why_us"] = WhyUsItem.objects.filter(is_active=True)
+        ctx["partners"] = Partner.objects.filter(is_active=True)
         ctx["courses"] = Course.objects.filter(is_active=True).select_related("category")[:9]
         ctx["news"] = NewsPost.objects.filter(is_published=True)[:8]
         ctx["teachers"] = Teacher.objects.filter(is_active=True)[:12]
