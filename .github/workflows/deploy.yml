@@ -92,7 +92,11 @@ jobs:
             git pull --ff-only
             venv/bin/pip install -r requirements.txt
             venv/bin/python manage.py migrate --noinput
-            venv/bin/python manage.py tailwind build          # BEFORE collectstatic
+            # --force: django-tailwind-cli's "up to date" check only compares
+            # source.css's mtime against the compiled output's — it has no idea
+            # templates changed, so without --force it silently no-ops on every
+            # deploy that doesn't also touch source.css (i.e. nearly all of them).
+            venv/bin/python manage.py tailwind build --force   # BEFORE collectstatic
             venv/bin/python manage.py collectstatic --noinput
             venv/bin/python manage.py compilemo               # .po -> .mo (polib)
             sudo systemctl restart hopeschool
