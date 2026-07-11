@@ -327,7 +327,7 @@ def populate_certificate(cert, *, fetcher=fetch_pdf_bytes, save=False):
         subj = {"uz": cap, "ru": cap, "en": cap}
 
     if level:
-        _set_translated(cert, "badge", level, level, level)
+        cert.badge = level
         cert.badge_accent = level in ("C1", "C2")
 
     _set_translated(

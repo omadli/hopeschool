@@ -5,4 +5,6 @@ from .models import Certificate
 
 @register(Certificate)
 class CertificateTR(TranslationOptions):
-    fields = ("title", "description", "badge")
+    # badge (IELTS 7, B2, SAT...) reads identically in every language — not
+    # translated, unlike title/description.
+    fields = ("title", "description")
