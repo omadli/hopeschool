@@ -169,3 +169,17 @@ class HomeVideo(VideoMixin, SingletonModel):
 
     def __str__(self):
         return "Bosh sahifa videosi"
+
+
+class Partner(OrderedActiveModel):
+    """A partner organisation shown in the homepage marquee (text only)."""
+
+    name = models.CharField(_("Nomi"), max_length=80)
+    website_url = models.URLField(_("Veb-sayt (ixtiyoriy)"), blank=True)
+
+    class Meta(OrderedActiveModel.Meta):
+        verbose_name = _("Hamkor")
+        verbose_name_plural = _("Hamkorlar")
+
+    def __str__(self):
+        return self.name

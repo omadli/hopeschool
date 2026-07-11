@@ -9,7 +9,7 @@ from django.urls import reverse
 from apps.certificates.models import Certificate
 from apps.courses.models import Course
 from apps.news.models import NewsPost
-from apps.pages.models import AboutSection, HeroSection, HomeVideo, SiteCopy
+from apps.pages.models import AboutSection, HeroSection, HomeVideo, Partner, SiteCopy
 from apps.siteconfig.models import SiteConfig
 
 User = get_user_model()
@@ -81,6 +81,33 @@ class AboutSectionModelTests(TestCase):
         self.assertTrue(hasattr(section, "title_uz"))
         self.assertTrue(hasattr(section, "title_ru"))
         self.assertTrue(hasattr(section, "title_en"))
+
+
+class PartnerModelTests(TestCase):
+    """Partner model basics."""
+
+    def test_str(self):
+        partner = Partner.objects.create(name="Test Partner")
+        self.assertEqual(str(partner), "Test Partner")
+
+    def test_i18n_fields_exist(self):
+        """modeltranslation creates _uz / _ru / _en variants."""
+        partner = Partner()
+        self.assertTrue(hasattr(partner, "name_uz"))
+        self.assertTrue(hasattr(partner, "name_ru"))
+        self.assertTrue(hasattr(partner, "name_en"))
+
+    def test_website_url_defaults_to_blank(self):
+        partner = Partner.objects.create(name="No URL Partner")
+        self.assertEqual(partner.website_url, "")
+
+    def test_default_ordering_by_order_field(self):
+        # Delete first so this test is robust whether or not seed data
+        # (Task 3) has landed yet — avoids order-value collisions either way.
+        Partner.objects.all().delete()
+        second = Partner.objects.create(name="Second", order=2)
+        first = Partner.objects.create(name="First", order=1)
+        self.assertEqual(list(Partner.objects.all()), [first, second])
 
 
 @override_settings(STORAGES=_STATIC_STORAGE)

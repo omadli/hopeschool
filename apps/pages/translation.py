@@ -4,6 +4,7 @@ from .models import (
     AboutSection,
     HeroSection,
     HomeVideo,
+    Partner,
     SiteCopy,
     StatItem,
     WhyUsItem,
@@ -23,6 +24,11 @@ class StatItemTR(TranslationOptions):
 @register(WhyUsItem)
 class WhyUsItemTR(TranslationOptions):
     fields = ("title", "description")
+
+
+@register(Partner)
+class PartnerTR(TranslationOptions):
+    fields = ("name",)
 
 
 # NOTE: these singletons set a model `default=` on their translatable fields.
