@@ -57,6 +57,33 @@ def translation_cache():
             _run_locks.clear()
 
 
+# Brand/program names the MT engine must pass through unchanged. Google
+# Translate parses these as ordinary words rather than proper nouns (e.g.
+# "Hope School" -> "Школа Надежды", "Bolajon" -> "Ребёнок"), which is wrong
+# every single time. Swapped for a placeholder before translation and
+# restored after. Digit-only tokens, verified empirically: punctuation/
+# brackets get mangled, and even plain uppercase-letter tokens get silently
+# transliterated into Cyrillic under some sentence contexts (e.g. inside
+# quotes) — pure digit sequences are the one form the engine never touches.
+_PROTECTED_TERMS = {
+    "Hope School": "700200301",
+    "Hope Academy": "700200302",
+    "Bolajon": "700200303",
+}
+
+
+def _protect_terms(text: str) -> str:
+    for term, token in _PROTECTED_TERMS.items():
+        text = text.replace(term, token)
+    return text
+
+
+def _restore_terms(text: str) -> str:
+    for term, token in _PROTECTED_TERMS.items():
+        text = text.replace(token, term)
+    return text
+
+
 def _engine_translate(text: str, target: str, source: str) -> str:
     """Single point of contact with the MT engine. Swap this to change backends.
 
@@ -66,8 +93,8 @@ def _engine_translate(text: str, target: str, source: str) -> str:
     try:
         from deep_translator import GoogleTranslator
 
-        result = GoogleTranslator(source=source, target=target).translate(text)
-        return result or ""
+        result = GoogleTranslator(source=source, target=target).translate(_protect_terms(text))
+        return _restore_terms(result) if result else ""
     except Exception as exc:  # pragma: no cover - network/engine errors
         logger.warning("MT failed (%s->%s): %s", source, target, exc)
         return ""
