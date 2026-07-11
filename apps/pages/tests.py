@@ -147,6 +147,12 @@ class PartnersSectionTests(TestCase):
         body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
         self.assertNotIn("marquee-track", body)
 
+    def test_partner_name_renders_twice_for_seamless_marquee_loop(self):
+        # The marquee's CSS animation (scrollx, translateX(-50%)) only loops
+        # seamlessly if the track contains the list twice, back-to-back.
+        body = self.client.get("/uz/", follow=True).content.decode("utf-8", "replace")
+        self.assertEqual(body.count("<span>Pearson</span>"), 2)
+
 
 @override_settings(STORAGES=_STATIC_STORAGE)
 class PagesAdminTests(TestCase):

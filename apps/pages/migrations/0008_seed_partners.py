@@ -29,7 +29,7 @@ def noop(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("pages", "0007_partner"),  # confirm this matches Task 1's generated filename
+        ("pages", "0007_partner"),
     ]
 
     operations = [
