@@ -89,6 +89,10 @@ class HeroSection(SingletonModel):
         _("2-yorliq — qiymat"), max_length=20, default="100+",
         help_text=_("«Bu oy … yangi oʻquvchi» yorlig'idagi raqam, masalan «100+»."),
     )
+    image = models.ImageField(
+        _("Rasm"), upload_to="hero/", blank=True, validators=image_validators,
+        help_text=_("Hero blokidagi katta rasm/poster."),
+    )
 
     class Meta:
         verbose_name = _("Hero bo'limi")

@@ -55,6 +55,7 @@ class HeroSectionAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdm
             "fields": ("metric1_value", "metric2_value"),
             "description": _("Hero rasmi ustidagi kichik kartalardagi raqamlar."),
         }),
+        (_("Rasm"), {"fields": ("image",)}),
     )
 
 
