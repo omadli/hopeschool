@@ -110,6 +110,19 @@ class PartnerModelTests(TestCase):
         self.assertEqual(list(Partner.objects.all()), [first, second])
 
 
+class PartnerSeedMigrationTests(TestCase):
+    """The seed data migration must populate the original 7 partner names."""
+
+    def test_seed_creates_seven_partners(self):
+        self.assertEqual(Partner.objects.count(), 7)
+
+    def test_seeded_partners_have_no_url(self):
+        self.assertTrue(all(p.website_url == "" for p in Partner.objects.all()))
+
+    def test_cambridge_is_seeded(self):
+        self.assertTrue(Partner.objects.filter(name="Cambridge").exists())
+
+
 @override_settings(STORAGES=_STATIC_STORAGE)
 class PagesAdminTests(TestCase):
     """Admin changelist and add pages return 200 for pages app models."""
