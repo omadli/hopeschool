@@ -16,9 +16,18 @@ msgstr ""
 msgid " va boshqalar"
 msgstr "and others"
 
+msgid "#RRGGBB. Boʻsh boʻlsa asosiy rang ishlatiladi."
+msgstr "#RRGGBB. If left empty, the primary color is used."
+
 msgid ""
 "%(o)d ta yozuv, %(f)d ta maydon avto-tarjima qilindi. Iltimos, tekshiring."
 msgstr "%(o)d entries, %(f)d fields were auto-translated. Please check."
+
+msgid "1-yorliq — qiymat"
+msgstr "Tab 1 — value"
+
+msgid "2-yorliq — qiymat"
+msgstr "Tab 2 — value"
 
 msgid ""
 "@BotFather bergan token. Boʻsh qoldirilsa, serverdagi .env qiymati "
@@ -50,11 +59,11 @@ msgstr "Apply now"
 msgid "Arizalar"
 msgstr "Requests"
 
-msgid "Arizalar (30 kun)"
-msgstr "Requests (30 days)"
+msgid "Arizalar (davr)"
+msgstr "Applications (period)"
 
-msgid "Arizalar (soʻnggi 14 kun)"
-msgstr "Applications (last 14 days)"
+msgid "Arizalar dinamikasi"
+msgstr "Applications trend"
 
 msgid "Arizalar holati boʻyicha"
 msgstr "By application status"
@@ -97,6 +106,10 @@ msgstr "Badge (tag)"
 
 msgid "Belgilanmasa, bu adminga arizalar yuborilmaydi."
 msgstr "If unchecked, applications are not sent to this admin."
+
+msgid "Belgilansa, paneldagi token oʻchiriladi va .env qiymati ishlatiladi."
+msgstr ""
+"If checked, the token in the panel is deleted and the .env value is used."
 
 msgid "Bilimga ishonchni mustahkamlaymiz"
 msgstr "We strengthen trust in knowledge"
@@ -158,10 +171,12 @@ msgstr "Bot"
 msgid ""
 "Bot tokenini kiriting, soʻng «Telegram qabul qiluvchilar» boʻlimida "
 "arizalarni qabul qiladigan adminlarni qoʻshing — bir nechta admin qoʻshish "
-"mumkin."
+"mumkin. Xavfsizlik uchun token bir marta yoziladi va qaytadan "
+"koʻrsatilmaydi."
 msgstr ""
 "Enter the bot token, then add the admins who receive applications in the "
-"«Telegram recipients» section — you can add several."
+"«Telegram recipients» section — you can add several. For security, the token"
+" is entered once and is never shown again."
 
 msgid "Boʻlim"
 msgstr "Section"
@@ -184,8 +199,11 @@ msgstr "The camera doesn't work in this browser. Enter the link manually."
 msgid "Bu oy"
 msgstr "This month"
 
-msgid "Bugungi tashriflar"
-msgstr "Visits today"
+msgid "Bu yilda sertifikat topilmadi."
+msgstr "No certificates found for this year."
+
+msgid "Bugun"
+msgstr "Today"
 
 msgid "CEFR / havola (QR skaner)"
 msgstr "CEFR / link (QR scanner)"
@@ -196,6 +214,12 @@ msgid ""
 msgstr ""
 "Enter the CEFR certificate link or scan the QR code — on save the PDF is "
 "converted to an image and the student's name is detected."
+
+msgid "CRM"
+msgstr "CRM"
+
+msgid "Chap yuqoridagi yorliq, masalan «IELTS 7.5» ('oʻrtacha' izohi bilan)."
+msgstr "Top-left tab, e.g. «IELTS 7.5» (with an \"average\" note)."
 
 msgid "Chat ID"
 msgstr "Chat ID"
@@ -211,6 +235,9 @@ msgstr "Published"
 
 msgid "Chop etilgan sana"
 msgstr "Published date"
+
+msgid "Dark"
+msgstr "Dark"
 
 msgid "Darsga yoziling"
 msgstr "Book a lesson"
@@ -308,6 +335,10 @@ msgstr "Gallery video"
 msgid "Google Analytics 4 ID"
 msgstr "Google Analytics 4 ID"
 
+msgid ""
+"Google Analytics ID G-XXXXXXX (yoki UA-XXXX-Y) koʻrinishida boʻlishi kerak."
+msgstr "Google Analytics ID must be in the format G-XXXXXXX (or UA-XXXX-Y)."
+
 msgid "Google Maps embed"
 msgstr "Google Maps embed"
 
@@ -323,6 +354,18 @@ msgstr "Group"
 msgid "Guruh hajmi"
 msgstr "Group size"
 
+msgid "Hafta"
+msgstr "Week"
+
+msgid "Hali manba yoʻq."
+msgstr "No sources yet."
+
+msgid "Hamkor"
+msgstr "Partner"
+
+msgid "Hamkorlar"
+msgstr "Partners"
+
 msgid "Havola"
 msgstr "Link"
 
@@ -332,11 +375,20 @@ msgstr "Imported from the link (image + name detected). Review and save."
 msgid "Havoladan qayta import qilish (PDF→rasm + ism)"
 msgstr "Re-import from the link (PDF→image + name)"
 
+msgid "Havolani ochish"
+msgstr "Open link"
+
 msgid "Hero bo'limi"
 msgstr "Hero section"
 
+msgid "Hero rasmi ustidagi kichik kartalardagi raqamlar."
+msgstr "Numbers on the small cards above the hero image."
+
 msgid "Hero tepasidagi kichik yorliq (masalan, shahar)."
 msgstr "A small tab above the Hero (for example, a city)."
+
+msgid "Himoyalangan"
+msgstr "Protected"
 
 msgid "Hisob / matematika"
 msgstr "Calculation / math"
@@ -394,9 +446,6 @@ msgstr "Note"
 
 msgid "Jami"
 msgstr "Total"
-
-msgid "Jami tashriflar"
-msgstr "Total visits"
 
 msgid "Jamoa"
 msgstr "Team"
@@ -491,6 +540,12 @@ msgstr "Choose a course (optional)"
 msgid "Lavozim / yo'nalish"
 msgstr "Position / field"
 
+msgid "Lidlar"
+msgstr "Leads"
+
+msgid "Light"
+msgstr "Light"
+
 msgid "Logo"
 msgstr "Logo"
 
@@ -499,6 +554,12 @@ msgstr "MP4/WebM. It is not necessary if a link is provided."
 
 msgid "Manba"
 msgstr "Source"
+
+msgid "Manbalar"
+msgstr "Sources"
+
+msgid "Manbalar boʻyicha lidlar (CRM)"
+msgstr "Leads by source (CRM)"
 
 msgid "Manzil"
 msgstr "Address"
@@ -511,6 +572,9 @@ msgstr "Center news"
 
 msgid "Masalan: hopeschool.uz (protokolsiz). Sitemap/canonical uchun."
 msgstr "E.g. hopeschool.uz (without protocol). For sitemap/canonical."
+
+msgid "Material Symbols nomi (masalan: public). Rasm boʻlmaganda ishlatiladi."
+msgstr "Material Symbols name (e.g. public). Used when there is no image."
 
 msgid "Matn"
 msgstr "Text"
@@ -602,6 +666,9 @@ msgstr "Previous"
 msgid "Operatsion tizim"
 msgstr "Operating system"
 
+msgid "Oy"
+msgstr "Month"
+
 msgid "Oyna — matn"
 msgstr "Window - text"
 
@@ -625,6 +692,9 @@ msgstr "Certificates of our students"
 
 msgid "PDF fayl"
 msgstr "PDF file"
+
+msgid "PDF havoladan avtomatik aniqlanadi (topilsa)."
+msgstr "Auto-detected from the PDF link (if found)."
 
 msgid "Planshet"
 msgstr "Tablet"
@@ -680,6 +750,9 @@ msgstr "Devices"
 msgid "Rad etildi"
 msgstr "Rejected"
 
+msgid "Rang"
+msgstr "Color"
+
 msgid "Raqam"
 msgstr "Number"
 
@@ -693,14 +766,23 @@ msgstr ""
 msgid "Rasm"
 msgstr "Image"
 
+msgid "Rasm (hisobot uchun)"
+msgstr "Image (for report)"
+
 msgid "Rasm, PDF yoki tashqi havoladan kamida bittasini kiriting."
 msgstr "Provide at least one of: image, PDF, or external link."
+
+msgid "Referrer"
+msgstr "Referrer"
 
 msgid "Rejimni almashtirish"
 msgstr "Toggle theme"
 
 msgid "Roli"
 msgstr "Role"
+
+msgid "Ruxsat etilmagan manba."
+msgstr "Source not allowed."
 
 msgid "SEO"
 msgstr "SEO"
@@ -716,6 +798,9 @@ msgstr "Page"
 
 msgid "Sahifalar"
 msgstr "Pages"
+
+msgid "Saqlangan tokenni oʻchirish"
+msgstr "Delete saved token"
 
 msgid "Sarlavha"
 msgstr "Title"
@@ -756,6 +841,9 @@ msgstr "View site"
 msgid "Sertifikat"
 msgstr "Certificate"
 
+msgid "Sertifikat olingan sanasi"
+msgstr "Certificate issue date"
+
 msgid "Sertifikatlar"
 msgstr "Certificates"
 
@@ -785,6 +873,12 @@ msgstr "Statistic item"
 
 msgid "Statistika raqamlari"
 msgstr "Statistic items"
+
+msgid "Suzuvchi yorliqlar"
+msgstr "Floating tabs"
+
+msgid "System"
+msgstr "System"
 
 msgid "Tajriba (yil)"
 msgstr "Experience (years)"
@@ -823,11 +917,11 @@ msgstr "Visit"
 msgid "Tashriflar"
 msgstr "Visits"
 
-msgid "Tashriflar (30 kun)"
-msgstr "Visits (30 days)"
+msgid "Tashriflar (davr)"
+msgstr "Visits (period)"
 
-msgid "Tashriflar (soʻnggi 14 kun)"
-msgstr "Visits (last 14 days)"
+msgid "Tashriflar dinamikasi"
+msgstr "Visits trend"
 
 msgid "Tavsif"
 msgstr "Description"
@@ -880,6 +974,9 @@ msgstr "Full title: \"Heading start\" + site name + \"Heading end\"."
 msgid "To'liq tavsif"
 msgstr "Full description"
 
+msgid "Token holati"
+msgstr "Token status"
+
 msgid "Top kurs (qizil belgi)"
 msgstr "Top course (red badge)"
 
@@ -916,6 +1013,9 @@ msgstr "Time"
 msgid "Veb-sayt"
 msgstr "Website"
 
+msgid "Veb-sayt (ixtiyoriy)"
+msgstr "Website (optional)"
+
 msgid "Video"
 msgstr "Video"
 
@@ -936,11 +1036,19 @@ msgstr ""
 "Click on the map or drag the icon — the coordinates will be filled in "
 "automatically."
 
+msgid "Xavfsizlik uchun saqlangan token qayta koʻrsatilmaydi. "
+msgstr "For security, the saved token is not shown again. "
+
 msgid "Yandex Maps embed"
 msgstr "Yandex Maps embed"
 
 msgid "Yandex Metrica ID"
 msgstr "Yandex Metrica ID"
+
+msgid ""
+"Yandex Metrica ID faqat raqamlardan iborat boʻlishi kerak (masalan: "
+"12345678)."
+msgstr "Yandex Metrica ID must consist of digits only (e.g. 12345678)."
 
 msgid "Yandex verification"
 msgstr "Yandex verification"
@@ -948,8 +1056,8 @@ msgstr "Yandex verification"
 msgid "Yangi"
 msgstr "New"
 
-msgid "Yangi arizalar"
-msgstr "New requests"
+msgid "Yangi arizalar (davr)"
+msgstr "New applications (period)"
 
 msgid "Yangilangan"
 msgstr "Updated"
@@ -968,6 +1076,9 @@ msgstr "News and announcements"
 
 msgid "Yaratilgan"
 msgstr "Created"
+
+msgid "Yil"
+msgstr "Year"
 
 msgid "Yopish"
 msgstr "Close"
@@ -1011,6 +1122,18 @@ msgstr "average"
 
 msgid "yangi oʻquvchi"
 msgstr "new students"
+
+msgid "«Bu oy … yangi oʻquvchi» yorlig'idagi raqam, masalan «100+»."
+msgstr "The number in the \"This month … new students\" tab, e.g. \"100+\"."
+
+msgid "• .env qiymati ishlatiladi"
+msgstr "• the .env value is used"
+
+msgid "✓ Oʻrnatilgan (panel)"
+msgstr "✓ Set (panel)"
+
+msgid "✗ Oʻrnatilmagan"
+msgstr "✗ Not set"
 
 msgid "📷 QR kodni skanerlash"
 msgstr "📷 Scan QR code"

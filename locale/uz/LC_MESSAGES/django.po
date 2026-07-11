@@ -405,6 +405,9 @@ msgstr "O'chirish"
 msgid "Reset filters"
 msgstr "Filtrlarni tiklash"
 
+msgid "Return to site"
+msgstr "Saytga qaytish"
+
 msgid "Run"
 msgstr "Bajarish"
 
@@ -453,6 +456,9 @@ msgstr "Koʻrish"
 msgid "View site"
 msgstr "Saytni ko'rish"
 
+msgid "Welcome back to"
+msgstr "Xush kelibsiz"
+
 msgid "Nothing matched your search"
 msgstr "Qidiruvingizga hech narsa mos kelmadi"
 
@@ -461,3 +467,6 @@ msgstr "Yozuvni tanlash"
 
 msgid "Submit"
 msgstr "Yuborish"
+
+msgid "username"
+msgstr "foydalanuvchi nomi"

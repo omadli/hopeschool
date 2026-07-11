@@ -131,6 +131,71 @@ PROJECT_RU = {
     'Menyuni ochish yoki yopish': 'Открыть или закрыть меню',
     'Menyuni yopish': 'Закрыть меню',
     'Show all': 'Показать все',
+    # --- Theme switch override (templates/unfold/helpers/theme_switch.html) ---
+    'Dark': 'Тёмная',
+    'Light': 'Светлая',
+    'System': 'Системная',
+    # --- Hero section (1-/2-tab metric values, floating tabs fieldset) ---
+    '1-yorliq — qiymat': '1-я вкладка — значение',
+    '2-yorliq — qiymat': '2-я вкладка — значение',
+    'Suzuvchi yorliqlar': 'Плавающие метки',
+    "Chap yuqoridagi yorliq, masalan «IELTS 7.5» ('oʻrtacha' izohi bilan).":
+        'Метка в левом верхнем углу, например «IELTS 7.5» (с примечанием «в среднем»).',
+    "«Bu oy … yangi oʻquvchi» yorlig'idagi raqam, masalan «100+».":
+        'Число в метке «В этом месяце … новых учеников», например «100+».',
+    'Hero rasmi ustidagi kichik kartalardagi raqamlar.':
+        'Цифры на маленьких карточках над изображением героя.',
+    # --- Partners (apps/pages/models.py) ---
+    'Hamkor': 'Партнёр',
+    'Hamkorlar': 'Партнёры',
+    'Veb-sayt (ixtiyoriy)': 'Веб-сайт (необязательно)',
+    # --- Certificates ---
+    'Havolani ochish': 'Открыть ссылку',
+    'Sertifikat olingan sanasi': 'Дата получения сертификата',
+    'Bu yilda sertifikat topilmadi.': 'В этом году сертификатов не найдено.',
+    'PDF havoladan avtomatik aniqlanadi (topilsa).':
+        'Определяется автоматически по ссылке на PDF (если найдено).',
+    # --- Leads / CRM (apps/leads) ---
+    'Lidlar': 'Лиды',
+    'Manbalar': 'Источники',
+    'Manbalar boʻyicha lidlar (CRM)': 'Лиды по источникам (CRM)',
+    'Rang': 'Цвет',
+    'Rasm (hisobot uchun)': 'Изображение (для отчёта)',
+    'Himoyalangan': 'Защищено',
+    'Referrer': 'Реферер',
+    'Ruxsat etilmagan manba.': 'Недопустимый источник.',
+    'Hali manba yoʻq.': 'Пока нет источников.',
+    'Material Symbols nomi (masalan: public). Rasm boʻlmaganda ishlatiladi.':
+        'Название Material Symbols (например: public). Используется, если нет изображения.',
+    # --- Analytics dashboard (apps/analytics/dashboard.py) ---
+    'Bugun': 'Сегодня',
+    'Hafta': 'Неделя',
+    'Oy': 'Месяц',
+    'Yil': 'Год',
+    'Arizalar (davr)': 'Заявки (период)',
+    'Yangi arizalar (davr)': 'Новые заявки (период)',
+    'Arizalar dinamikasi': 'Динамика заявок',
+    'Tashriflar (davr)': 'Посещения (период)',
+    'Tashriflar dinamikasi': 'Динамика посещений',
+    'CRM': 'CRM',
+    # --- Site config: analytics IDs, Telegram token (apps/siteconfig) ---
+    'Google Analytics ID G-XXXXXXX (yoki UA-XXXX-Y) koʻrinishida boʻlishi kerak.':
+        'Google Analytics ID должен быть в формате G-XXXXXXX (или UA-XXXX-Y).',
+    'Yandex Metrica ID faqat raqamlardan iborat boʻlishi kerak (masalan: 12345678).':
+        'Yandex Metrica ID должен состоять только из цифр (например: 12345678).',
+    '#RRGGBB. Boʻsh boʻlsa asosiy rang ishlatiladi.':
+        '#RRGGBB. Если оставить пустым, используется основной цвет.',
+    'Token holati': 'Статус токена',
+    'Saqlangan tokenni oʻchirish': 'Удалить сохранённый токен',
+    'Belgilansa, paneldagi token oʻchiriladi va .env qiymati ishlatiladi.':
+        'Если отмечено, токен в панели будет удалён, и будет использовано значение из .env.',
+    'Xavfsizlik uchun saqlangan token qayta koʻrsatilmaydi. ':
+        'Из соображений безопасности сохранённый токен больше не отображается. ',
+    'Bot tokenini kiriting, soʻng «Telegram qabul qiluvchilar» boʻlimida arizalarni qabul qiladigan adminlarni qoʻshing — bir nechta admin qoʻshish mumkin. Xavfsizlik uchun token bir marta yoziladi va qaytadan koʻrsatilmaydi.':
+        'Введите токен бота, затем в разделе «Получатели Telegram» добавьте администраторов, принимающих заявки, — можно добавить несколько. Из соображений безопасности токен вводится один раз и больше не отображается.',
+    '• .env qiymati ishlatiladi': '• используется значение из .env',
+    '✓ Oʻrnatilgan (panel)': '✓ Установлен (панель)',
+    '✗ Oʻrnatilmagan': '✗ Не установлен',
 }
 
 PROJECT_EN = {
@@ -261,6 +326,71 @@ PROJECT_EN = {
     'Menyuni ochish yoki yopish': 'Open or close menu',
     'Menyuni yopish': 'Close menu',
     'Show all': 'Show all',
+    # --- Theme switch override (templates/unfold/helpers/theme_switch.html) ---
+    'Dark': 'Dark',
+    'Light': 'Light',
+    'System': 'System',
+    # --- Hero section (1-/2-tab metric values, floating tabs fieldset) ---
+    '1-yorliq — qiymat': 'Tab 1 — value',
+    '2-yorliq — qiymat': 'Tab 2 — value',
+    'Suzuvchi yorliqlar': 'Floating tabs',
+    "Chap yuqoridagi yorliq, masalan «IELTS 7.5» ('oʻrtacha' izohi bilan).":
+        'Top-left tab, e.g. «IELTS 7.5» (with an "average" note).',
+    "«Bu oy … yangi oʻquvchi» yorlig'idagi raqam, masalan «100+».":
+        'The number in the "This month … new students" tab, e.g. "100+".',
+    'Hero rasmi ustidagi kichik kartalardagi raqamlar.':
+        'Numbers on the small cards above the hero image.',
+    # --- Partners (apps/pages/models.py) ---
+    'Hamkor': 'Partner',
+    'Hamkorlar': 'Partners',
+    'Veb-sayt (ixtiyoriy)': 'Website (optional)',
+    # --- Certificates ---
+    'Havolani ochish': 'Open link',
+    'Sertifikat olingan sanasi': 'Certificate issue date',
+    'Bu yilda sertifikat topilmadi.': 'No certificates found for this year.',
+    'PDF havoladan avtomatik aniqlanadi (topilsa).':
+        'Auto-detected from the PDF link (if found).',
+    # --- Leads / CRM (apps/leads) ---
+    'Lidlar': 'Leads',
+    'Manbalar': 'Sources',
+    'Manbalar boʻyicha lidlar (CRM)': 'Leads by source (CRM)',
+    'Rang': 'Color',
+    'Rasm (hisobot uchun)': 'Image (for report)',
+    'Himoyalangan': 'Protected',
+    'Referrer': 'Referrer',
+    'Ruxsat etilmagan manba.': 'Source not allowed.',
+    'Hali manba yoʻq.': 'No sources yet.',
+    'Material Symbols nomi (masalan: public). Rasm boʻlmaganda ishlatiladi.':
+        'Material Symbols name (e.g. public). Used when there is no image.',
+    # --- Analytics dashboard (apps/analytics/dashboard.py) ---
+    'Bugun': 'Today',
+    'Hafta': 'Week',
+    'Oy': 'Month',
+    'Yil': 'Year',
+    'Arizalar (davr)': 'Applications (period)',
+    'Yangi arizalar (davr)': 'New applications (period)',
+    'Arizalar dinamikasi': 'Applications trend',
+    'Tashriflar (davr)': 'Visits (period)',
+    'Tashriflar dinamikasi': 'Visits trend',
+    'CRM': 'CRM',
+    # --- Site config: analytics IDs, Telegram token (apps/siteconfig) ---
+    'Google Analytics ID G-XXXXXXX (yoki UA-XXXX-Y) koʻrinishida boʻlishi kerak.':
+        'Google Analytics ID must be in the format G-XXXXXXX (or UA-XXXX-Y).',
+    'Yandex Metrica ID faqat raqamlardan iborat boʻlishi kerak (masalan: 12345678).':
+        'Yandex Metrica ID must consist of digits only (e.g. 12345678).',
+    '#RRGGBB. Boʻsh boʻlsa asosiy rang ishlatiladi.':
+        '#RRGGBB. If left empty, the primary color is used.',
+    'Token holati': 'Token status',
+    'Saqlangan tokenni oʻchirish': 'Delete saved token',
+    'Belgilansa, paneldagi token oʻchiriladi va .env qiymati ishlatiladi.':
+        'If checked, the token in the panel is deleted and the .env value is used.',
+    'Xavfsizlik uchun saqlangan token qayta koʻrsatilmaydi. ':
+        'For security, the saved token is not shown again. ',
+    'Bot tokenini kiriting, soʻng «Telegram qabul qiluvchilar» boʻlimida arizalarni qabul qiladigan adminlarni qoʻshing — bir nechta admin qoʻshish mumkin. Xavfsizlik uchun token bir marta yoziladi va qaytadan koʻrsatilmaydi.':
+        'Enter the bot token, then add the admins who receive applications in the «Telegram recipients» section — you can add several. For security, the token is entered once and is never shown again.',
+    '• .env qiymati ishlatiladi': '• the .env value is used',
+    '✓ Oʻrnatilgan (panel)': '✓ Set (panel)',
+    '✗ Oʻrnatilmagan': '✗ Not set',
 }
 
 UNFOLD_UZ = {
@@ -283,6 +413,9 @@ UNFOLD_UZ = {
     'Filters': 'Filtrlar',
     'General': 'Umumiy',
     'Go back': 'Orqaga qayt',
+    # --- Login page (unfold/templates/admin/login.html + helpers) ---
+    'Return to site': 'Saytga qaytish',
+    'Welcome back to': 'Xush kelibsiz',
     'Hide counts': 'Hisoblarni yashirish',
     'Light': 'Yorugʻ',
     'Log in again': 'Qaytadan kiring',
@@ -342,6 +475,9 @@ UNFOLD_RU = {
     'Filters': 'Фильтры',
     'General': 'Общее',
     'Go back': 'Вернуться назад',
+    # --- Login page (unfold/templates/admin/login.html + helpers) ---
+    'Return to site': 'Вернуться на сайт',
+    'Welcome back to': 'С возвращением в',
     'Hide counts': 'Скрыть количество',
     'Light': 'Светлая',
     'Log in again': 'Войдите снова',

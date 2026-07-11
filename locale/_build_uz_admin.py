@@ -181,6 +181,14 @@ UZ = {
     "Unknown content": "Noma'lum kontent",
 }
 
+# Strings from django.contrib.auth's own uz catalog (separate from
+# contrib.admin's, which `src` below is read from) that Django's official
+# translation still leaves blank — e.g. the login form's "username" field
+# label (AbstractUser.username verbose_name; "password" is already covered).
+DJANGO_AUTH_UZ = {
+    "username": "foydalanuvchi nomi",
+}
+
 # Plural entries — Uzbek uses a single plural form (nplurals=1).
 UZ_PLURAL = {
     "%(count)s %(name)s was changed successfully.":
@@ -250,6 +258,14 @@ def main():
             seen.add(key)
             unfold_count += 1
 
+    # ---- django.contrib.auth gaps (not sourced from contrib.admin's po) ---
+    auth_count = 0
+    for key, val in DJANGO_AUTH_UZ.items():
+        if val and key not in seen:
+            out.append(polib.POEntry(msgid=key, msgstr=val))
+            seen.add(key)
+            auth_count += 1
+
     lc_dir = os.path.join(BASE, "locale", "uz", "LC_MESSAGES")
     os.makedirs(lc_dir, exist_ok=True)
     po_path = os.path.join(lc_dir, "django.po")
@@ -265,8 +281,8 @@ def main():
         if key not in used_plural:
             missing.append(key + " (plural)")
 
-    print("Wrote %d singular + %d plural Django + %d Unfold uz overrides."
-          % (len(used), len(used_plural), unfold_count))
+    print("Wrote %d singular + %d plural Django + %d Unfold + %d auth uz overrides."
+          % (len(used), len(used_plural), unfold_count, auth_count))
     print("  po=%s" % po_path)
     print("  mo=%s" % mo_path)
     if missing:

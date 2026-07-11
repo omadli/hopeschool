@@ -16,11 +16,20 @@ msgstr ""
 msgid " va boshqalar"
 msgstr "и другие"
 
+msgid "#RRGGBB. Boʻsh boʻlsa asosiy rang ishlatiladi."
+msgstr "#RRGGBB. Если оставить пустым, используется основной цвет."
+
 msgid ""
 "%(o)d ta yozuv, %(f)d ta maydon avto-tarjima qilindi. Iltimos, tekshiring."
 msgstr ""
 "%(o)d записей, %(f)d полей были переведены автоматически. Пожалуйста, "
 "проверьте."
+
+msgid "1-yorliq — qiymat"
+msgstr "1-я вкладка — значение"
+
+msgid "2-yorliq — qiymat"
+msgstr "2-я вкладка — значение"
 
 msgid ""
 "@BotFather bergan token. Boʻsh qoldirilsa, serverdagi .env qiymati "
@@ -53,11 +62,11 @@ msgstr "Оставить заявку"
 msgid "Arizalar"
 msgstr "Заявки"
 
-msgid "Arizalar (30 kun)"
-msgstr "Заявки (30 дней)"
+msgid "Arizalar (davr)"
+msgstr "Заявки (период)"
 
-msgid "Arizalar (soʻnggi 14 kun)"
-msgstr "Заявки (за последние 14 дней)"
+msgid "Arizalar dinamikasi"
+msgstr "Динамика заявок"
 
 msgid "Arizalar holati boʻyicha"
 msgstr "По статусу заявок"
@@ -100,6 +109,11 @@ msgstr "Метка (тег)"
 
 msgid "Belgilanmasa, bu adminga arizalar yuborilmaydi."
 msgstr "Если снять отметку, заявки этому администратору не отправляются."
+
+msgid "Belgilansa, paneldagi token oʻchiriladi va .env qiymati ishlatiladi."
+msgstr ""
+"Если отмечено, токен в панели будет удалён, и будет использовано значение из"
+" .env."
 
 msgid "Bilimga ishonchni mustahkamlaymiz"
 msgstr "Укрепляем доверие к знаниям"
@@ -161,10 +175,12 @@ msgstr "Бот"
 msgid ""
 "Bot tokenini kiriting, soʻng «Telegram qabul qiluvchilar» boʻlimida "
 "arizalarni qabul qiladigan adminlarni qoʻshing — bir nechta admin qoʻshish "
-"mumkin."
+"mumkin. Xavfsizlik uchun token bir marta yoziladi va qaytadan "
+"koʻrsatilmaydi."
 msgstr ""
 "Введите токен бота, затем в разделе «Получатели Telegram» добавьте "
-"администраторов, принимающих заявки — можно добавить несколько."
+"администраторов, принимающих заявки, — можно добавить несколько. Из "
+"соображений безопасности токен вводится один раз и больше не отображается."
 
 msgid "Boʻlim"
 msgstr "Раздел"
@@ -187,8 +203,11 @@ msgstr "В этом браузере камера не работает. Вве�
 msgid "Bu oy"
 msgstr "В этом месяце"
 
-msgid "Bugungi tashriflar"
-msgstr "Визиты сегодня"
+msgid "Bu yilda sertifikat topilmadi."
+msgstr "В этом году сертификатов не найдено."
+
+msgid "Bugun"
+msgstr "Сегодня"
 
 msgid "CEFR / havola (QR skaner)"
 msgstr "CEFR / ссылка (QR-сканер)"
@@ -199,6 +218,14 @@ msgid ""
 msgstr ""
 "Введите ссылку на сертификат CEFR или отсканируйте QR-код — при сохранении "
 "PDF преобразуется в изображение и определяется имя ученика."
+
+msgid "CRM"
+msgstr "CRM"
+
+msgid "Chap yuqoridagi yorliq, masalan «IELTS 7.5» ('oʻrtacha' izohi bilan)."
+msgstr ""
+"Метка в левом верхнем углу, например «IELTS 7.5» (с примечанием «в "
+"среднем»)."
 
 msgid "Chat ID"
 msgstr "Chat ID"
@@ -215,6 +242,9 @@ msgstr "Опубликовано"
 
 msgid "Chop etilgan sana"
 msgstr "Дата публикации"
+
+msgid "Dark"
+msgstr "Тёмная"
 
 msgid "Darsga yoziling"
 msgstr "Записаться на урок"
@@ -314,6 +344,10 @@ msgstr "Галерея видео"
 msgid "Google Analytics 4 ID"
 msgstr "ID Google Analytics 4"
 
+msgid ""
+"Google Analytics ID G-XXXXXXX (yoki UA-XXXX-Y) koʻrinishida boʻlishi kerak."
+msgstr "Google Analytics ID должен быть в формате G-XXXXXXX (или UA-XXXX-Y)."
+
 msgid "Google Maps embed"
 msgstr "Встраивание Google Maps"
 
@@ -329,6 +363,18 @@ msgstr "Группа"
 msgid "Guruh hajmi"
 msgstr "Размер группы"
 
+msgid "Hafta"
+msgstr "Неделя"
+
+msgid "Hali manba yoʻq."
+msgstr "Пока нет источников."
+
+msgid "Hamkor"
+msgstr "Партнёр"
+
+msgid "Hamkorlar"
+msgstr "Партнёры"
+
 msgid "Havola"
 msgstr "Ссылка"
 
@@ -340,11 +386,20 @@ msgstr ""
 msgid "Havoladan qayta import qilish (PDF→rasm + ism)"
 msgstr "Повторно импортировать по ссылке (PDF→изображение + имя)"
 
+msgid "Havolani ochish"
+msgstr "Открыть ссылку"
+
 msgid "Hero bo'limi"
 msgstr "Раздел героев"
 
+msgid "Hero rasmi ustidagi kichik kartalardagi raqamlar."
+msgstr "Цифры на маленьких карточках над изображением героя."
+
 msgid "Hero tepasidagi kichik yorliq (masalan, shahar)."
 msgstr "Небольшая вкладка над Героем (например, городом)."
+
+msgid "Himoyalangan"
+msgstr "Защищено"
 
 msgid "Hisob / matematika"
 msgstr "Счёт / математика"
@@ -402,9 +457,6 @@ msgstr "Комментарий"
 
 msgid "Jami"
 msgstr "Итого"
-
-msgid "Jami tashriflar"
-msgstr "Всего визитов"
 
 msgid "Jamoa"
 msgstr "Команда"
@@ -499,6 +551,12 @@ msgstr "Выберите курс (необязательно)"
 msgid "Lavozim / yo'nalish"
 msgstr "Должность / направление"
 
+msgid "Lidlar"
+msgstr "Лиды"
+
+msgid "Light"
+msgstr "Светлая"
+
 msgid "Logo"
 msgstr "Логотип"
 
@@ -507,6 +565,12 @@ msgstr "MP4/ВебМ. Это не обязательно, если есть сс
 
 msgid "Manba"
 msgstr "Источник"
+
+msgid "Manbalar"
+msgstr "Источники"
+
+msgid "Manbalar boʻyicha lidlar (CRM)"
+msgstr "Лиды по источникам (CRM)"
 
 msgid "Manzil"
 msgstr "Адрес"
@@ -519,6 +583,11 @@ msgstr "Новости центра"
 
 msgid "Masalan: hopeschool.uz (protokolsiz). Sitemap/canonical uchun."
 msgstr "Например: hopeschool.uz (без протокола). Для sitemap/canonical."
+
+msgid "Material Symbols nomi (masalan: public). Rasm boʻlmaganda ishlatiladi."
+msgstr ""
+"Название Material Symbols (например: public). Используется, если нет "
+"изображения."
 
 msgid "Matn"
 msgstr "Текст"
@@ -610,6 +679,9 @@ msgstr "Назад"
 msgid "Operatsion tizim"
 msgstr "Операционная система"
 
+msgid "Oy"
+msgstr "Месяц"
+
 msgid "Oyna — matn"
 msgstr "Окно - текст"
 
@@ -633,6 +705,9 @@ msgstr "Сертификаты наших учеников"
 
 msgid "PDF fayl"
 msgstr "PDF-файл"
+
+msgid "PDF havoladan avtomatik aniqlanadi (topilsa)."
+msgstr "Определяется автоматически по ссылке на PDF (если найдено)."
 
 msgid "Planshet"
 msgstr "Планшет"
@@ -688,6 +763,9 @@ msgstr "Устройства"
 msgid "Rad etildi"
 msgstr "Отклонена"
 
+msgid "Rang"
+msgstr "Цвет"
+
 msgid "Raqam"
 msgstr "Число"
 
@@ -701,14 +779,23 @@ msgstr ""
 msgid "Rasm"
 msgstr "Изображение"
 
+msgid "Rasm (hisobot uchun)"
+msgstr "Изображение (для отчёта)"
+
 msgid "Rasm, PDF yoki tashqi havoladan kamida bittasini kiriting."
 msgstr "Укажите хотя бы одно: изображение, PDF или внешнюю ссылку."
+
+msgid "Referrer"
+msgstr "Реферер"
 
 msgid "Rejimni almashtirish"
 msgstr "Сменить тему"
 
 msgid "Roli"
 msgstr "Роль"
+
+msgid "Ruxsat etilmagan manba."
+msgstr "Недопустимый источник."
 
 msgid "SEO"
 msgstr "SEO"
@@ -724,6 +811,9 @@ msgstr "Страница"
 
 msgid "Sahifalar"
 msgstr "Страницы"
+
+msgid "Saqlangan tokenni oʻchirish"
+msgstr "Удалить сохранённый токен"
 
 msgid "Sarlavha"
 msgstr "Заголовок"
@@ -764,6 +854,9 @@ msgstr "Посмотреть сайт"
 msgid "Sertifikat"
 msgstr "Сертификат"
 
+msgid "Sertifikat olingan sanasi"
+msgstr "Дата получения сертификата"
+
 msgid "Sertifikatlar"
 msgstr "Сертификаты"
 
@@ -793,6 +886,12 @@ msgstr "Статистический показатель"
 
 msgid "Statistika raqamlari"
 msgstr "Статистические показатели"
+
+msgid "Suzuvchi yorliqlar"
+msgstr "Плавающие метки"
+
+msgid "System"
+msgstr "Системная"
 
 msgid "Tajriba (yil)"
 msgstr "Опыт (лет)"
@@ -831,11 +930,11 @@ msgstr "Визит"
 msgid "Tashriflar"
 msgstr "Визиты"
 
-msgid "Tashriflar (30 kun)"
-msgstr "Визиты (30 дней)"
+msgid "Tashriflar (davr)"
+msgstr "Посещения (период)"
 
-msgid "Tashriflar (soʻnggi 14 kun)"
-msgstr "Посещения (последние 14 дней)"
+msgid "Tashriflar dinamikasi"
+msgstr "Динамика посещений"
 
 msgid "Tavsif"
 msgstr "Описание"
@@ -889,6 +988,9 @@ msgstr ""
 msgid "To'liq tavsif"
 msgstr "Полное описание"
 
+msgid "Token holati"
+msgstr "Статус токена"
+
 msgid "Top kurs (qizil belgi)"
 msgstr "Топ-курс (красная метка)"
 
@@ -925,6 +1027,9 @@ msgstr "Время"
 msgid "Veb-sayt"
 msgstr "Веб-сайт"
 
+msgid "Veb-sayt (ixtiyoriy)"
+msgstr "Веб-сайт (необязательно)"
+
 msgid "Video"
 msgstr "Видео"
 
@@ -945,11 +1050,21 @@ msgstr ""
 "Нажмите на карту или перетащите иконку — координаты заполнятся "
 "автоматически."
 
+msgid "Xavfsizlik uchun saqlangan token qayta koʻrsatilmaydi. "
+msgstr ""
+"Из соображений безопасности сохранённый токен больше не отображается. "
+
 msgid "Yandex Maps embed"
 msgstr "Встраивание Yandex Maps"
 
 msgid "Yandex Metrica ID"
 msgstr "ID Yandex Metrica"
+
+msgid ""
+"Yandex Metrica ID faqat raqamlardan iborat boʻlishi kerak (masalan: "
+"12345678)."
+msgstr ""
+"Yandex Metrica ID должен состоять только из цифр (например: 12345678)."
 
 msgid "Yandex verification"
 msgstr "Подтверждение Yandex"
@@ -957,8 +1072,8 @@ msgstr "Подтверждение Yandex"
 msgid "Yangi"
 msgstr "Новая"
 
-msgid "Yangi arizalar"
-msgstr "Новые заявки"
+msgid "Yangi arizalar (davr)"
+msgstr "Новые заявки (период)"
 
 msgid "Yangilangan"
 msgstr "Обновлено"
@@ -977,6 +1092,9 @@ msgstr "Новости и объявления"
 
 msgid "Yaratilgan"
 msgstr "Создано"
+
+msgid "Yil"
+msgstr "Год"
 
 msgid "Yopish"
 msgstr "Закрыть"
@@ -1020,6 +1138,18 @@ msgstr "в среднем"
 
 msgid "yangi oʻquvchi"
 msgstr "новых учеников"
+
+msgid "«Bu oy … yangi oʻquvchi» yorlig'idagi raqam, masalan «100+»."
+msgstr "Число в метке «В этом месяце … новых учеников», например «100+»."
+
+msgid "• .env qiymati ishlatiladi"
+msgstr "• используется значение из .env"
+
+msgid "✓ Oʻrnatilgan (panel)"
+msgstr "✓ Установлен (панель)"
+
+msgid "✗ Oʻrnatilmagan"
+msgstr "✗ Не установлен"
 
 msgid "📷 QR kodni skanerlash"
 msgstr "📷 Сканировать QR-код"
@@ -1072,9 +1202,6 @@ msgstr "Нажмите, чтобы скачать"
 msgid "Close"
 msgstr "Закрыть"
 
-msgid "Dark"
-msgstr "Тёмная"
-
 msgid "Delete"
 msgstr "Удалить"
 
@@ -1095,9 +1222,6 @@ msgstr "Вернуться назад"
 
 msgid "Hide counts"
 msgstr "Скрыть количество"
-
-msgid "Light"
-msgstr "Светлая"
 
 msgid "Log in again"
 msgstr "Войдите снова"
@@ -1135,6 +1259,9 @@ msgstr "Удалить"
 msgid "Reset filters"
 msgstr "Сбросить фильтры"
 
+msgid "Return to site"
+msgstr "Вернуться на сайт"
+
 msgid "Run"
 msgstr "Выполнить"
 
@@ -1168,9 +1295,6 @@ msgstr "Выбрать все строки"
 msgid "Show counts"
 msgstr "Показать количество"
 
-msgid "System"
-msgstr "Системная"
-
 msgid "This item will be deleted."
 msgstr "Этот элемент будет удален."
 
@@ -1197,6 +1321,9 @@ msgstr "Посмотреть"
 
 msgid "View site"
 msgstr "Посмотреть сайт"
+
+msgid "Welcome back to"
+msgstr "С возвращением в"
 
 msgid "Nothing matched your search"
 msgstr "Ничего не соответствует вашему запросу"
