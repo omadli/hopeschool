@@ -2,6 +2,41 @@
 (function () {
   "use strict";
   var de = document.documentElement;
+  var reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+  // ---- accessible dialog helpers (modal + certificate lightbox) ----
+  // Move focus into the dialog on open, trap Tab inside it, and restore focus
+  // to the trigger on close so keyboard/screen-reader users aren't dropped
+  // behind the backdrop or back at the top of the page.
+  var FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),' +
+    'select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  var lastFocused = null;
+  function focusables(el) {
+    return Array.prototype.slice.call(el.querySelectorAll(FOCUSABLE))
+      .filter(function (n) { return n.getClientRects().length; });
+  }
+  function openDialog(el) {
+    lastFocused = document.activeElement;
+    el.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+    var f = focusables(el);
+    (f[0] || el).focus();
+  }
+  function closeDialog(el) {
+    if (el.classList.contains("hidden")) return;
+    el.classList.add("hidden");
+    document.body.style.overflow = "";
+    if (lastFocused && lastFocused.focus) lastFocused.focus();
+    lastFocused = null;
+  }
+  function trapTab(el, e) {
+    if (e.key !== "Tab") return;
+    var f = focusables(el);
+    if (!f.length) { e.preventDefault(); return; }
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
 
   // ---- scroll progress + sticky header ----
   var hdr = document.getElementById("hdr");
@@ -73,7 +108,9 @@
   var cio = new IntersectionObserver(function (es) {
     es.forEach(function (e) {
       if (!e.isIntersecting) return;
-      var el = e.target, to = +el.dataset.to || 0, c = 0, step = Math.max(1, Math.round(to / 45));
+      var el = e.target, to = +el.dataset.to || 0;
+      if (reduceMotion.matches) { el.textContent = to; cio.unobserve(el); return; }
+      var c = 0, step = Math.max(1, Math.round(to / 45));
       (function t() { c += step; if (c >= to) { el.textContent = to; } else { el.textContent = c; requestAnimationFrame(t); } })();
       cio.unobserve(el);
     });
@@ -90,13 +127,18 @@
       else c.scrollBy({ left: page(), behavior: "smooth" });
     }
     function prev() { c.scrollBy({ left: -page(), behavior: "smooth" }); }
-    function start() { t = setInterval(next, iv); }
+    // Respect prefers-reduced-motion: no autoplay for users who opt out.
+    function start() { if (reduceMotion.matches) return; stop(); t = setInterval(next, iv); }
     function stop() { clearInterval(t); }
     start();
     c.addEventListener("mouseenter", stop);
     c.addEventListener("mouseleave", start);
     c.addEventListener("touchstart", stop, { passive: true });
     c.addEventListener("touchend", function () { stop(); start(); }, { passive: true });
+    // Pause while a keyboard user is focused inside so auto-advance can't scroll
+    // the focused card out from under them; resume when focus leaves the row.
+    c.addEventListener("focusin", stop);
+    c.addEventListener("focusout", function (e) { if (!c.contains(e.relatedTarget)) start(); });
     var id = c.dataset.carousel;
     document.querySelectorAll('[data-next="' + id + '"]').forEach(function (b) { b.onclick = function () { stop(); next(); start(); }; });
     document.querySelectorAll('[data-prev="' + id + '"]').forEach(function (b) { b.onclick = function () { stop(); prev(); start(); }; });
@@ -104,7 +146,7 @@
 
   // ---- announcement ticker ----
   var tk = document.getElementById("ticker");
-  if (tk && window.__TICKER__ && window.__TICKER__.length) {
+  if (tk && window.__TICKER__ && window.__TICKER__.length && !reduceMotion.matches) {
     var ti = 0;
     setInterval(function () {
       ti = (ti + 1) % window.__TICKER__.length;
@@ -135,11 +177,12 @@
 
   // ---- modal ----
   var modal = document.getElementById("modal");
-  function openM() { if (modal) { modal.classList.remove("hidden"); document.body.style.overflow = "hidden"; } }
-  function closeM() { if (modal) { modal.classList.add("hidden"); document.body.style.overflow = ""; } }
+  function openM() { if (modal) openDialog(modal); }
+  function closeM() { if (modal) closeDialog(modal); }
   document.querySelectorAll("[data-open-modal]").forEach(function (b) { b.addEventListener("click", openM); });
   document.querySelectorAll("[data-close-modal]").forEach(function (b) { b.addEventListener("click", closeM); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeM(); });
+  if (modal) modal.addEventListener("keydown", function (e) { trapTab(modal, e); });
 
   // ---- certificate lightbox (Sertifikatlar sahifasi) ----
   var certLb = document.getElementById("cert-lightbox");
@@ -164,13 +207,9 @@
       certDesc.classList.toggle("hidden", !d.certDescription);
       certLink.classList.toggle("hidden", !d.certLink);
       if (d.certLink) certLink.href = d.certLink;
-      certLb.classList.remove("hidden");
-      document.body.style.overflow = "hidden";
+      openDialog(certLb);
     }
-    function closeCertLb() {
-      certLb.classList.add("hidden");
-      document.body.style.overflow = "";
-    }
+    function closeCertLb() { closeDialog(certLb); }
     document.querySelectorAll("[data-cert-open]").forEach(function (card) {
       card.addEventListener("click", function () { openCertLb(card); });
     });
@@ -178,6 +217,7 @@
       b.addEventListener("click", closeCertLb);
     });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCertLb(); });
+    certLb.addEventListener("keydown", function (e) { trapTab(certLb, e); });
   }
 
   // ---- lead form submit (real endpoint, dependency-free) ----

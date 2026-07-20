@@ -1112,3 +1112,32 @@ class UserAdminSecurityTests(TestCase):
         })
         sneaky = User.objects.get(username="sneaky")
         self.assertFalse(sneaky.is_superuser)
+
+
+class RichTextSanitizeTests(SimpleTestCase):
+    """SEC-2: admin CKEditor HTML must be stripped of XSS before public render."""
+
+    def test_strips_script_and_event_handlers(self):
+        from apps.common.richtext import sanitize_rich_html
+        self.assertNotIn("<script", sanitize_rich_html("<p>a</p><script>alert(1)</script>"))
+        self.assertNotIn("onerror", sanitize_rich_html('<img src=x onerror=alert(1)>'))
+        self.assertNotIn("javascript:", sanitize_rich_html('<a href="javascript:alert(1)">x</a>'))
+
+    def test_keeps_safe_markup(self):
+        from apps.common.richtext import sanitize_rich_html
+        out = sanitize_rich_html('<p><strong>B</strong> <a href="https://x.uz">l</a></p>')
+        self.assertIn("<strong>B</strong>", out)
+        self.assertIn('href="https://x.uz"', out)
+
+    def test_iframe_host_allowlist(self):
+        from apps.common.richtext import sanitize_rich_html
+        self.assertIn("youtube.com/embed", sanitize_rich_html(
+            '<iframe src="https://www.youtube.com/embed/abc"></iframe>'))
+        # Off-allowlist host: the src is dropped (iframe left empty/harmless).
+        self.assertNotIn("evil.com", sanitize_rich_html(
+            '<iframe src="https://evil.com/x"></iframe>'))
+
+    def test_empty_input(self):
+        from apps.common.richtext import sanitize_rich_html
+        self.assertEqual(sanitize_rich_html(""), "")
+        self.assertEqual(sanitize_rich_html(None), "")

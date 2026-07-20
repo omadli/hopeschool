@@ -18,10 +18,20 @@ fallback is preserved when no image is uploaded.
 from __future__ import annotations
 
 from django import template
+from django.utils.safestring import mark_safe
 from easy_thumbnails.exceptions import InvalidImageFormatError
 from easy_thumbnails.files import get_thumbnailer
 
+from apps.common.richtext import sanitize_rich_html
+
 register = template.Library()
+
+
+@register.filter(name="richtext")
+def richtext(value):
+    """Render admin CKEditor HTML, sanitized against stored XSS. Use instead
+    of ``|safe`` for any rich-text field shown to the public."""
+    return mark_safe(sanitize_rich_html(value or ""))
 
 
 def _thumb(image, width, fmt=None):

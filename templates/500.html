@@ -1,0 +1,31 @@
+{# Self-contained: a 500 can fire when the DB / context processors are the
+   thing that broke, so this page must not depend on base.html, site_config,
+   or any DB query. Plain HTML + inline styles only. #}
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Xatolik — Hope School</title>
+  <style>
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      background:#f6f8fc;color:#0b1220;display:grid;place-items:center;min-height:100vh;padding:1rem}
+    .card{max-width:26rem;text-align:center}
+    .code{font-size:64px;font-weight:800;color:#2257b3;line-height:1}
+    h1{font-size:1.5rem;margin:1rem 0 .5rem}
+    p{color:#566076;margin:0}
+    a{display:inline-block;margin-top:2rem;padding:.7rem 1.6rem;border-radius:999px;
+      background:#2257b3;color:#fff;text-decoration:none;font-weight:600}
+    @media (prefers-color-scheme:dark){
+      body{background:#080d1a;color:#e6ecf7}p{color:#9bb0d2}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="code">500</div>
+    <h1>Serverda xatolik</h1>
+    <p>Kechirasiz, vaqtinchalik nosozlik yuz berdi. Iltimos, birozdan soʻng qayta urinib koʻring.</p>
+    <a href="/">Bosh sahifaga qaytish</a>
+  </div>
+</body>
+</html>

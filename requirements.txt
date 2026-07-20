@@ -9,7 +9,6 @@ django-environ>=0.11
 
 # --- Admin (Unfold) ---
 django-unfold>=0.40
-django-import-export>=4.0
 
 # --- i18n ---
 django-modeltranslation>=0.19

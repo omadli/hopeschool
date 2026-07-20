@@ -1,15 +1,21 @@
 {% extends "base.html" %}
-{% load static i18n %}
+{% load static i18n cache %}
 
 {% block content %}
-  {% include "sections/_hero.html" %}
-  {% include "sections/_partners.html" %}
-  {% include "sections/_about.html" %}
-  {% include "sections/_courses.html" %}
-  {% include "sections/_news.html" %}
-  {% include "sections/_teachers.html" %}
-  {% include "sections/_results.html" %}
-  {% include "sections/_gallery.html" %}
-  {% include "sections/_video.html" %}
+  {# Static, image-heavy sections are cached per language (shared DatabaseCache,
+     5 min TTL) so the ~230 thumbnail lookups + section queries don't re-run on
+     every anonymous hit. Admin edits propagate within the TTL.
+     _contact.html is deliberately NOT cached: it renders a per-request
+     {% csrf_token %}, and a shared fragment would serve one visitor's token to
+     everyone and break the lead form. #}
+  {% cache 300 landing_hero LANGUAGE_CODE using="fragments" %}{% include "sections/_hero.html" %}{% endcache %}
+  {% cache 300 landing_partners LANGUAGE_CODE using="fragments" %}{% include "sections/_partners.html" %}{% endcache %}
+  {% cache 300 landing_about LANGUAGE_CODE using="fragments" %}{% include "sections/_about.html" %}{% endcache %}
+  {% cache 300 landing_courses LANGUAGE_CODE using="fragments" %}{% include "sections/_courses.html" %}{% endcache %}
+  {% cache 300 landing_news LANGUAGE_CODE using="fragments" %}{% include "sections/_news.html" %}{% endcache %}
+  {% cache 300 landing_teachers LANGUAGE_CODE using="fragments" %}{% include "sections/_teachers.html" %}{% endcache %}
+  {% cache 300 landing_results LANGUAGE_CODE using="fragments" %}{% include "sections/_results.html" %}{% endcache %}
+  {% cache 300 landing_gallery LANGUAGE_CODE using="fragments" %}{% include "sections/_gallery.html" %}{% endcache %}
+  {% cache 300 landing_video LANGUAGE_CODE using="fragments" %}{% include "sections/_video.html" %}{% endcache %}
   {% include "sections/_contact.html" %}
 {% endblock %}
