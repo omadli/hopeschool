@@ -1,7 +1,8 @@
-{# Self-contained: a 500 can fire when the DB / context processors are the
-   thing that broke, so this page must not depend on base.html, site_config,
-   or any DB query. Plain HTML + inline styles only. #}
-<!doctype html>
+{% comment %}
+  Self-contained: a 500 can fire when the DB / context processors are the
+  thing that broke, so this page must not depend on base.html, site_config,
+  or any DB query. Plain HTML + inline styles only.
+{% endcomment %}<!doctype html>
 <html lang="uz">
 <head>
   <meta charset="utf-8">

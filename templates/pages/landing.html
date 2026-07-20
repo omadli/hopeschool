@@ -2,12 +2,14 @@
 {% load static i18n cache %}
 
 {% block content %}
-  {# Static, image-heavy sections are cached per language (shared DatabaseCache,
-     5 min TTL) so the ~230 thumbnail lookups + section queries don't re-run on
-     every anonymous hit. Admin edits propagate within the TTL.
-     _contact.html is deliberately NOT cached: it renders a per-request
-     {% csrf_token %}, and a shared fragment would serve one visitor's token to
-     everyone and break the lead form. #}
+  {% comment %}
+    Static, image-heavy sections are cached per language (shared DatabaseCache,
+    5 min TTL) so the ~230 thumbnail lookups + section queries don't re-run on
+    every anonymous hit. Admin edits propagate within the TTL.
+    _contact.html is deliberately NOT cached: it renders a per-request CSRF
+    token, and a shared fragment would serve one visitor's token to everyone
+    and break the lead form.
+  {% endcomment %}
   {% cache 300 landing_hero LANGUAGE_CODE using="fragments" %}{% include "sections/_hero.html" %}{% endcache %}
   {% cache 300 landing_partners LANGUAGE_CODE using="fragments" %}{% include "sections/_partners.html" %}{% endcache %}
   {% cache 300 landing_about LANGUAGE_CODE using="fragments" %}{% include "sections/_about.html" %}{% endcache %}
