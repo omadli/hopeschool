@@ -292,11 +292,19 @@ def _person_key(student_name):
     return _strip_apostrophes((student_name or "").casefold()).split()
 
 
+def _newest_first_key(cert):
+    """Sort key giving newest `issued_on` first, undated certs last (ascending
+    sort). Dates are negated via ordinal since date objects aren't negatable."""
+    if cert.issued_on is None:
+        return (1, 0, 0)
+    return (0, -cert.issued_on.toordinal(), -cert.id)
+
+
 def reorder_certificates():
-    """Renumber every certificate's `order` chronologically by `issued_on`,
-    keeping a student's repeat certificates adjacent (grouped by their first
-    certificate's date, then by date within the group). Certs without
-    `issued_on` sort last, by id. Returns the number of rows changed.
+    """Renumber every certificate's `order` so the NEWEST show first (order 0 =
+    top), keeping a student's repeat certificates adjacent (grouped, newest
+    within the group first). Certs without `issued_on` sort last, by id.
+    Returns the number of rows changed.
     """
     from apps.certificates.models import Certificate
 
@@ -306,11 +314,10 @@ def reorder_certificates():
         groups.setdefault(tuple(_person_key(cert.student_name)), []).append(cert)
 
     for group in groups.values():
-        group.sort(key=lambda c: (c.issued_on is None, c.issued_on, c.id))
-    ordered_groups = sorted(
-        groups.values(),
-        key=lambda g: (g[0].issued_on is None, g[0].issued_on, g[0].id),
-    )
+        group.sort(key=_newest_first_key)
+    # After the within-group sort, group[0] is the group's newest certificate;
+    # order groups by that so the most recent student appears at the top.
+    ordered_groups = sorted(groups.values(), key=lambda g: _newest_first_key(g[0]))
 
     changed = 0
     order = 0

@@ -30,58 +30,43 @@ class StaticViewSitemap(Sitemap):
         return 1.0 if item == "home" else 0.7
 
 
-class CourseSitemap(Sitemap):
+class ModelSitemap(Sitemap):
+    """Shared config for per-object sitemaps (URL from get_absolute_url)."""
+
     i18n = True
     alternates = True
     x_default = True
     protocol = "https"
+
+    def lastmod(self, obj):
+        return obj.updated_at
+
+    def location(self, obj):
+        return obj.get_absolute_url()
+
+
+class CourseSitemap(ModelSitemap):
     changefreq = "weekly"
     priority = 0.7
 
     def items(self):
         return Course.objects.filter(is_active=True)
 
-    def lastmod(self, obj):
-        return obj.updated_at
 
-    def location(self, obj):
-        return obj.get_absolute_url()
-
-
-class TeacherSitemap(Sitemap):
-    i18n = True
-    alternates = True
-    x_default = True
-    protocol = "https"
+class TeacherSitemap(ModelSitemap):
     changefreq = "monthly"
     priority = 0.6
 
     def items(self):
         return Teacher.objects.filter(is_active=True)
 
-    def lastmod(self, obj):
-        return obj.updated_at
 
-    def location(self, obj):
-        return obj.get_absolute_url()
-
-
-class NewsSitemap(Sitemap):
-    i18n = True
-    alternates = True
-    x_default = True
-    protocol = "https"
+class NewsSitemap(ModelSitemap):
     changefreq = "monthly"
     priority = 0.6
 
     def items(self):
         return NewsPost.objects.filter(is_published=True)
-
-    def lastmod(self, obj):
-        return obj.updated_at
-
-    def location(self, obj):
-        return obj.get_absolute_url()
 
 
 sitemaps = {

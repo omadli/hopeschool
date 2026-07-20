@@ -363,3 +363,42 @@ class FetchPdfRedirectTests(SimpleTestCase):
         with mock.patch("apps.certificates.services.requests.get", side_effect=[hop, final]):
             data = fetch_pdf_bytes("https://8.8.8.8/start")
         self.assertTrue(data.startswith(b"%PDF"))
+
+
+class ReorderNewestFirstTests(TestCase):
+    """reorder_certificates numbers newest issued_on first (order 0 = top),
+    keeping a student's repeat certificates adjacent."""
+
+    def test_newest_gets_lowest_order(self):
+        from datetime import date
+        from apps.certificates.models import Certificate
+        from apps.certificates.services import reorder_certificates
+
+        old = Certificate.objects.create(title="old", student_name="Ali",
+                                         issued_on=date(2023, 1, 1))
+        new = Certificate.objects.create(title="new", student_name="Vali",
+                                         issued_on=date(2025, 1, 1))
+        undated = Certificate.objects.create(title="undated", student_name="Guli")
+        reorder_certificates()
+        for c in (old, new, undated):
+            c.refresh_from_db()
+        # Newest first, undated last.
+        self.assertLess(new.order, old.order)
+        self.assertLess(old.order, undated.order)
+
+    def test_student_repeats_stay_adjacent_newest_first(self):
+        from datetime import date
+        from apps.certificates.models import Certificate
+        from apps.certificates.services import reorder_certificates
+
+        a1 = Certificate.objects.create(title="a1", student_name="Ali Aliyev",
+                                        issued_on=date(2022, 1, 1))
+        a2 = Certificate.objects.create(title="a2", student_name="Ali Aliyev",
+                                        issued_on=date(2024, 1, 1))
+        b = Certificate.objects.create(title="b", student_name="Bob",
+                                       issued_on=date(2023, 1, 1))
+        reorder_certificates()
+        for c in (a1, a2, b):
+            c.refresh_from_db()
+        # Ali's group (newest cert 2024) leads, newest-within-group first, then Bob.
+        self.assertEqual([a2.order, a1.order, b.order], [0, 1, 2])
