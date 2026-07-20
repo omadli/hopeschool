@@ -70,9 +70,13 @@
   // ---- dark/light theme ----
   var themeBtn = document.getElementById("theme-btn");
   if (themeBtn) {
+    // aria-pressed reflects "dark mode on" (the inline head script may already
+    // have added .dark before paint).
+    themeBtn.setAttribute("aria-pressed", String(de.classList.contains("dark")));
     themeBtn.addEventListener("click", function () {
       de.classList.toggle("dark");
       var dark = de.classList.contains("dark");
+      themeBtn.setAttribute("aria-pressed", String(dark));
       try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (e) {}
       var m = document.getElementById("theme-color-meta");
       if (m) m.setAttribute("content", dark ? "#080d1a" : "#ffffff");
@@ -84,18 +88,29 @@
   if (lw) {
     var lb = lw.querySelector("[data-langbtn]");
     var lm = lw.querySelector("[data-langmenu]");
-    lb.addEventListener("click", function (e) { e.stopPropagation(); lm.classList.toggle("hidden"); });
-    document.addEventListener("click", function () { lm.classList.add("hidden"); });
+    function langClose() { lm.classList.add("hidden"); lb.setAttribute("aria-expanded", "false"); }
+    lb.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var open = lm.classList.toggle("hidden") === false;
+      lb.setAttribute("aria-expanded", String(open));
+    });
+    document.addEventListener("click", langClose);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") langClose(); });
   }
 
   // ---- mobile drawer ----
   var burger = document.getElementById("burger");
   var drawer = document.getElementById("drawer");
   if (burger && drawer) {
-    burger.addEventListener("click", function () { drawer.classList.toggle("hidden"); });
-    drawer.querySelectorAll("a").forEach(function (a) {
-      a.addEventListener("click", function () { drawer.classList.add("hidden"); });
+    function drawerClose() { drawer.classList.add("hidden"); burger.setAttribute("aria-expanded", "false"); }
+    burger.addEventListener("click", function () {
+      var open = drawer.classList.toggle("hidden") === false;
+      burger.setAttribute("aria-expanded", String(open));
     });
+    drawer.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", drawerClose);
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") drawerClose(); });
   }
 
   // ---- scroll reveal ----

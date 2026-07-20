@@ -35,14 +35,22 @@
     {% if images %}
     <div class="columns-2 md:columns-3 lg:columns-4 gap-4 [column-fill:_balance]">
       {% for img in images %}
-      <div class="mb-4 break-inside-avoid group relative overflow-hidden rounded-card duotone">
+      <button type="button" data-cert-open data-cert-image="{{ img.image.url }}" data-cert-name="{{ img.caption|default:img.alt_text }}" aria-label="{% translate 'Rasmni kattalashtirish' %}" class="mb-4 w-full break-inside-avoid group relative overflow-hidden rounded-card duotone block cursor-zoom-in">
         {% responsive_img img.image alt=img.alt_text|default:img.caption css="w-full object-cover transition duration-700 group-hover:scale-105" width=520 width_2x=900 sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw" %}
-      </div>
+      </button>
       {% endfor %}
     </div>
+    {% if images.has_other_pages %}
+    <nav class="mt-10 flex items-center justify-center gap-2 text-[14px] font-medium" aria-label="{% translate 'Sahifalar' %}">
+      {% if images.has_previous %}<a href="?page={{ images.previous_page_number }}" class="px-4 py-2 rounded-pill border bd hover:text-brand-blue-600">← {% translate "Oldingi" %}</a>{% endif %}
+      <span class="px-3 py-2 txt-soft">{{ images.number }} / {{ images.paginator.num_pages }}</span>
+      {% if images.has_next %}<a href="?page={{ images.next_page_number }}" class="px-4 py-2 rounded-pill border bd hover:text-brand-blue-600">{% translate "Keyingi" %} →</a>{% endif %}
+    </nav>
+    {% endif %}
     {% elif not videos %}
     <p class="text-center txt-soft">{% translate "Hozircha rasm yo'q." %}</p>
     {% endif %}
   </div>
 </section>
+{% include "partials/_certificate_lightbox.html" %}
 {% endblock %}

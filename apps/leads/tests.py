@@ -101,8 +101,13 @@ class LeadSourceModelTests(TestCase):
         src = LeadSource.resolve("instagram")
         self.assertEqual(
             src.build_link("hopeschool.uz", "ru"),
-            "https://hopeschool.uz/ru/#contact?source=instagram",
+            "https://hopeschool.uz/ru/?source=instagram#contact",
         )
+
+    def test_source_query_param_seeds_hidden_field(self):
+        # JS-off attribution: ?source=… must reach the form's hidden input.
+        html = self.client.get("/uz/?source=telegram").content.decode()
+        self.assertIn('name="source" value="telegram"', html)
 
 
 # ---------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 """Tests for apps.certificates — models, views, admin, CEFR import."""
 import io
+import socket
 import tempfile
 from unittest import mock
 
@@ -252,7 +253,10 @@ class FetchPdfTests(SimpleTestCase):
         tests cover it) and requests.get returning ``resp``."""
         from apps.certificates.services import fetch_pdf_bytes
 
-        with mock.patch("apps.certificates.services._validate_public_url"), \
+        # _validate_public_url now returns the pinned (host, family, ip); stub it
+        # with a valid public target so fetch_pdf_bytes can unpack + pin.
+        with mock.patch("apps.certificates.services._validate_public_url",
+                        return_value=("example.com", socket.AF_INET, "93.184.216.34")), \
              mock.patch("apps.certificates.services.requests.get", return_value=resp):
             return fetch_pdf_bytes("https://example.com/x")
 
@@ -298,6 +302,19 @@ class FetchPdfSsrfTests(SimpleTestCase):
     def test_public_ip_literal_passes(self):
         # Public IP literal → getaddrinfo parses it locally (no DNS network).
         self._validate("https://8.8.8.8/cert.pdf")
+
+    def test_validate_returns_pinned_address(self):
+        from apps.certificates.services import _validate_public_url
+        host, family, ip = _validate_public_url("https://8.8.8.8/cert.pdf")
+        self.assertEqual((host, ip), ("8.8.8.8", "8.8.8.8"))
+
+    def test_pin_host_overrides_resolution_then_restores(self):
+        from apps.certificates.services import _pin_host
+        with _pin_host("example.com", socket.AF_INET, "93.184.216.34"):
+            self.assertEqual(
+                socket.getaddrinfo("example.com", 443)[0][4][0], "93.184.216.34")
+        # Restored: a literal IP still resolves locally, no pin leaked.
+        self.assertEqual(socket.getaddrinfo("8.8.8.8", 443)[0][4][0], "8.8.8.8")
 
 
 class FetchPdfRedirectTests(SimpleTestCase):

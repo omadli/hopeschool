@@ -52,9 +52,14 @@ class LeadSource(OrderedActiveModel):
         return _BRAND_SLUGS.get(self.slug, "")
 
     def build_link(self, domain, lang):
-        """Absolute application link in ``lang`` carrying this source slug."""
+        """Absolute application link in ``lang`` carrying this source slug.
+
+        The slug is a real query param (not a #fragment) so the server reads it
+        directly — attribution survives even with JavaScript disabled. #contact
+        still scrolls to the form.
+        """
         domain = (domain or "").strip().rstrip("/")
-        return f"https://{domain}/{lang}/#contact?source={self.slug}"
+        return f"https://{domain}/{lang}/?source={self.slug}#contact"
 
     @classmethod
     def get_default(cls):

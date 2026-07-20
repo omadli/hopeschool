@@ -16,6 +16,8 @@ class Testimonial(OrderedActiveModel):
     is_featured = models.BooleanField(_("Tanlangan"), default=False)
 
     class Meta(OrderedActiveModel.Meta):
+        # "Tanlangan" (is_featured) fikrlar tepaga chiqadi, keyin qo‘lda tartib.
+        ordering = ["-is_featured", "order", "-created_at"]
         verbose_name = _("Fikr")
         verbose_name_plural = _("Fikrlar (ota-onalar)")
 

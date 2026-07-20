@@ -97,9 +97,9 @@ class SiteConfig(SingletonModel):
     latitude = models.CharField(_("Kenglik (lat)"), max_length=32, blank=True)
     longitude = models.CharField(_("Uzunlik (lng)"), max_length=32, blank=True)
 
-    # --- Maps (embed) ---
+    # --- Maps: coordinates drive the iframes; this optional field overrides the
+    # Google map with a hand-pasted embed (sanitized by safe_google_maps_embed). ---
     google_maps_embed = models.TextField(_("Google Maps embed"), blank=True)
-    yandex_maps_embed = models.TextField(_("Yandex Maps embed"), blank=True)
 
     # --- Social links are now managed via the repeatable SocialLink model ---
 
@@ -142,46 +142,16 @@ class SiteConfig(SingletonModel):
         self.phone_secondary = normalize_phone(self.phone_secondary)
         super().save(*args, **kwargs)
 
-    # --- Safe manual map embeds (sanitized; rendered with |safe in templates) ---
+    # --- Safe manual Google Maps embed (sanitized; rendered with |safe) ---
     @property
     def safe_google_maps_embed(self):
         return sanitize_map_embed(self.google_maps_embed)
 
     @property
-    def safe_yandex_maps_embed(self):
-        return sanitize_map_embed(self.yandex_maps_embed)
-
-    # --- Map helpers (auto-built from picked coordinates) ---
-    @property
     def has_geo(self):
+        """True when coordinates are set (drives JSON-LD geo + the map iframes,
+        whose src URLs are built by the ui.py google_map_src/yandex_map_src tags)."""
         return bool(self.latitude and self.longitude)
-
-    @property
-    def google_map_src(self):
-        if self.has_geo:
-            return (f"https://maps.google.com/maps?q={self.latitude},{self.longitude}"
-                    f"&z=16&hl=uz&output=embed")
-        return ""
-
-    @property
-    def yandex_map_src(self):
-        if self.has_geo:
-            return (f"https://yandex.com/map-widget/v1/?ll={self.longitude}%2C{self.latitude}"
-                    f"&z=16&pt={self.longitude}%2C{self.latitude},pm2rdm")
-        return ""
-
-    @property
-    def google_maps_link(self):
-        if self.has_geo:
-            return f"https://www.google.com/maps/search/?api=1&query={self.latitude},{self.longitude}"
-        return ""
-
-    @property
-    def yandex_maps_link(self):
-        if self.has_geo:
-            return (f"https://yandex.com/maps/?ll={self.longitude}%2C{self.latitude}"
-                    f"&z=16&pt={self.longitude}%2C{self.latitude}")
-        return ""
 
 
 class SocialLink(OrderedActiveModel):

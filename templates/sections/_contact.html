@@ -16,7 +16,7 @@
         <form action="{% url 'lead_create' %}" method="post" onsubmit="return previewSubmit(event)" class="space-y-3.5">
           {% csrf_token %}
           <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-          <input type="hidden" name="source" value="site">
+          <input type="hidden" name="source" value="{{ lead_source_qs|default:'site' }}">
           <div class="grid sm:grid-cols-2 gap-3.5">
             <div><label for="cf_name" class="block text-[13px] font-semibold mb-1.5">{% translate "Ism familiya" %} *</label><input required type="text" name="full_name" id="cf_name" placeholder="{% translate 'Ismingiz' %}" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition"></div>
             <div><label for="cf_phone" class="block text-[13px] font-semibold mb-1.5">{% translate "Telefon raqam" %} *</label><input required type="tel" name="phone" id="cf_phone" placeholder="+998 __ ___ __ __" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition"></div>

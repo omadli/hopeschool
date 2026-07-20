@@ -43,4 +43,8 @@ def site_context(request):
         "social_links": social_links,
         "alt_urls": alt_urls,
         "lead_courses": lead_courses,
+        # Ad-link attribution (?source=…): seed the hidden form field server-side
+        # so it works with JS off. JS still overwrites it and persists across
+        # pages (main.js). Length-capped; junk just resolves to the default source.
+        "lead_source_qs": request.GET.get("source", "")[:40],
     }
