@@ -9,19 +9,21 @@
         <h3 id="modal-title" class="font-display font-extrabold text-[20px]">{{ site_copy.modal_title }}</h3>
       </div>
       <p class="text-[14px] txt-soft mb-5">{{ site_copy.modal_subtitle }}</p>
-      <form action="{% url 'lead_create' %}" method="post" onsubmit="return previewSubmit(event)" class="space-y-3">
+      <form action="{% url 'lead_create' %}" method="post" onsubmit="return previewSubmit(event)" data-generic-error="{% translate 'Xatolik yuz berdi. Iltimos, qaytadan urinib koʻring.' %}" class="space-y-3">
         {% csrf_token %}
         <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
         <input type="hidden" name="source" value="{{ lead_source_qs|default:'site' }}">
-        <input required type="text" name="full_name" aria-label="{% translate 'Ism familiya' %}" placeholder="{% translate 'Ism familiya' %}" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition">
-        <input required type="tel" name="phone" aria-label="{% translate 'Telefon raqam' %}" placeholder="+998 __ ___ __ __" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition">
-        <select name="course" aria-label="{% translate 'Qaysi kurs?' %}" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition">
-          <option value="">{% translate "Kursni tanlang (ixtiyoriy)" %}</option>
-          {% for c in lead_courses %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
-        </select>
-        <textarea name="message" rows="2" aria-label="{% translate 'Qoʻshimcha izoh' %}" placeholder="{% translate 'Qoʻshimcha izoh (ixtiyoriy)' %}" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition resize-none"></textarea>
+        <div><label for="m_name" class="block text-[13px] font-semibold mb-1.5">{% translate "Ism familiya" %} *</label><input required type="text" name="full_name" id="m_name" placeholder="{% translate 'Ismingiz' %}" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition"></div>
+        <div><label for="m_phone" class="block text-[13px] font-semibold mb-1.5">{% translate "Telefon raqam" %} *</label><input required type="tel" inputmode="tel" name="phone" id="m_phone" placeholder="+998 __ ___ __ __" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition"></div>
+        <div><label for="m_course" class="block text-[13px] font-semibold mb-1.5">{% translate "Qaysi kurs?" %}</label>
+          <select name="course" id="m_course" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition">
+            <option value="">{% translate "Kursni tanlang (ixtiyoriy)" %}</option>
+            {% for c in lead_courses %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div><label for="m_message" class="block text-[13px] font-semibold mb-1.5">{% translate "Qoʻshimcha izoh" %}</label><textarea name="message" id="m_message" rows="2" placeholder="{% translate 'Qoʻshimcha izoh (ixtiyoriy)' %}" class="w-full rounded-xl border bd bg-alt px-4 py-3 text-[15px] outline-none focus:border-brand-blue-400 focus:ring-4 focus:ring-brand-blue-100 dark:focus:ring-brand-blue-500/20 transition resize-none"></textarea></div>
         <p data-form-error class="hidden text-[13px] font-medium text-brand-red-600" role="alert"></p>
-        <button type="submit" class="w-full rounded-pill bg-brand-red-600 px-6 py-3.5 text-[15px] font-semibold text-white hover:bg-brand-red-700">{{ site_copy.modal_submit_label }}</button>
+        <button type="submit" data-sending="{% translate 'Yuborilmoqda…' %}" class="w-full rounded-pill bg-brand-red-600 px-6 py-3.5 text-[15px] font-semibold text-white hover:bg-brand-red-700 disabled:opacity-70">{{ site_copy.modal_submit_label }}</button>
       </form>
     </div>
   </div>

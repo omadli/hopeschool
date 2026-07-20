@@ -260,9 +260,18 @@
     e.preventDefault();
     var form = e.target;
     var btn = form.querySelector('button[type="submit"]');
-    var GENERIC = "Xatolik yuz berdi. Iltimos, qaytadan urinib koʻring.";
+    // Messages come from data-* attributes so they follow the active language
+    // (the JS bundle is static and can't be run through gettext).
+    var GENERIC = form.getAttribute("data-generic-error") ||
+      "Xatolik yuz berdi. Iltimos, qaytadan urinib koʻring.";
     setError(form, "");
-    if (btn) btn.disabled = true;
+    var btnHtml;
+    if (btn) {
+      btn.disabled = true;
+      btnHtml = btn.innerHTML;
+      var sending = btn.getAttribute("data-sending");
+      if (sending) btn.textContent = sending;
+    }
 
     fetch(form.action, {
       method: "POST",
@@ -281,7 +290,9 @@
         }
       })
       .catch(function () { setError(form, GENERIC); })
-      .finally(function () { if (btn) btn.disabled = false; });
+      .finally(function () {
+        if (btn) { btn.disabled = false; if (btnHtml != null) btn.innerHTML = btnHtml; }
+      });
 
     return false;
   };
