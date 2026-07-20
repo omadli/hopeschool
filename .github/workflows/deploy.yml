@@ -99,6 +99,10 @@ jobs:
             venv/bin/python manage.py tailwind build --force   # BEFORE collectstatic
             venv/bin/python manage.py collectstatic --noinput
             venv/bin/python manage.py compilemo               # .po -> .mo (polib)
+            # Landing sections are fragment-cached (5 min) in a DB cache that
+            # survives restart — clear it so template/content changes take effect
+            # immediately instead of serving stale HTML for up to the TTL.
+            venv/bin/python manage.py shell -c "from django.core.cache import caches; caches['fragments'].clear()" || true
             # Pre-generate thumbnails so the first real visitor doesn't pay the
             # Pillow resize/WebP-encode cost (which can 502 a sync worker).
             venv/bin/python manage.py warm_thumbnails || true
