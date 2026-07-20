@@ -28,7 +28,8 @@ class NewsPost(VideoMixin, TimeStampedModel):
     meta_description = models.TextField(_("SEO tavsif"), blank=True)
 
     class Meta:
-        ordering = ["-published_at"]
+        # "Tanlangan" (is_featured) posts pin to the top; then newest first.
+        ordering = ["-is_featured", "-published_at"]
         verbose_name = _("Yangilik / eʼlon")
         verbose_name_plural = _("Yangiliklar va eʼlonlar")
 

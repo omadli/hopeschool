@@ -1,5 +1,6 @@
 """Tests for apps.certificates — models, views, admin, CEFR import."""
 import io
+import socket
 import tempfile
 from unittest import mock
 
@@ -252,7 +253,10 @@ class FetchPdfTests(SimpleTestCase):
         tests cover it) and requests.get returning ``resp``."""
         from apps.certificates.services import fetch_pdf_bytes
 
-        with mock.patch("apps.certificates.services._validate_public_url"), \
+        # _validate_public_url now returns the pinned (host, family, ip); stub it
+        # with a valid public target so fetch_pdf_bytes can unpack + pin.
+        with mock.patch("apps.certificates.services._validate_public_url",
+                        return_value=("example.com", socket.AF_INET, "93.184.216.34")), \
              mock.patch("apps.certificates.services.requests.get", return_value=resp):
             return fetch_pdf_bytes("https://example.com/x")
 
@@ -298,6 +302,19 @@ class FetchPdfSsrfTests(SimpleTestCase):
     def test_public_ip_literal_passes(self):
         # Public IP literal → getaddrinfo parses it locally (no DNS network).
         self._validate("https://8.8.8.8/cert.pdf")
+
+    def test_validate_returns_pinned_address(self):
+        from apps.certificates.services import _validate_public_url
+        host, family, ip = _validate_public_url("https://8.8.8.8/cert.pdf")
+        self.assertEqual((host, ip), ("8.8.8.8", "8.8.8.8"))
+
+    def test_pin_host_overrides_resolution_then_restores(self):
+        from apps.certificates.services import _pin_host
+        with _pin_host("example.com", socket.AF_INET, "93.184.216.34"):
+            self.assertEqual(
+                socket.getaddrinfo("example.com", 443)[0][4][0], "93.184.216.34")
+        # Restored: a literal IP still resolves locally, no pin leaked.
+        self.assertEqual(socket.getaddrinfo("8.8.8.8", 443)[0][4][0], "8.8.8.8")
 
 
 class FetchPdfRedirectTests(SimpleTestCase):
@@ -346,3 +363,42 @@ class FetchPdfRedirectTests(SimpleTestCase):
         with mock.patch("apps.certificates.services.requests.get", side_effect=[hop, final]):
             data = fetch_pdf_bytes("https://8.8.8.8/start")
         self.assertTrue(data.startswith(b"%PDF"))
+
+
+class ReorderNewestFirstTests(TestCase):
+    """reorder_certificates numbers newest issued_on first (order 0 = top),
+    keeping a student's repeat certificates adjacent."""
+
+    def test_newest_gets_lowest_order(self):
+        from datetime import date
+        from apps.certificates.models import Certificate
+        from apps.certificates.services import reorder_certificates
+
+        old = Certificate.objects.create(title="old", student_name="Ali",
+                                         issued_on=date(2023, 1, 1))
+        new = Certificate.objects.create(title="new", student_name="Vali",
+                                         issued_on=date(2025, 1, 1))
+        undated = Certificate.objects.create(title="undated", student_name="Guli")
+        reorder_certificates()
+        for c in (old, new, undated):
+            c.refresh_from_db()
+        # Newest first, undated last.
+        self.assertLess(new.order, old.order)
+        self.assertLess(old.order, undated.order)
+
+    def test_student_repeats_stay_adjacent_newest_first(self):
+        from datetime import date
+        from apps.certificates.models import Certificate
+        from apps.certificates.services import reorder_certificates
+
+        a1 = Certificate.objects.create(title="a1", student_name="Ali Aliyev",
+                                        issued_on=date(2022, 1, 1))
+        a2 = Certificate.objects.create(title="a2", student_name="Ali Aliyev",
+                                        issued_on=date(2024, 1, 1))
+        b = Certificate.objects.create(title="b", student_name="Bob",
+                                       issued_on=date(2023, 1, 1))
+        reorder_certificates()
+        for c in (a1, a2, b):
+            c.refresh_from_db()
+        # Ali's group (newest cert 2024) leads, newest-within-group first, then Bob.
+        self.assertEqual([a2.order, a1.order, b.order], [0, 1, 2])

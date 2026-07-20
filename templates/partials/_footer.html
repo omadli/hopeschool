@@ -34,7 +34,10 @@
     </div>
     <div class="mt-10 pt-6 border-t bd flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] txt-soft">
       <p>© {% now "Y" %} {{ site_config.site_name }}. {% translate "Barcha huquqlar himoyalangan." %}</p>
-      <p>{{ site_copy.footer_note }}</p>
+      <div class="flex items-center gap-3">
+        <a href="{% url 'privacy' %}" class="hover:text-brand-blue-600">{% translate "Maxfiylik siyosati" %}</a>
+        <span>{{ site_copy.footer_note }}</span>
+      </div>
     </div>
   </div>
 </footer>

@@ -9,6 +9,7 @@ renders, pypdf (BSD) extracts text. No AGPL (PyMuPDF), no system poppler.
 """
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import io
 import re
@@ -73,12 +74,44 @@ def _validate_public_url(url):
         infos = socket.getaddrinfo(host, port, proto=socket.IPPROTO_TCP)
     except socket.gaierror as exc:
         raise CertificateImportError(f"Havola manzili aniqlanmadi: {host}") from exc
+    validated = []
     for info in infos:
         ip = info[4][0]
         if not is_public_ip(ip):
             raise CertificateImportError(
                 "Ichki/xususiy manzillarga soʻrov yuborib boʻlmaydi."
             )
+        validated.append((info[0], ip))  # (family, ip)
+    # Return one validated address so the caller can PIN the fetch to it (see
+    # _pin_host): otherwise requests would resolve the host a second time, and a
+    # DNS record that answered this check with a public IP could rebind to an
+    # internal one for the actual request (TOCTOU / DNS rebinding).
+    family, ip = validated[0]
+    return host, family, ip
+
+
+@contextlib.contextmanager
+def _pin_host(host, family, ip):
+    """Force `host` to resolve to the already-validated `ip` for one request,
+    closing the DNS-rebinding window between validation and fetch.
+
+    ponytail: monkeypatches the process-global socket.getaddrinfo — safe under
+    gunicorn *sync* workers (single-threaded per request). If workers ever become
+    threaded, swap this for a pinned urllib3 HTTPAdapter.
+    """
+    original = socket.getaddrinfo
+
+    def pinned(h, p, *args, **kwargs):
+        if h == host:
+            sockaddr = (ip, p) if family == socket.AF_INET else (ip, p, 0, 0)
+            return [(family, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", sockaddr)]
+        return original(h, p, *args, **kwargs)
+
+    socket.getaddrinfo = pinned
+    try:
+        yield
+    finally:
+        socket.getaddrinfo = original
 
 
 def fetch_pdf_bytes(url, *, timeout=20):
@@ -90,12 +123,15 @@ def fetch_pdf_bytes(url, *, timeout=20):
     """
     current = (url or "").strip()
     for _ in range(MAX_REDIRECTS + 1):
-        _validate_public_url(current)
+        host, family, ip = _validate_public_url(current)
         try:
-            resp = requests.get(
-                current, timeout=timeout, headers={"User-Agent": USER_AGENT},
-                allow_redirects=False, stream=True,
-            )
+            # Pin the connection to the IP we just validated (stream=True opens
+            # the socket inside this call; the body is read from that same socket).
+            with _pin_host(host, family, ip):
+                resp = requests.get(
+                    current, timeout=timeout, headers={"User-Agent": USER_AGENT},
+                    allow_redirects=False, stream=True,
+                )
         except requests.RequestException as exc:
             raise CertificateImportError(f"Yuklab boʻlmadi: {exc}") from exc
 
@@ -256,11 +292,19 @@ def _person_key(student_name):
     return _strip_apostrophes((student_name or "").casefold()).split()
 
 
+def _newest_first_key(cert):
+    """Sort key giving newest `issued_on` first, undated certs last (ascending
+    sort). Dates are negated via ordinal since date objects aren't negatable."""
+    if cert.issued_on is None:
+        return (1, 0, 0)
+    return (0, -cert.issued_on.toordinal(), -cert.id)
+
+
 def reorder_certificates():
-    """Renumber every certificate's `order` chronologically by `issued_on`,
-    keeping a student's repeat certificates adjacent (grouped by their first
-    certificate's date, then by date within the group). Certs without
-    `issued_on` sort last, by id. Returns the number of rows changed.
+    """Renumber every certificate's `order` so the NEWEST show first (order 0 =
+    top), keeping a student's repeat certificates adjacent (grouped, newest
+    within the group first). Certs without `issued_on` sort last, by id.
+    Returns the number of rows changed.
     """
     from apps.certificates.models import Certificate
 
@@ -270,11 +314,10 @@ def reorder_certificates():
         groups.setdefault(tuple(_person_key(cert.student_name)), []).append(cert)
 
     for group in groups.values():
-        group.sort(key=lambda c: (c.issued_on is None, c.issued_on, c.id))
-    ordered_groups = sorted(
-        groups.values(),
-        key=lambda g: (g[0].issued_on is None, g[0].issued_on, g[0].id),
-    )
+        group.sort(key=_newest_first_key)
+    # After the within-group sort, group[0] is the group's newest certificate;
+    # order groups by that so the most recent student appears at the top.
+    ordered_groups = sorted(groups.values(), key=lambda g: _newest_first_key(g[0]))
 
     changed = 0
     order = 0

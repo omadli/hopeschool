@@ -15,16 +15,19 @@ TESTING = "test" in sys.argv
 # ---------------------------------------------------------------------------
 # Environment
 # ---------------------------------------------------------------------------
+# Defaults are the SAFE (production) values: a missing/mistyped DEBUG in the
+# server .env must fail closed, not silently ship the site with DEBUG=True.
+# Development opts IN to debug via .env (DEBUG=True) — see .env.example.
 env = environ.Env(
-    DEBUG=(bool, True),
-    ALLOWED_HOSTS=(list, ["*"]),
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, []),
     SECRET_KEY=(str, "django-insecure-dev-key-change-me"),
 )
 environ.Env.read_env(BASE_DIR / ".env")
 
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
 # Admin panel URL prefix. Default "admin/". Set a hard-to-guess value in .env
@@ -256,6 +259,14 @@ CACHES = {
         "TIMEOUT": 300,
         "OPTIONS": {"MAX_ENTRIES": 5000},
     },
+    # Template-fragment cache for the landing sections (see templates/pages/
+    # landing.html). Shared DatabaseCache so all workers serve the same cached
+    # HTML; reuses the default cache table (fragment keys are namespaced).
+    "fragments": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "hopeschool_cache",
+        "TIMEOUT": 300,
+    },
     # Per-process in-memory cache for the read-mostly singletons (SiteConfig,
     # HeroSection, SiteCopy). django-solo hits the DB on every get_solo() unless
     # SOLO_CACHE is set; a LocMemCache serves them from RAM with no DB round-trip
@@ -278,6 +289,11 @@ SOLO_CACHE_PREFIX = "solo"
 # solo caching under the test runner to keep tests isolated; production keeps it.
 if TESTING:
     SOLO_CACHE = None
+    # Landing fragment cache is not rolled back between tests and keys only on
+    # language, so cached HTML would leak across tests that render "/". Make it a
+    # no-op under the test runner (the shared "default" cache stays real so the
+    # lead rate-limit tests still exercise a genuine cross-worker backend).
+    CACHES["fragments"] = {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}
 
 # ---------------------------------------------------------------------------
 # Internationalization (uz default, ru, en)
@@ -324,6 +340,11 @@ THUMBNAIL_PRESERVE_EXTENSIONS = ("jpg", "jpeg", "png", "gif", "webp")
 # Silent in production: a missing/unreadable source yields an empty URL
 # (the template keeps its gradient placeholder) instead of raising.
 THUMBNAIL_DEBUG = False
+# Persist each thumbnail's width/height in the DB. Without this, every
+# {% responsive_img %} re-opens and PIL-decodes each variant on EVERY render
+# just to read its dimensions (~230 decodes per landing render). With it on,
+# dimensions come back inside the existing lookup — decode happens once.
+THUMBNAIL_CACHE_DIMENSIONS = True
 
 # Upload limits (security)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 12 * 1024 * 1024   # 12 MB

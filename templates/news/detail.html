@@ -49,7 +49,7 @@
     <h1 class="mt-3 font-display font-extrabold tracking-tight text-[clamp(1.9rem,4vw,2.7rem)] leading-tight">{{ post.title }}</h1>
     {% if post.cover_image %}{% responsive_img post.cover_image alt=post.title css="mt-6 w-full rounded-card border bd object-cover" width=760 width_2x=1280 eager=True fetchpriority="high" sizes="(min-width:768px) 48rem, 100vw" %}{% endif %}
     {% if post.has_video %}<div class="mt-6">{% include "partials/_video.html" with video=post title=post.title %}</div>{% endif %}
-    {% if post.body %}<div class="rich mt-6 text-[16.5px] leading-relaxed">{{ post.body|safe }}</div>{% endif %}
+    {% if post.body %}<div class="rich mt-6 text-[16.5px] leading-relaxed">{{ post.body|richtext }}</div>{% endif %}
   </div>
 
   {% if related %}

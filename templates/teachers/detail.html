@@ -43,7 +43,7 @@
           {% if teacher.experience_years %}<span class="rounded-pill bg-alt border bd px-3 py-1.5">{% blocktranslate count years=teacher.experience_years %}{{ years }} yil tajriba{% plural %}{{ years }} yil tajriba{% endblocktranslate %}</span>{% endif %}
           {% if teacher.subjects %}<span class="rounded-pill bg-alt border bd px-3 py-1.5">{{ teacher.subjects }}</span>{% endif %}
         </div>
-        {% if teacher.bio %}<div class="rich mt-6 text-[16px] leading-relaxed">{{ teacher.bio|safe }}</div>{% endif %}
+        {% if teacher.bio %}<div class="rich mt-6 text-[16px] leading-relaxed">{{ teacher.bio|richtext }}</div>{% endif %}
         <button data-open-modal class="mt-7 inline-flex rounded-pill bg-brand-red-600 px-6 py-3.5 text-[15px] font-semibold text-white hover:bg-brand-red-700 transition">{% translate "Darsga yoziling" %}</button>
       </div>
     </div>

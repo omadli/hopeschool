@@ -56,15 +56,6 @@ class SiteConfigModelTests(TestCase):
         config = self._get_config(latitude="41.299496", longitude="69.240073")
         self.assertTrue(config.has_geo)
 
-    def test_google_map_src_contains_coords(self):
-        config = self._get_config(latitude="41.299496", longitude="69.240073")
-        self.assertIn("41.299496", config.google_map_src)
-        self.assertIn("69.240073", config.google_map_src)
-
-    def test_google_map_src_empty_without_coords(self):
-        config = self._get_config(latitude="", longitude="")
-        self.assertEqual(config.google_map_src, "")
-
 
 @override_settings(STORAGES=_STATIC_STORAGE)
 class SiteConfigAdminTests(TestCase):

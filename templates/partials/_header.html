@@ -18,14 +18,14 @@
       <div class="flex items-center gap-2">
         {# language dropdown #}
         <div class="relative" data-langwrap>
-          <button data-langbtn aria-label="{% translate 'Tilni tanlash' %}: {{ LANGUAGE_CODE|upper }}" aria-haspopup="true" class="flex items-center gap-1.5 rounded-pill border bd surface-card px-2.5 sm:px-3 py-2 text-[13px] font-semibold">
+          <button data-langbtn aria-label="{% translate 'Tilni tanlash' %}: {{ LANGUAGE_CODE|upper }}" aria-haspopup="true" aria-expanded="false" class="flex items-center gap-1.5 rounded-pill border bd surface-card px-2.5 sm:px-3 py-2 text-[13px] font-semibold">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>
             <span>{{ LANGUAGE_CODE|upper }}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div data-langmenu class="hidden absolute right-0 mt-2 w-36 rounded-xl surface-card border bd shadow-strong p-1 z-50">
             {% for lang in alt_urls %}
-              <a href="{{ lang.url }}" class="block rounded-lg px-3 py-2 text-[14px] font-medium hover:bg-brand-blue-50 dark:hover:bg-white/5 {% if lang.code == LANGUAGE_CODE %}text-brand-blue-600 dark:text-brand-blue-300{% endif %}">{{ lang.name }}</a>
+              <a href="{{ lang.url }}"{% if lang.code == LANGUAGE_CODE %} aria-current="true"{% endif %} class="block rounded-lg px-3 py-2 text-[14px] font-medium hover:bg-brand-blue-50 dark:hover:bg-white/5 {% if lang.code == LANGUAGE_CODE %}text-brand-blue-600 dark:text-brand-blue-300{% endif %}">{{ lang.name }}</a>
             {% endfor %}
           </div>
         </div>
@@ -40,7 +40,7 @@
           {% translate "Ariza qoldirish" %}
         </button>
 
-        <button id="burger" aria-label="{% translate 'Menyu' %}" aria-controls="drawer" class="lg:hidden grid place-items-center h-10 w-10 rounded-pill border bd surface-card">
+        <button id="burger" aria-label="{% translate 'Menyu' %}" aria-controls="drawer" aria-expanded="false" class="lg:hidden grid place-items-center h-10 w-10 rounded-pill border bd surface-card">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
       </div>

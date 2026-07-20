@@ -100,11 +100,11 @@ class SiteConfigAdmin(AutoTranslateAdminMixin, ModelAdmin, TabbedTranslationAdmi
             "description": _("Xaritani bosib yoki qidirib joylashuvni tanlang. "
                              "Google va Yandex xaritalari shu koordinatalardan avtomatik chiqadi."),
         }),
-        (_("Xarita — qo‘lda override (ixtiyoriy)"), {
-            "fields": ("google_maps_embed", "yandex_maps_embed"),
+        (_("Google xarita — qo‘lda override (ixtiyoriy)"), {
+            "fields": ("google_maps_embed",),
             "classes": ("collapse",),
-            "description": _("Faqat maxsus embed kerak bo‘lsa to‘ldiring. Bo‘sh qoldirilsa, "
-                             "yuqoridagi koordinatalardan foydalaniladi."),
+            "description": _("Faqat maxsus Google embed kerak bo‘lsa to‘ldiring. Bo‘sh "
+                             "qoldirilsa, yuqoridagi koordinatalardan foydalaniladi."),
         }),
         (_("SEO"), {
             "fields": ("seo_title", "seo_description", "og_image",

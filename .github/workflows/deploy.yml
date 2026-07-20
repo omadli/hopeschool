@@ -99,4 +99,7 @@ jobs:
             venv/bin/python manage.py tailwind build --force   # BEFORE collectstatic
             venv/bin/python manage.py collectstatic --noinput
             venv/bin/python manage.py compilemo               # .po -> .mo (polib)
+            # Pre-generate thumbnails so the first real visitor doesn't pay the
+            # Pillow resize/WebP-encode cost (which can 502 a sync worker).
+            venv/bin/python manage.py warm_thumbnails || true
             sudo systemctl restart hopeschool
