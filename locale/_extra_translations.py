@@ -196,6 +196,140 @@ PROJECT_RU = {
     '• .env qiymati ishlatiladi': '• используется значение из .env',
     '✓ Oʻrnatilgan (panel)': '✓ Установлен (панель)',
     '✗ Oʻrnatilmagan': '✗ Не установлен',
+
+    # --- Analitika paneli v2 + maxfiylik/404 (2026-08) ---
+    'Maʼlumotlarni yuklab boʻlmadi.': 'Не удалось загрузить данные.',
+    'Qayta urinish': 'Повторить',
+    'Aniqlanmagan':
+        'Не определено',
+    'Asliga qaytarish':
+        'Сбросить масштаб',
+    'Boshlanish sanasi':
+        'Дата начала',
+    'Brauzer, qurilma va operatsion tizim':
+        'Браузер, устройство и операционная система',
+    'Brauzerlar':
+        'Браузеры',
+    'Bu davrda maʼlumot yoʻq.':
+        'За этот период нет данных.',
+    'Butun davr':
+        'За всё время',
+    'Butun ekran':
+        'Полный экран',
+    'Chiqib ketish darajasi':
+        'Показатель отказов',
+    'Davlatlar':
+        'Страны',
+    'Jonli':
+        'В реальном времени',
+    'Joylashuv':
+        'Местоположение',
+    'Kam':
+        'Мало',
+    'Kattalashtirish':
+        'Приблизить',
+    'Kichiklashtirish':
+        'Отдалить',
+    'Koʻp':
+        'Много',
+    'Koʻrish':
+        'Просмотры',
+    'Mahalliy tarmoq':
+        'Локальная сеть',
+    'Nomaʼlum':
+        'Неизвестно',
+    'Operatsion tizimlar':
+        'Операционные системы',
+    'Oʻrtacha davomiylik':
+        'Средняя длительность',
+    'Qoʻllash':
+        'Применить',
+    'Qurilma':
+        'Устройство',
+    'Roʻyxat':
+        'Список',
+    'Sahifa koʻrishlari':
+        'Просмотры страниц',
+    'Soʻnggi 1 soat':
+        'Последний час',
+    'Soʻnggi 1 yil':
+        'Последний год',
+    'Soʻnggi 24 soat':
+        'Последние 24 часа',
+    'Soʻnggi 3 oy':
+        'Последние 3 месяца',
+    'Soʻnggi 30 kun':
+        'Последние 30 дней',
+    'Soʻnggi 6 oy':
+        'Последние 6 месяцев',
+    'Soʻnggi 7 kun':
+        'Последние 7 дней',
+    'Tanlangan davr':
+        'Выбранный период',
+    'Tashrifchi':
+        'Посетители',
+    'Texnologiyalar':
+        'Технологии',
+    'Toʻgʻridan-toʻgʻri':
+        'Прямые заходы',
+    'Tugash sanasi':
+        'Дата окончания',
+    'Xarita':
+        'Карта',
+    'Ariza qoldirganingizda: ism-familiya, telefon raqam, tanlangan kurs va ixtiyoriy izoh.':
+        'При оставлении заявки: имя и фамилия, номер телефона, выбранный курс и необязательный комментарий.',
+    'Arizalar faqat markazning masʼul xodimlariga (jumladan Telegram orqali) yetkaziladi. Biz maʼlumotlaringizni uchinchi shaxslarga sotmaymiz. Sayt statistikasi uchun tashqi tahlil xizmatlaridan (masalan Google Analytics, Yandex Metrica) foydalanilishi mumkin.':
+        'Заявки передаются только ответственным сотрудникам центра (в том числе через Telegram). Мы не продаём ваши данные третьим лицам. Для статистики сайта могут использоваться внешние аналитические сервисы (например Google Analytics, Yandex Metrica).',
+    'Arizalar siz bilan bogʻlanish uchun zarur boʻlgan muddat davomida saqlanadi. Tashrif loglari cheklangan muddatdan soʻng avtomatik oʻchiriladi.':
+        'Заявки хранятся столько, сколько необходимо для связи с вами. Логи посещений автоматически удаляются по истечении ограниченного срока.',
+    'Arizangiz boʻyicha siz bilan bogʻlanish va kurslar haqida maʼlumot berish.':
+        'Связь с вами по вашей заявке и предоставление информации о курсах.',
+    'Cookie va lokal saqlash':
+        'Cookie и локальное хранилище',
+    'Hope School maxfiylik siyosati: qanday maʼlumotlar yigʻiladi va qanday ishlatiladi.':
+        'Политика конфиденциальности Hope School: какие данные собираются и как используются.',
+    'Maxfiylik siyosati':
+        'Политика конфиденциальности',
+    'Maʼlumotlar kim bilan ulashiladi':
+        'С кем передаются данные',
+    'Maʼlumotlardan qanday foydalaniladi':
+        'Как используются данные',
+    'Maʼlumotlarni saqlash muddati':
+        'Срок хранения данных',
+    'Oxirgi yangilanish':
+        'Последнее обновление',
+    'Oʻzingiz haqingizdagi maʼlumotlarni koʻrish, tuzatish yoki oʻchirishni soʻrashingiz mumkin. Buning uchun quyidagi aloqa maʼlumotlari orqali bogʻlaning.':
+        'Вы можете запросить просмотр, исправление или удаление своих данных. Для этого свяжитесь с нами по указанным ниже контактам.',
+    'O‘quvchilarimizning erishgan natijalari (CEFR va boshqa sertifikatlar) yutuqlar namunasi sifatida saytda e’lon qilinishi mumkin. Bunda sertifikat tasviri va o‘quvchi ismi ko‘rsatiladi. Ular faqat o‘quvchi yoki uning qonuniy vakili roziligi bilan joylashtiriladi. Sertifikatingizni saytdan olib tashlashni istasangiz, quyidagi aloqa orqali murojaat qiling — biz zudlik bilan o‘chiramiz.':
+        'Результаты наших учеников (CEFR и другие сертификаты) могут публиковаться на сайте как примеры достижений. При этом показываются изображение сертификата и имя ученика. Они размещаются только с согласия ученика или его законного представителя. Если вы хотите убрать свой сертификат с сайта, свяжитесь с нами по указанным контактам — мы удалим его незамедлительно.',
+    'Qanday maʼlumotlar yigʻiladi':
+        'Какие данные собираются',
+    'Sayt tanlagan tilingiz va yorugʻ/qorongʻu rejimni brauzeringizda saqlaydi. Statistika xizmatlari oʻz cookie fayllaridan foydalanishi mumkin.':
+        'Сайт сохраняет в вашем браузере выбранный язык и светлую/тёмную тему. Сервисы статистики могут использовать свои cookie-файлы.',
+    'Saytga tashrif buyurganingizda avtomatik: IP-manzil, brauzer turi va koʻrilgan sahifalar (statistika uchun).':
+        'При посещении сайта автоматически: IP-адрес, тип браузера и просмотренные страницы (для статистики).',
+    'Sertifikatlar (o‘quvchi yutuqlari)':
+        'Сертификаты (достижения учеников)',
+    'Sizning huquqlaringiz':
+        'Ваши права',
+    'Xizmat sifatini va sayt ishlashini yaxshilash (umumlashtirilgan statistika).':
+        'Улучшение качества услуг и работы сайта (обобщённая статистика).',
+    'Sahifa topilmadi':
+        'Страница не найдена',
+    'Kechirasiz, siz qidirgan sahifa mavjud emas yoki koʻchirilgan.':
+        'Извините, запрашиваемая страница не существует или была перемещена.',
+    'Xatolik yuz berdi. Iltimos, qaytadan urinib koʻring.':
+        'Произошла ошибка. Пожалуйста, попробуйте ещё раз.',
+    'Yuborilmoqda…':
+        'Отправка…',
+    'Rasmni kattalashtirish':
+        'Увеличить изображение',
+    'Hero blokidagi katta rasm/poster.':
+        'Большое изображение/постер в блоке Hero.',
+    'Google xarita — qo‘lda override (ixtiyoriy)':
+        'Google Карта — ручное переопределение (необязательно)',
+    'Faqat maxsus Google embed kerak bo‘lsa to‘ldiring. Bo‘sh ':
+        'Заполняйте, только если нужен особый Google embed. Пустое ',
 }
 
 PROJECT_EN = {
@@ -391,6 +525,139 @@ PROJECT_EN = {
     '• .env qiymati ishlatiladi': '• the .env value is used',
     '✓ Oʻrnatilgan (panel)': '✓ Set (panel)',
     '✗ Oʻrnatilmagan': '✗ Not set',
+    # --- Analytics dashboard v2 + privacy/404 (2026-08) ---
+    'Maʼlumotlarni yuklab boʻlmadi.': 'Could not load the data.',
+    'Qayta urinish': 'Retry',
+    'Aniqlanmagan':
+        'Unknown',
+    'Asliga qaytarish':
+        'Reset zoom',
+    'Boshlanish sanasi':
+        'Start date',
+    'Brauzer, qurilma va operatsion tizim':
+        'Browser, device and operating system',
+    'Brauzerlar':
+        'Browsers',
+    'Bu davrda maʼlumot yoʻq.':
+        'No data for this period.',
+    'Butun davr':
+        'All time',
+    'Butun ekran':
+        'Fullscreen',
+    'Chiqib ketish darajasi':
+        'Bounce rate',
+    'Davlatlar':
+        'Countries',
+    'Jonli':
+        'Live',
+    'Joylashuv':
+        'Locations',
+    'Kam':
+        'Low',
+    'Kattalashtirish':
+        'Zoom in',
+    'Kichiklashtirish':
+        'Zoom out',
+    'Koʻp':
+        'High',
+    'Koʻrish':
+        'Views',
+    'Mahalliy tarmoq':
+        'Local network',
+    'Nomaʼlum':
+        'Unknown',
+    'Operatsion tizimlar':
+        'Operating systems',
+    'Oʻrtacha davomiylik':
+        'Avg. visit duration',
+    'Qoʻllash':
+        'Apply',
+    'Qurilma':
+        'Device',
+    'Roʻyxat':
+        'List',
+    'Sahifa koʻrishlari':
+        'Page views',
+    'Soʻnggi 1 soat':
+        'Last hour',
+    'Soʻnggi 1 yil':
+        'Last year',
+    'Soʻnggi 24 soat':
+        'Last 24 hours',
+    'Soʻnggi 3 oy':
+        'Last 3 months',
+    'Soʻnggi 30 kun':
+        'Last 30 days',
+    'Soʻnggi 6 oy':
+        'Last 6 months',
+    'Soʻnggi 7 kun':
+        'Last 7 days',
+    'Tanlangan davr':
+        'Custom range',
+    'Tashrifchi':
+        'Users',
+    'Texnologiyalar':
+        'Technology',
+    'Toʻgʻridan-toʻgʻri':
+        'Direct / none',
+    'Tugash sanasi':
+        'End date',
+    'Xarita':
+        'Map',
+    'Ariza qoldirganingizda: ism-familiya, telefon raqam, tanlangan kurs va ixtiyoriy izoh.':
+        'When you submit a request: full name, phone number, the selected course and an optional note.',
+    'Arizalar faqat markazning masʼul xodimlariga (jumladan Telegram orqali) yetkaziladi. Biz maʼlumotlaringizni uchinchi shaxslarga sotmaymiz. Sayt statistikasi uchun tashqi tahlil xizmatlaridan (masalan Google Analytics, Yandex Metrica) foydalanilishi mumkin.':
+        "Requests are delivered only to the centre's responsible staff (including via Telegram). We do not sell your data to third parties. External analytics services (for example Google Analytics, Yandex Metrica) may be used for site statistics.",
+    'Arizalar siz bilan bogʻlanish uchun zarur boʻlgan muddat davomida saqlanadi. Tashrif loglari cheklangan muddatdan soʻng avtomatik oʻchiriladi.':
+        'Requests are kept for as long as needed to contact you. Visit logs are deleted automatically after a limited period.',
+    'Arizangiz boʻyicha siz bilan bogʻlanish va kurslar haqida maʼlumot berish.':
+        'To contact you about your request and provide information about courses.',
+    'Cookie va lokal saqlash':
+        'Cookies and local storage',
+    'Hope School maxfiylik siyosati: qanday maʼlumotlar yigʻiladi va qanday ishlatiladi.':
+        'Hope School privacy policy: what data is collected and how it is used.',
+    'Maxfiylik siyosati':
+        'Privacy policy',
+    'Maʼlumotlar kim bilan ulashiladi':
+        'Who the data is shared with',
+    'Maʼlumotlardan qanday foydalaniladi':
+        'How the data is used',
+    'Maʼlumotlarni saqlash muddati':
+        'How long data is kept',
+    'Oxirgi yangilanish':
+        'Last updated',
+    'Oʻzingiz haqingizdagi maʼlumotlarni koʻrish, tuzatish yoki oʻchirishni soʻrashingiz mumkin. Buning uchun quyidagi aloqa maʼlumotlari orqali bogʻlaning.':
+        'You may request access to, correction of, or deletion of your data. To do so, contact us using the details below.',
+    'O‘quvchilarimizning erishgan natijalari (CEFR va boshqa sertifikatlar) yutuqlar namunasi sifatida saytda e’lon qilinishi mumkin. Bunda sertifikat tasviri va o‘quvchi ismi ko‘rsatiladi. Ular faqat o‘quvchi yoki uning qonuniy vakili roziligi bilan joylashtiriladi. Sertifikatingizni saytdan olib tashlashni istasangiz, quyidagi aloqa orqali murojaat qiling — biz zudlik bilan o‘chiramiz.':
+        "Our students' results (CEFR and other certificates) may be published on the site as examples of achievement. The certificate image and the student's name are shown. They are published only with the consent of the student or their legal guardian. If you would like your certificate removed from the site, contact us using the details below — we will delete it immediately.",
+    'Qanday maʼlumotlar yigʻiladi':
+        'What data is collected',
+    'Sayt tanlagan tilingiz va yorugʻ/qorongʻu rejimni brauzeringizda saqlaydi. Statistika xizmatlari oʻz cookie fayllaridan foydalanishi mumkin.':
+        'The site stores your chosen language and light/dark theme in your browser. Analytics services may use their own cookies.',
+    'Saytga tashrif buyurganingizda avtomatik: IP-manzil, brauzer turi va koʻrilgan sahifalar (statistika uchun).':
+        'Automatically when you visit the site: IP address, browser type and pages viewed (for statistics).',
+    'Sertifikatlar (o‘quvchi yutuqlari)':
+        'Certificates (student achievements)',
+    'Sizning huquqlaringiz':
+        'Your rights',
+    'Xizmat sifatini va sayt ishlashini yaxshilash (umumlashtirilgan statistika).':
+        'To improve service quality and site performance (aggregated statistics).',
+    'Sahifa topilmadi':
+        'Page not found',
+    'Kechirasiz, siz qidirgan sahifa mavjud emas yoki koʻchirilgan.':
+        'Sorry, the page you are looking for does not exist or has been moved.',
+    'Xatolik yuz berdi. Iltimos, qaytadan urinib koʻring.':
+        'Something went wrong. Please try again.',
+    'Yuborilmoqda…':
+        'Sending…',
+    'Rasmni kattalashtirish':
+        'Enlarge image',
+    'Hero blokidagi katta rasm/poster.':
+        'The large image/poster in the hero block.',
+    'Google xarita — qo‘lda override (ixtiyoriy)':
+        'Google Map — manual override (optional)',
+    'Faqat maxsus Google embed kerak bo‘lsa to‘ldiring. Bo‘sh ':
+        'Fill in only if a custom Google embed is needed. Empty ',
 }
 
 UNFOLD_UZ = {

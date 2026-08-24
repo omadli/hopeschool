@@ -1,8 +1,16 @@
 {% extends 'admin/base_site.html' %}
 
-{% load i18n unfold ui %}
+{% load i18n static unfold ui %}
 
 {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+    {% comment %}
+      ~120 KB of world-map path data — only the dashboard draws the choropleth,
+      so it is loaded here instead of in UNFOLD["SCRIPTS"] (every admin page).
+    {% endcomment %}
+    <script src="{% static 'js/world_map.js' %}" defer></script>
+{% endblock %}
 
 {% block branding %}
     {% include "unfold/helpers/site_branding.html" %}
@@ -10,21 +18,55 @@
 
 {% block content %}
     {% url 'admin_dashboard_data' as dash_data_url %}
-    {# ---- Global period filter ---- #}
-    <div class="flex flex-wrap gap-1.5 mb-6 text-sm" data-dash-tabs data-dash-url="{{ dash_data_url }}" data-active-period="{{ dash_period }}">
-        {% for key, label in period_tabs %}
-            <a href="?period={{ key }}" data-period="{{ key }}" class="dash-tab px-3.5 py-1.5 rounded-lg font-medium {% if key == dash_period %}bg-primary-600 text-white{% else %}bg-base-100 dark:bg-base-800 text-font-subtle-light dark:text-font-subtle-dark{% endif %}">{{ label }}</a>
-        {% endfor %}
+    {% comment %} ---- Global time-range filter ---- {% endcomment %}
+    <div class="dash-toolbar">
+        <div class="dash-range" data-dash-range data-dash-url="{{ dash_data_url }}"
+             data-period="{{ dash_period }}" data-from="{{ dash_from }}" data-to="{{ dash_to }}">
+            <button type="button" class="dash-range-btn" data-range-open aria-expanded="false">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span data-range-label>{{ dash_range_label }}</span>
+                <span class="dash-live-dot" data-live-dot hidden></span>
+                <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="dash-range-menu" data-range-menu hidden>
+                {% for key, label in range_options %}
+                    <button type="button" class="dash-range-item" data-range-pick="{{ key }}">
+                        <span class="material-symbols-outlined dash-check">{% if key == dash_period %}check{% endif %}</span>
+                        <span>{{ label }}</span>
+                        {% if key == "live" %}<span class="dash-live-dot"></span>{% endif %}
+                    </button>
+                {% endfor %}
+                <div class="dash-range-sep"></div>
+                <div class="dash-range-item" style="cursor:default;">
+                    <span class="material-symbols-outlined dash-check">event</span>
+                    <span>{% translate "Tanlangan davr" %}</span>
+                </div>
+                <div class="dash-range-custom">
+                    <input type="date" data-range-from value="{{ dash_from }}" aria-label="{% translate 'Boshlanish sanasi' %}">
+                    <input type="date" data-range-to value="{{ dash_to }}" aria-label="{% translate 'Tugash sanasi' %}">
+                    <button type="button" data-range-apply>{% translate "Qoʻllash" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% comment %} Indeterminate bar + retry row, driven by admin_dashboard.js. {% endcomment %}
+    <div class="dash-progress" data-dash-progress hidden><span></span></div>
+    <div class="dash-error" data-dash-error hidden>
+        <span class="material-symbols-outlined">error</span>
+        <span>{% translate "Maʼlumotlarni yuklab boʻlmadi." %}</span>
+        <button type="button" data-dash-retry>{% translate "Qayta urinish" %}</button>
     </div>
 
     <div id="dashboard-content">
         {% include "admin/_dashboard_content.html" %}
     </div>
 
-    {# ---- Static content inventory (not period-filtered) ---- #}
-    <div class="grid grid-cols-1 gap-4 mt-8">
-        {% component "unfold/components/card.html" with title=_('Sayt kontenti') class="h-full" %}
-            {% component "unfold/components/table.html" with table=content_inventory %}{% endcomponent %}
-        {% endcomponent %}
+    {% comment %} ---- Static content inventory (not range-filtered) ---- {% endcomment %}
+    <div class="dash-card">
+        <div class="dash-card-head">
+            <div class="dash-card-title"><span class="material-symbols-outlined">inventory_2</span>{% translate "Sayt kontenti" %}</div>
+        </div>
+        {% component "unfold/components/table.html" with table=content_inventory %}{% endcomponent %}
     </div>
 {% endblock %}

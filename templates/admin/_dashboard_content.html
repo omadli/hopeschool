@@ -1,103 +1,229 @@
 {% load i18n unfold ui %}
-{# ---- KPI cards ---- #}
-<div class="grid grid-cols-2 gap-3 mb-8 gap-4 lg:grid-cols-4">
-    {% for kpi in kpis %}
-        {% component "unfold/components/card.html" with class="h-full" %}
-            <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-primary-500 text-3xl sm:text-4xl shrink-0">{{ kpi.icon }}</span>
-                <div class="flex flex-col min-w-0">
-                    <span class="text-font-subtle-light dark:text-font-subtle-dark text-xs sm:text-sm">{{ kpi.title }}</span>
-                    {% component "unfold/components/title.html" %}{{ kpi.value }}{% endcomponent %}
-                </div>
-            </div>
-        {% endcomponent %}
+{% comment %}
+  Dashboard content for the selected time range. Swapped in by
+  static/js/admin_dashboard.js on every range change, so it must stay
+  self-contained: no <script>, all behaviour is (re)bound by that file.
+{% endcomment %}
+
+{% comment %} ---- Stat tiles: users / views / bounce / duration ---- {% endcomment %}
+<div class="dash-grid dash-grid-4">
+    {% for s in stats %}
+        {% if s.series %}
+            <button type="button" class="dash-tile" data-series-toggle="{{ s.key }}" aria-pressed="true" style="color:{{ s.color }}">
+        {% else %}
+            <div class="dash-tile">
+        {% endif %}
+            <span class="dash-tile-head">
+                <span class="material-symbols-outlined">{{ s.icon }}</span>
+                <span>{{ s.title }}</span>
+                {% if s.series %}<span class="dash-tile-dot" style="background:{{ s.color }}"></span>{% endif %}
+            </span>
+            <span class="dash-tile-row">
+                <span class="dash-tile-value">{{ s.value }}</span>
+                {% if s.trend %}
+                    <span class="dash-trend {% if s.trend.good %}dash-trend-good{% else %}dash-trend-bad{% endif %}">
+                        <span class="material-symbols-outlined">{% if s.trend.up %}trending_up{% else %}trending_down{% endif %}</span>{{ s.trend.pct }}%
+                    </span>
+                {% endif %}
+            </span>
+        {% if s.series %}</button>{% else %}</div>{% endif %}
     {% endfor %}
 </div>
 
-{# ---- Charts: visits (line) + devices (doughnut) ---- #}
-<div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-3">
-    <div class="lg:col-span-2">
-        {% component "unfold/components/card.html" with title=_('Tashriflar dinamikasi') class="h-full" %}
-            <div class="relative w-full" style="height:300px;"><canvas data-dash-chart data-chart="{{ visits_chart }}"></canvas></div>
-        {% endcomponent %}
-    </div>
-    <div>
-        {% component "unfold/components/card.html" with title=_('Qurilmalar') class="h-full" %}
-            <div class="relative w-full" style="height:200px;"><canvas data-dash-chart data-chart="{{ device_chart }}"></canvas></div>
-            {% if device_legend %}
-                <div class="mt-5 flex flex-col gap-2">
-                    {% for d in device_legend %}
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-2xl shrink-0" style="color:{{ d.color }}">{{ d.icon }}</span>
-                            <span class="text-sm text-font-default-light dark:text-font-default-dark truncate">{{ d.label }}</span>
-                            <span class="ml-auto text-sm font-semibold text-font-important-light dark:text-font-important-dark">{{ d.count }}</span>
-                            <span class="w-10 text-right text-xs text-font-subtle-light dark:text-font-subtle-dark">{{ d.percent }}%</span>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endcomponent %}
-    </div>
+{% comment %} ---- Main chart: users + page views over the range ---- {% endcomment %}
+<div class="dash-card" style="margin-bottom:1rem;">
+    <div class="dash-chart-box"><canvas data-dash-chart="visits" data-chart="{{ visits_chart }}"></canvas></div>
 </div>
 
-{# ---- Leads chart + status ---- #}
-<div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-3">
-    <div class="lg:col-span-2">
-        {% component "unfold/components/card.html" with title=_('Arizalar dinamikasi') class="h-full" %}
-            <div class="relative w-full" style="height:300px;"><canvas data-dash-chart data-chart="{{ leads_chart }}"></canvas></div>
-        {% endcomponent %}
-    </div>
-    <div>
-        {% component "unfold/components/card.html" with title=_('Arizalar holati boʻyicha') class="h-full" %}
-            {% component "unfold/components/table.html" with table=leads_by_status %}{% endcomponent %}
-        {% endcomponent %}
-    </div>
-</div>
-
-{# ---- CRM source cards (driven by the global filter) ---- #}
-<div class="mb-8">
-    {% component "unfold/components/card.html" with title=_('Manbalar boʻyicha lidlar (CRM)') class="h-full" %}
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {% for s in source_cards %}
-                <div class="flex items-center gap-5 rounded-xl border border-base-200 p-5 dark:border-base-800">
-                    <span class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-base-100 dark:bg-base-800" style="{% if s.color %}color:{{ s.color }}{% endif %}">
-                        {% if s.image %}<img src="{{ s.image }}" alt="{{ s.name }}" class="h-full w-full rounded-2xl object-cover">
-                        {% elif s.brand %}{% social_icon s.brand size=48 %}
-                        {% else %}<span class="material-symbols-outlined" style="font-size:48px;line-height:1;">{{ s.icon }}</span>{% endif %}
-                    </span>
-                    <div class="min-w-0 flex-1">
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="truncate font-semibold text-base text-font-important-light dark:text-font-important-dark">{{ s.name }}</span>
-                            <span class="text-2xl font-bold text-primary-600 dark:text-primary-400">{{ s.count }}</span>
-                        </div>
-                        <div class="mt-2 h-2 overflow-hidden rounded-full bg-base-100 dark:bg-base-800">
-                            <div class="h-full rounded-full bg-primary-500 transition-all" style="width:{{ s.percent }}%"></div>
-                        </div>
-                        <div class="mt-2 flex items-center justify-between gap-2">
-                            <span class="text-xs text-font-subtle-light dark:text-font-subtle-dark">{{ s.percent }}%</span>
-                            <button type="button" data-copy-link="{{ s.link }}" class="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400">
-                                <span class="material-symbols-outlined text-base">content_copy</span>
-                                <span data-copy-label>{% translate "Havola" %}</span>
-                            </button>
-                        </div>
-                    </div>
+{% comment %} ---- Top pages / Top sources ---- {% endcomment %}
+<div class="dash-grid dash-grid-2">
+    <div class="dash-card">
+        <div class="dash-card-head">
+            <div>
+                <div class="dash-card-title"><span class="material-symbols-outlined">description</span>{% translate "Top sahifalar" %}</div>
+                <div class="dash-card-sub">{% translate "Sahifalar" %}: {{ top_pages|length }}</div>
+            </div>
+        </div>
+        <div class="dash-rows">
+            <div class="dash-rows-head">
+                <span>{% translate "Manzil" %}</span>
+                <span>{% translate "Tashrifchi" %}</span>
+                <span>{% translate "Koʻrish" %}</span>
+            </div>
+            {% for row in top_pages %}
+                <div class="dash-row">
+                    <span class="dash-row-bar" style="width:{{ row.percent }}%"></span>
+                    <span class="dash-row-label" title="{{ row.label }}">{{ row.label }}</span>
+                    <span class="dash-row-num dash-row-num-strong">{{ row.users }}</span>
+                    <span class="dash-row-num">{{ row.views }}</span>
                 </div>
             {% empty %}
-                <p class="text-sm text-font-subtle-light dark:text-font-subtle-dark">{% translate "Hali manba yoʻq." %}</p>
+                <p class="dash-empty">{% translate "Bu davrda maʼlumot yoʻq." %}</p>
             {% endfor %}
         </div>
-    {% endcomponent %}
+    </div>
+
+    <div class="dash-card">
+        <div class="dash-card-head">
+            <div>
+                <div class="dash-card-title"><span class="material-symbols-outlined">arrow_outward</span>{% translate "Top manbalar" %}</div>
+                <div class="dash-card-sub">{% translate "Manbalar" %}: {{ top_sources|length }}</div>
+            </div>
+        </div>
+        <div class="dash-rows">
+            <div class="dash-rows-head">
+                <span>{% translate "Manba" %}</span>
+                <span>{% translate "Tashrifchi" %}</span>
+            </div>
+            {% for row in top_sources %}
+                <div class="dash-row">
+                    <span class="dash-row-bar" style="width:{{ row.percent }}%"></span>
+                    <span class="dash-row-label" title="{{ row.label }}">
+                        {% if row.brand %}{% tech_icon row.brand 17 "dash-brand" %}{% else %}<span class="material-symbols-outlined">adjust</span>{% endif %}{{ row.label }}
+                    </span>
+                    <span class="dash-row-num dash-row-num-strong">{{ row.users }}</span>
+                </div>
+            {% empty %}
+                <p class="dash-empty">{% translate "Bu davrda maʼlumot yoʻq." %}</p>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 
-{# ---- Geo + top tables ---- #}
-<div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-    {% component "unfold/components/card.html" with title=_('Davlatlar boʻyicha tashriflar') class="h-full" %}
-        {% component "unfold/components/table.html" with table=top_countries %}{% endcomponent %}
-    {% endcomponent %}
-    {% component "unfold/components/card.html" with title=_('Top sahifalar') class="h-full" %}
-        {% component "unfold/components/table.html" with table=top_paths %}{% endcomponent %}
-    {% endcomponent %}
-    {% component "unfold/components/card.html" with title=_('Top manbalar') class="h-full" %}
-        {% component "unfold/components/table.html" with table=top_referrers %}{% endcomponent %}
-    {% endcomponent %}
+{% comment %} ---- Locations (map / list) + Browsers (browsers / devices / OS) ---- {% endcomment %}
+<div class="dash-grid dash-grid-2">
+    <div class="dash-card" data-pane-group>
+        <div class="dash-card-head">
+            <div>
+                <div class="dash-card-title"><span class="material-symbols-outlined">public</span>{% translate "Joylashuv" %}</div>
+                <div class="dash-card-sub">{% translate "Davlatlar" %}: {{ top_countries|length }}</div>
+            </div>
+            <div class="dash-seg">
+                <button type="button" data-pane-btn="map" aria-selected="true">{% translate "Xarita" %}</button>
+                <button type="button" data-pane-btn="list" aria-selected="false">{% translate "Roʻyxat" %}</button>
+            </div>
+        </div>
+        <div data-pane="map">
+            <div class="dash-map-outer" data-map-outer>
+                <div class="dash-map-tools">
+                    <button type="button" data-map-zoom="1.4" title="{% translate 'Kattalashtirish' %}" aria-label="{% translate 'Kattalashtirish' %}"><span class="material-symbols-outlined">add</span></button>
+                    <button type="button" data-map-zoom="0.714" title="{% translate 'Kichiklashtirish' %}" aria-label="{% translate 'Kichiklashtirish' %}"><span class="material-symbols-outlined">remove</span></button>
+                    <button type="button" data-map-reset title="{% translate 'Asliga qaytarish' %}" aria-label="{% translate 'Asliga qaytarish' %}"><span class="material-symbols-outlined">center_focus_strong</span></button>
+                    <button type="button" data-map-full title="{% translate 'Butun ekran' %}" aria-label="{% translate 'Butun ekran' %}"><span class="material-symbols-outlined">fullscreen</span></button>
+                </div>
+                <div class="dash-map-wrap" data-world-map data-countries="{{ map_countries }}"></div>
+                <div class="dash-map-legend">
+                    <span>{% translate "Kam" %}</span><span class="dash-map-scale"></span><span>{% translate "Koʻp" %}</span>
+                </div>
+            </div>
+        </div>
+        <div data-pane="list" hidden>
+            <div class="dash-rows">
+                <div class="dash-rows-head">
+                    <span>{% translate "Davlat" %}</span>
+                    <span>{% translate "Tashrifchi" %}</span>
+                </div>
+                {% for row in top_countries %}
+                    <div class="dash-row">
+                        <span class="dash-row-bar" style="width:{{ row.percent }}%"></span>
+                        <span class="dash-row-label">
+                            {% if row.key == "ZZ" %}<span class="material-symbols-outlined">lan</span>
+                            {% elif not row.key %}<span class="material-symbols-outlined">help</span>
+                            {% else %}<span class="dash-flag" data-flag="{{ row.key }}"></span>{% endif %}
+                            <span data-country="{{ row.key }}">{% if row.key and row.key != "ZZ" %}{{ row.fallback }}{% else %}{{ row.label }}{% endif %}</span>
+                        </span>
+                        <span class="dash-row-num dash-row-num-strong">{{ row.users }}</span>
+                    </div>
+                {% empty %}
+                    <p class="dash-empty">{% translate "Bu davrda maʼlumot yoʻq." %}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-card" data-pane-group>
+        <div class="dash-card-head">
+            <div>
+                <div class="dash-card-title"><span class="material-symbols-outlined">devices</span>{% translate "Texnologiyalar" %}</div>
+                <div class="dash-card-sub">{% translate "Brauzer, qurilma va operatsion tizim" %}</div>
+            </div>
+            <div class="dash-seg">
+                <button type="button" data-pane-btn="browsers" aria-selected="true">{% translate "Brauzerlar" %}</button>
+                <button type="button" data-pane-btn="devices" aria-selected="false">{% translate "Qurilmalar" %}</button>
+                <button type="button" data-pane-btn="os" aria-selected="false">{% translate "Operatsion tizimlar" %}</button>
+            </div>
+        </div>
+        {% for pane, rows, head in tech_panes %}
+            <div data-pane="{{ pane }}" {% if not forloop.first %}hidden{% endif %}>
+                <div class="dash-rows">
+                    <div class="dash-rows-head">
+                        <span>{{ head }}</span>
+                        <span>{% translate "Tashrifchi" %}</span>
+                    </div>
+                    {% for row in rows %}
+                        <div class="dash-row">
+                            <span class="dash-row-bar" style="width:{{ row.percent }}%"></span>
+                            <span class="dash-row-label" title="{{ row.label }}">
+                                {% if row.brand %}{% tech_icon row.brand 17 "dash-brand" %}{% elif row.icon %}<span class="material-symbols-outlined">{{ row.icon }}</span>{% endif %}{{ row.label }}
+                            </span>
+                            <span class="dash-row-num dash-row-num-strong">{{ row.users }}</span>
+                        </div>
+                    {% empty %}
+                        <p class="dash-empty">{% translate "Bu davrda maʼlumot yoʻq." %}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% comment %} ---- Leads (CRM) — same range as everything above ---- {% endcomment %}
+<div class="dash-grid dash-grid-2">
+    <div class="dash-card">
+        <div class="dash-card-head">
+            <div class="dash-card-title"><span class="material-symbols-outlined">mail</span>{% translate "Arizalar dinamikasi" %}</div>
+        </div>
+        <div class="dash-chart-box dash-chart-box-sm"><canvas data-dash-chart="leads" data-chart="{{ leads_chart }}"></canvas></div>
+    </div>
+    <div class="dash-card">
+        <div class="dash-card-head">
+            <div class="dash-card-title"><span class="material-symbols-outlined">flag</span>{% translate "Arizalar holati boʻyicha" %}</div>
+        </div>
+        {% component "unfold/components/table.html" with table=leads_by_status %}{% endcomponent %}
+    </div>
+</div>
+
+<div class="dash-card" style="margin-bottom:1rem;">
+    <div class="dash-card-head">
+        <div class="dash-card-title"><span class="material-symbols-outlined">hub</span>{% translate "Manbalar boʻyicha lidlar (CRM)" %}</div>
+    </div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {% for s in source_cards %}
+            <div class="flex items-center gap-5 rounded-xl border border-base-200 p-5 dark:border-base-800">
+                <span class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-base-100 dark:bg-base-800" style="{% if s.color %}color:{{ s.color }}{% endif %}">
+                    {% if s.image %}<img src="{{ s.image }}" alt="{{ s.name }}" class="h-full w-full rounded-2xl object-cover">
+                    {% elif s.brand %}{% social_icon s.brand size=48 %}
+                    {% else %}<span class="material-symbols-outlined" style="font-size:48px;line-height:1;">{{ s.icon }}</span>{% endif %}
+                </span>
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="truncate font-semibold text-base text-font-important-light dark:text-font-important-dark">{{ s.name }}</span>
+                        <span class="text-2xl font-bold text-primary-600 dark:text-primary-400">{{ s.count }}</span>
+                    </div>
+                    <div class="mt-2 h-2 overflow-hidden rounded-full bg-base-100 dark:bg-base-800">
+                        <div class="h-full rounded-full bg-primary-500 transition-all" style="width:{{ s.percent }}%"></div>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between gap-2">
+                        <span class="text-xs text-font-subtle-light dark:text-font-subtle-dark">{{ s.percent }}%</span>
+                        <button type="button" data-copy-link="{{ s.link }}" class="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                            <span class="material-symbols-outlined text-base">content_copy</span>
+                            <span data-copy-label>{% translate "Havola" %}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="dash-empty">{% translate "Hali manba yoʻq." %}</p>
+        {% endfor %}
+    </div>
 </div>
