@@ -37,7 +37,15 @@ class VisitLog(models.Model):
     # Geo (resolved out-of-band by the resolve_geoip management command, never
     # in the request path). Empty until resolved; private/local IPs stay empty.
     country = models.CharField(_("Davlat"), max_length=80, blank=True, db_index=True)
+    # ISO 3166-1 alpha-2, or "ZZ" for traffic from a private/loopback address
+    # (dev machine, LAN, health check) — those can never be geolocated.
     country_code = models.CharField(_("Davlat kodi"), max_length=2, blank=True)
+    # Rotating per-day pseudonymous visitor hash (IP + UA + SECRET_KEY + date).
+    # Lets the dashboard count "users", sessions, bounce rate and visit duration
+    # without a cookie and without storing anything re-identifiable.
+    visitor_id = models.CharField(
+        _("Tashrifchi"), max_length=32, blank=True, db_index=True
+    )
     created_at = models.DateTimeField(_("Vaqti"), auto_now_add=True, db_index=True)
 
     class Meta:

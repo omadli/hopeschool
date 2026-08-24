@@ -488,6 +488,7 @@ UNFOLD = {
     # Qo'shimcha admin CSS (CKEditor tungi rejim tuzatmasi + UI tweaks)
     "STYLES": [
         lambda request: static("css/admin_extra.css"),
+        lambda request: static("css/admin_dashboard.css"),
     ],
     "SCRIPTS": [
         lambda request: static("js/admin_sidebar.js"),

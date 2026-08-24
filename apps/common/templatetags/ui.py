@@ -68,6 +68,22 @@ def social_icon(platform, size=16, cls=""):
     )
 
 
+@register.simple_tag
+def tech_icon(slug, size=16, cls=""):
+    """Brand SVG for a browser / OS / referrer host slug.
+
+    Looks in TECH_ICONS first, then reuses SOCIAL_ICONS (a referrer host can be
+    a social platform we already have a mark for), then falls back to a globe.
+    """
+    from apps.common.tech_icons import TECH_ICONS
+
+    inner = TECH_ICONS.get(slug) or SOCIAL_ICONS.get(slug) or TECH_ICONS["globe"]
+    return mark_safe(
+        f'<svg width="{size}" height="{size}" viewBox="0 0 24 24" '
+        f'fill="currentColor" class="{cls}">{inner}</svg>'
+    )
+
+
 @register.filter
 def som(value):
     """Format a number with thin spaces: 600000 -> '600 000'."""

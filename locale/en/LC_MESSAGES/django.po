@@ -47,11 +47,21 @@ msgstr "Album name"
 msgid "Analitika"
 msgstr "Analytics"
 
+msgid "Aniqlanmagan"
+msgstr "Unknown"
+
 msgid "Ariza"
 msgstr "Request"
 
 msgid "Ariza oynasi (modal)"
 msgstr "Application window (modal)"
+
+msgid ""
+"Ariza qoldirganingizda: ism-familiya, telefon raqam, tanlangan kurs va "
+"ixtiyoriy izoh."
+msgstr ""
+"When you submit a request: full name, phone number, the selected course and "
+"an optional note."
 
 msgid "Ariza qoldirish"
 msgstr "Apply now"
@@ -59,17 +69,40 @@ msgstr "Apply now"
 msgid "Arizalar"
 msgstr "Requests"
 
-msgid "Arizalar (davr)"
-msgstr "Applications (period)"
-
 msgid "Arizalar dinamikasi"
 msgstr "Applications trend"
+
+msgid ""
+"Arizalar faqat markazning masʼul xodimlariga (jumladan Telegram orqali) "
+"yetkaziladi. Biz maʼlumotlaringizni uchinchi shaxslarga sotmaymiz. Sayt "
+"statistikasi uchun tashqi tahlil xizmatlaridan (masalan Google Analytics, "
+"Yandex Metrica) foydalanilishi mumkin."
+msgstr ""
+"Requests are delivered only to the centre's responsible staff (including via"
+" Telegram). We do not sell your data to third parties. External analytics "
+"services (for example Google Analytics, Yandex Metrica) may be used for site"
+" statistics."
 
 msgid "Arizalar holati boʻyicha"
 msgstr "By application status"
 
+msgid ""
+"Arizalar siz bilan bogʻlanish uchun zarur boʻlgan muddat davomida saqlanadi."
+" Tashrif loglari cheklangan muddatdan soʻng avtomatik oʻchiriladi."
+msgstr ""
+"Requests are kept for as long as needed to contact you. Visit logs are "
+"deleted automatically after a limited period."
+
+msgid ""
+"Arizangiz boʻyicha siz bilan bogʻlanish va kurslar haqida maʼlumot berish."
+msgstr ""
+"To contact you about your request and provide information about courses."
+
 msgid "Arizangiz qabul qilindi!"
 msgstr "Your request has been received!"
+
+msgid "Asliga qaytarish"
+msgstr "Reset zoom"
 
 msgid "Asosiy kontentga oʻtish"
 msgstr "Skip to main content"
@@ -153,6 +186,9 @@ msgstr "Home page blocks"
 msgid "Bosh sahifa videosi"
 msgstr "Homepage video"
 
+msgid "Boshlanish sanasi"
+msgstr "Start date"
+
 msgid "Boshqa"
 msgstr "Other"
 
@@ -190,11 +226,20 @@ msgstr "Browser"
 msgid "Brauzer maʼlumoti"
 msgstr "User agent"
 
+msgid "Brauzer, qurilma va operatsion tizim"
+msgstr "Browser, device and operating system"
+
+msgid "Brauzerlar"
+msgstr "Browsers"
+
 msgid "Brending"
 msgstr "Branding"
 
 msgid "Bu brauzerda kamera ishlamaydi. Havolani qoʻlda kiriting."
 msgstr "The camera doesn't work in this browser. Enter the link manually."
+
+msgid "Bu davrda maʼlumot yoʻq."
+msgstr "No data for this period."
 
 msgid "Bu oy"
 msgstr "This month"
@@ -202,8 +247,11 @@ msgstr "This month"
 msgid "Bu yilda sertifikat topilmadi."
 msgstr "No certificates found for this year."
 
-msgid "Bugun"
-msgstr "Today"
+msgid "Butun davr"
+msgstr "All time"
+
+msgid "Butun ekran"
+msgstr "Fullscreen"
 
 msgid "CEFR / havola (QR skaner)"
 msgstr "CEFR / link (QR scanner)"
@@ -230,11 +278,17 @@ msgid ""
 msgstr ""
 "Chat ID must be a number (e.g. 123456789 or -1001234567890) or an @username."
 
+msgid "Chiqib ketish darajasi"
+msgstr "Bounce rate"
+
 msgid "Chop etilgan"
 msgstr "Published"
 
 msgid "Chop etilgan sana"
 msgstr "Published date"
+
+msgid "Cookie va lokal saqlash"
+msgstr "Cookies and local storage"
 
 msgid "Dark"
 msgstr "Dark"
@@ -248,8 +302,8 @@ msgstr "Country"
 msgid "Davlat kodi"
 msgstr "Country code"
 
-msgid "Davlatlar boʻyicha tashriflar"
-msgstr "Visits by country"
+msgid "Davlatlar"
+msgstr "Countries"
 
 msgid "Davomiyligi"
 msgstr "Duration"
@@ -275,8 +329,8 @@ msgstr "Active"
 msgid "Faol / chop etilgan"
 msgstr "Active / published"
 
-msgid "Faqat maxsus embed kerak bo‘lsa to‘ldiring. Bo‘sh qoldirilsa, "
-msgstr "Only fill in if you need a custom embed. If left blank,"
+msgid "Faqat maxsus Google embed kerak bo‘lsa to‘ldiring. Bo‘sh "
+msgstr "Fill in only if a custom Google embed is needed. Empty "
 
 msgid "Favicon"
 msgstr "Favicon"
@@ -345,6 +399,9 @@ msgstr "Google Maps embed"
 msgid "Google verification"
 msgstr "Google verification"
 
+msgid "Google xarita — qo‘lda override (ixtiyoriy)"
+msgstr "Google Map — manual override (optional)"
+
 msgid "Grafik"
 msgstr "Chart"
 
@@ -353,9 +410,6 @@ msgstr "Group"
 
 msgid "Guruh hajmi"
 msgstr "Group size"
-
-msgid "Hafta"
-msgstr "Week"
 
 msgid "Hali manba yoʻq."
 msgstr "No sources yet."
@@ -378,6 +432,9 @@ msgstr "Re-import from the link (PDF→image + name)"
 msgid "Havolani ochish"
 msgstr "Open link"
 
+msgid "Hero blokidagi katta rasm/poster."
+msgstr "The large image/poster in the hero block."
+
 msgid "Hero bo'limi"
 msgstr "Hero section"
 
@@ -395,6 +452,12 @@ msgstr "Calculation / math"
 
 msgid "Holat"
 msgstr "Status"
+
+msgid ""
+"Hope School maxfiylik siyosati: qanday maʼlumotlar yigʻiladi va qanday "
+"ishlatiladi."
+msgstr ""
+"Hope School privacy policy: what data is collected and how it is used."
 
 msgid "Hozircha rasm yo'q."
 msgstr "No images yet."
@@ -453,6 +516,12 @@ msgstr "Team"
 msgid "Jamoamiz bilan tanishing"
 msgstr "Meet our team"
 
+msgid "Jonli"
+msgstr "Live"
+
+msgid "Joylashuv"
+msgstr "Locations"
+
 msgid "Joylashuv (xaritadan tanlang)"
 msgstr "Location (pick on the map)"
 
@@ -462,11 +531,20 @@ msgstr "Location is set in the admin panel"
 msgid "Juda koʻp soʻrov. Birozdan soʻng urinib koʻring."
 msgstr "Too many requests. Please try again later."
 
+msgid "Kam"
+msgstr "Low"
+
 msgid "Kamera ochilmoqda…"
 msgstr "Opening camera…"
 
 msgid "Kameraga ruxsat berilmadi:"
 msgstr "Camera access denied:"
+
+msgid "Kattalashtirish"
+msgstr "Zoom in"
+
+msgid "Kechirasiz, siz qidirgan sahifa mavjud emas yoki koʻchirilgan."
+msgstr "Sorry, the page you are looking for does not exist or has been moved."
 
 msgid "Kenglik (lat)"
 msgstr "Latitude (lat)"
@@ -482,6 +560,9 @@ msgstr "A smaller number is shown higher."
 
 msgid "Kichik sarlavha"
 msgstr "Subtitle"
+
+msgid "Kichiklashtirish"
+msgstr "Zoom out"
 
 msgid "Kimligini eslatuvchi nom (masalan: Direktor). Ixtiyoriy."
 msgstr "A reminder name (e.g. Director). Optional."
@@ -513,6 +594,12 @@ msgstr "Contact - send button"
 msgid "Kontaktlar"
 msgstr "Contacts"
 
+msgid "Koʻp"
+msgstr "High"
+
+msgid "Koʻrish"
+msgstr "Views"
+
 msgid "Kurs"
 msgstr "Course"
 
@@ -531,9 +618,6 @@ msgstr "Course categories"
 msgid "Kurslar"
 msgstr "Courses"
 
-msgid "Kurslar / oʻqituvchilar"
-msgstr "Courses / teachers"
-
 msgid "Kursni tanlang (ixtiyoriy)"
 msgstr "Choose a course (optional)"
 
@@ -551,6 +635,9 @@ msgstr "Logo"
 
 msgid "MP4/WebM. Havola berilsa, shart emas."
 msgstr "MP4/WebM. It is not necessary if a link is provided."
+
+msgid "Mahalliy tarmoq"
+msgstr "Local network"
 
 msgid "Manba"
 msgstr "Source"
@@ -578,6 +665,21 @@ msgstr "Material Symbols name (e.g. public). Used when there is no image."
 
 msgid "Matn"
 msgstr "Text"
+
+msgid "Maxfiylik siyosati"
+msgstr "Privacy policy"
+
+msgid "Maʼlumotlar kim bilan ulashiladi"
+msgstr "Who the data is shared with"
+
+msgid "Maʼlumotlardan qanday foydalaniladi"
+msgstr "How the data is used"
+
+msgid "Maʼlumotlarni saqlash muddati"
+msgstr "How long data is kept"
+
+msgid "Maʼlumotlarni yuklab boʻlmadi."
+msgstr "Could not load the data."
 
 msgid "Menyu"
 msgstr "Menu"
@@ -639,6 +741,9 @@ msgstr "Why us — card"
 msgid "Nega biz — kartalar"
 msgstr "Why us — cards"
 
+msgid "Nomaʼlum"
+msgstr "Unknown"
+
 msgid "Nomi"
 msgstr "Name"
 
@@ -666,8 +771,11 @@ msgstr "Previous"
 msgid "Operatsion tizim"
 msgstr "Operating system"
 
-msgid "Oy"
-msgstr "Month"
+msgid "Operatsion tizimlar"
+msgstr "Operating systems"
+
+msgid "Oxirgi yangilanish"
+msgstr "Last updated"
 
 msgid "Oyna — matn"
 msgstr "Window - text"
@@ -690,6 +798,31 @@ msgstr "Enrolled"
 msgid "Oʻquvchilarimiz sertifikatlari"
 msgstr "Certificates of our students"
 
+msgid "Oʻrtacha davomiylik"
+msgstr "Avg. visit duration"
+
+msgid ""
+"Oʻzingiz haqingizdagi maʼlumotlarni koʻrish, tuzatish yoki oʻchirishni "
+"soʻrashingiz mumkin. Buning uchun quyidagi aloqa maʼlumotlari orqali "
+"bogʻlaning."
+msgstr ""
+"You may request access to, correction of, or deletion of your data. To do "
+"so, contact us using the details below."
+
+msgid ""
+"O‘quvchilarimizning erishgan natijalari (CEFR va boshqa sertifikatlar) "
+"yutuqlar namunasi sifatida saytda e’lon qilinishi mumkin. Bunda sertifikat "
+"tasviri va o‘quvchi ismi ko‘rsatiladi. Ular faqat o‘quvchi yoki uning "
+"qonuniy vakili roziligi bilan joylashtiriladi. Sertifikatingizni saytdan "
+"olib tashlashni istasangiz, quyidagi aloqa orqali murojaat qiling — biz "
+"zudlik bilan o‘chiramiz."
+msgstr ""
+"Our students' results (CEFR and other certificates) may be published on the "
+"site as examples of achievement. The certificate image and the student's "
+"name are shown. They are published only with the consent of the student or "
+"their legal guardian. If you would like your certificate removed from the "
+"site, contact us using the details below — we will delete it immediately."
+
 msgid "PDF fayl"
 msgstr "PDF file"
 
@@ -708,8 +841,14 @@ msgstr "Point the camera at the QR code…"
 msgid "Qalqon (kafolat)"
 msgstr "Shield (guarantee)"
 
+msgid "Qanday maʼlumotlar yigʻiladi"
+msgstr "What data is collected"
+
 msgid "Qaysi kurs?"
 msgstr "Which course?"
+
+msgid "Qayta urinish"
+msgstr "Retry"
 
 msgid "Qidirish"
 msgstr "Search"
@@ -732,6 +871,9 @@ msgstr "In red color"
 msgid "Qo'shimcha telefon"
 msgstr "Secondary phone"
 
+msgid "Qoʻllash"
+msgstr "Apply"
+
 msgid "Qoʻngʻiroq"
 msgstr "Call"
 
@@ -740,6 +882,9 @@ msgstr "Additional comment"
 
 msgid "Qoʻshimcha izoh (ixtiyoriy)"
 msgstr "Additional Comment (optional)"
+
+msgid "Qurilma"
+msgstr "Device"
 
 msgid "Qurilma turi"
 msgstr "Device type"
@@ -772,6 +917,9 @@ msgstr "Image (for report)"
 msgid "Rasm, PDF yoki tashqi havoladan kamida bittasini kiriting."
 msgstr "Provide at least one of: image, PDF, or external link."
 
+msgid "Rasmni kattalashtirish"
+msgstr "Enlarge image"
+
 msgid "Referrer"
 msgstr "Referrer"
 
@@ -780,6 +928,9 @@ msgstr "Toggle theme"
 
 msgid "Roli"
 msgstr "Role"
+
+msgid "Roʻyxat"
+msgstr "List"
 
 msgid "Ruxsat etilmagan manba."
 msgstr "Source not allowed."
@@ -793,8 +944,11 @@ msgstr "SEO title"
 msgid "SEO tavsif"
 msgstr "SEO description"
 
-msgid "Sahifa"
-msgstr "Page"
+msgid "Sahifa koʻrishlari"
+msgstr "Page views"
+
+msgid "Sahifa topilmadi"
+msgstr "Page not found"
 
 msgid "Sahifalar"
 msgstr "Pages"
@@ -832,8 +986,22 @@ msgstr "The part before the site name."
 msgid "Sayt sozlamalari"
 msgstr "Site settings"
 
+msgid ""
+"Sayt tanlagan tilingiz va yorugʻ/qorongʻu rejimni brauzeringizda saqlaydi. "
+"Statistika xizmatlari oʻz cookie fayllaridan foydalanishi mumkin."
+msgstr ""
+"The site stores your chosen language and light/dark theme in your browser. "
+"Analytics services may use their own cookies."
+
 msgid "Saytda ko'rsatilsin"
 msgstr "Show on site"
+
+msgid ""
+"Saytga tashrif buyurganingizda avtomatik: IP-manzil, brauzer turi va "
+"koʻrilgan sahifalar (statistika uchun)."
+msgstr ""
+"Automatically when you visit the site: IP address, browser type and pages "
+"viewed (for statistics)."
 
 msgid "Saytni koʻrish"
 msgstr "View site"
@@ -847,11 +1015,17 @@ msgstr "Certificate issue date"
 msgid "Sertifikatlar"
 msgstr "Certificates"
 
+msgid "Sertifikatlar (o‘quvchi yutuqlari)"
+msgstr "Certificates (student achievements)"
+
 msgid "Shior"
 msgstr "Tagline"
 
 msgid "Show all"
 msgstr "Show all"
+
+msgid "Sizning huquqlaringiz"
+msgstr "Your rights"
 
 msgid "Slug"
 msgstr "Slug"
@@ -864,6 +1038,27 @@ msgstr "Count"
 
 msgid "Sozlamalar"
 msgstr "Settings"
+
+msgid "Soʻnggi 1 soat"
+msgstr "Last hour"
+
+msgid "Soʻnggi 1 yil"
+msgstr "Last year"
+
+msgid "Soʻnggi 24 soat"
+msgstr "Last 24 hours"
+
+msgid "Soʻnggi 3 oy"
+msgstr "Last 3 months"
+
+msgid "Soʻnggi 30 kun"
+msgstr "Last 30 days"
+
+msgid "Soʻnggi 6 oy"
+msgstr "Last 6 months"
+
+msgid "Soʻnggi 7 kun"
+msgstr "Last 7 days"
 
 msgid "Statistika"
 msgstr "Statistics"
@@ -896,6 +1091,9 @@ msgstr ""
 msgid "Tanlangan"
 msgstr "Featured"
 
+msgid "Tanlangan davr"
+msgstr "Custom range"
+
 msgid "Tanlangan yozuvlarda boʻsh tarjima maydoni topilmadi."
 msgstr "An empty translation field was not found in the selected records."
 
@@ -914,14 +1112,11 @@ msgstr "External link"
 msgid "Tashrif"
 msgstr "Visit"
 
+msgid "Tashrifchi"
+msgstr "Users"
+
 msgid "Tashriflar"
 msgstr "Visits"
-
-msgid "Tashriflar (davr)"
-msgstr "Visits (period)"
-
-msgid "Tashriflar dinamikasi"
-msgstr "Visits trend"
 
 msgid "Tavsif"
 msgstr "Description"
@@ -956,6 +1151,9 @@ msgstr "Telegram recipients"
 msgid "Telegramga yuborildi"
 msgstr "Sent to Telegram"
 
+msgid "Texnologiyalar"
+msgstr "Technology"
+
 msgid "Til"
 msgstr "Language"
 
@@ -988,6 +1186,12 @@ msgstr "Top pages"
 
 msgid "Topildi:"
 msgstr "Found:"
+
+msgid "Toʻgʻridan-toʻgʻri"
+msgstr "Direct / none"
+
+msgid "Tugash sanasi"
+msgstr "End date"
 
 msgid "Tugmalar"
 msgstr "Buttons"
@@ -1025,8 +1229,8 @@ msgstr "Video file"
 msgid "Video havola"
 msgstr "Video link"
 
-msgid "Xarita — qo‘lda override (ixtiyoriy)"
-msgstr "Map - manual override (optional)"
+msgid "Xarita"
+msgstr "Map"
 
 msgid "Xaritani bosib yoki qidirib joylashuvni tanlang. "
 msgstr "Pick the location by clicking the map or searching. "
@@ -1036,11 +1240,16 @@ msgstr ""
 "Click on the map or drag the icon — the coordinates will be filled in "
 "automatically."
 
+msgid "Xatolik yuz berdi. Iltimos, qaytadan urinib koʻring."
+msgstr "Something went wrong. Please try again."
+
 msgid "Xavfsizlik uchun saqlangan token qayta koʻrsatilmaydi. "
 msgstr "For security, the saved token is not shown again. "
 
-msgid "Yandex Maps embed"
-msgstr "Yandex Maps embed"
+msgid ""
+"Xizmat sifatini va sayt ishlashini yaxshilash (umumlashtirilgan statistika)."
+msgstr ""
+"To improve service quality and site performance (aggregated statistics)."
 
 msgid "Yandex Metrica ID"
 msgstr "Yandex Metrica ID"
@@ -1055,9 +1264,6 @@ msgstr "Yandex verification"
 
 msgid "Yangi"
 msgstr "New"
-
-msgid "Yangi arizalar (davr)"
-msgstr "New applications (period)"
 
 msgid "Yangilangan"
 msgstr "Updated"
@@ -1076,9 +1282,6 @@ msgstr "News and announcements"
 
 msgid "Yaratilgan"
 msgstr "Created"
-
-msgid "Yil"
-msgstr "Year"
 
 msgid "Yopish"
 msgstr "Close"
@@ -1106,6 +1309,9 @@ msgstr "Directions"
 
 msgid "Yoʻnaltiruvchi"
 msgstr "Referrer"
+
+msgid "Yuborilmoqda…"
+msgstr "Sending…"
 
 msgid "Yulduz"
 msgstr "Star"
