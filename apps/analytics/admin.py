@@ -31,6 +31,7 @@ class VisitLogAdmin(ModelAdmin):
         "browser",
         "os",
         "language",
+        "visitor_id",
         "created_at",
     )
 
